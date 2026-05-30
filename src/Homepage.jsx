@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import Navbar from './components/navbar/navbar';
 import LandingPage from './components/landing page/landing-page';
 
-function App() {
+function Homepage() {
   return (
     <>
       <Navbar />
@@ -11,4 +10,4 @@ function App() {
   );
 }
 
-export default App;
+export default Homepage;
