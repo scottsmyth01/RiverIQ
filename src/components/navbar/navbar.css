@@ -1,0 +1,24 @@
+div.nav-container {
+  height: 10vh;
+  color: white;
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+div.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+div.nav-options {
+  display: flex;
+  gap: 15px;
+  margin-right: 15px;
+}
+
+img {
+  width: 50px;
+}
