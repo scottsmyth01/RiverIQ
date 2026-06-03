@@ -1,0 +1,22 @@
+.loading-screen {
+  min-height: 100vh;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-logo {
+  width: 150px;
+  animation: spin-logo 0.6s ease-in-out infinite;
+}
+
+@keyframes spin-logo {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
