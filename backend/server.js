@@ -5,12 +5,12 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js';
 import authRouter from './routes/authRoutes.js';
+import userRouter from './routes/userRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 1234;
 
 connectDB();
-
 app.use(cors({ credentials: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
