@@ -89,10 +89,10 @@ const LandingPage = () => {
                   <>
                     <h2>Login</h2>
 
-                    <label htmlFor='login-username'>Username/Email</label>
+                    <label htmlFor='login-username'>Email</label>
                     <input
-                      id='login-username'
-                      name='login-username'
+                      id='login-email'
+                      name='login-email'
                       type='text'
                       required
                     />
@@ -137,7 +137,7 @@ const LandingPage = () => {
                   <>
                     <h2>Register</h2>
 
-                    <label htmlFor='username'>Username</label>
+                    <label htmlFor='username'>Name</label>
                     <input
                       id='username'
                       name='username'
