@@ -1,50 +1,55 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 import LoadingScreen from '../../components/LoadingScreen/LoadingScreen';
 import './LandingPage.css';
 
+const initialLandingState = {
+  authMode: 'home',
+  isLoading: false,
+};
+
+function reducer(state, action) {
+  switch (action) {
+    case 'showLogin':
+      return { ...state, authMode: 'login' };
+    case 'showPasswordReset':
+      return { ...state, authMode: 'passwordReset' };
+    case 'toggleAuthMode':
+      return {
+        ...state,
+        authMode: state.authMode === 'login' ? 'register' : 'login',
+      };
+    case 'startSubmit':
+      return { ...state, isLoading: true };
+    case 'finishSubmit':
+      return { ...state, isLoading: false };
+    default:
+      return state;
+  }
+}
+
 const LandingPage = () => {
-  const [authMode, setAuthMode] = useState('home');
-  const [isLoading, setIsLoading] = useState(false);
-  const isHomeMode = authMode === 'home';
-  const isLoginMode = authMode === 'login';
-  const isRegisterMode = authMode === 'register';
-  const isPasswordResetMode = authMode === 'passwordReset';
-
-  function handleTryNow() {
-    setAuthMode('login');
-  }
-
-  function handlePasswordReset() {
-    setAuthMode('passwordReset');
-  }
+  const [{ authMode, isLoading }, dispatch] = useReducer(
+    reducer,
+    initialLandingState,
+  );
 
   function handleSubmit(event) {
     event.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    dispatch('startSubmit');
 
-      const form = new FormData(event.currentTarget);
-      const values = Object.fromEntries(form.entries());
+    const form = new FormData(event.currentTarget);
+    const values = Object.fromEntries(form.entries());
+
+    setTimeout(() => {
+      dispatch('finishSubmit');
 
       console.log(values);
     }, 2500);
   }
 
-  function handleAuthModeToggle() {
-    setAuthMode(isLoginMode ? 'register' : 'login');
-  }
-
-  function handleBackToLogin() {
-    setAuthMode('login');
-  }
-
-  if (isLoading) {
-    return <LoadingScreen />;
-  } else {
-    return (
-      <>
-        {isHomeMode && (
+  return (
+    <>
+        {authMode === 'home' && (
           <div className='landing-hero'>
             <div className='landing-form'>
               <h1>RiverIQ</h1>
@@ -53,7 +58,7 @@ const LandingPage = () => {
                 <h4>Simply.</h4>
               </div>
               <button
-                onClick={handleTryNow}
+                onClick={() => dispatch('showLogin')}
                 className='btn-primary'
               >
                 Try Now
@@ -61,11 +66,13 @@ const LandingPage = () => {
             </div>
           </div>
         )}
-        {!isHomeMode && (
+        {authMode !== 'home' && (
           <div className='register-page'>
             <section
               className={`register-panel ${
-                isLoginMode || isPasswordResetMode ? 'login-mode' : ''
+                authMode === 'login' || authMode === 'passwordReset'
+                  ? 'login-mode'
+                  : ''
               }`}
             >
               <div className='register-brand'>
@@ -85,7 +92,7 @@ const LandingPage = () => {
                 className='register-form'
                 onSubmit={handleSubmit}
               >
-                {isLoginMode && (
+                {authMode === 'login' && (
                   <>
                     <h2>Login</h2>
 
@@ -113,7 +120,7 @@ const LandingPage = () => {
                           fontWeight: '300',
                           textDecoration: 'none',
                         }}
-                        onClick={handlePasswordReset}
+                        onClick={() => dispatch('showPasswordReset')}
                         type='button'
                       >
                         Forgot Password?
@@ -125,7 +132,7 @@ const LandingPage = () => {
                       Need an account?{' '}
                       <button
                         type='button'
-                        onClick={handleAuthModeToggle}
+                        onClick={() => dispatch('toggleAuthMode')}
                       >
                         Register now.
                       </button>
@@ -133,7 +140,7 @@ const LandingPage = () => {
                   </>
                 )}
 
-                {isRegisterMode && (
+                {authMode === 'register' && (
                   <>
                     <h2>Register</h2>
 
@@ -166,7 +173,7 @@ const LandingPage = () => {
                       Already a member?{' '}
                       <button
                         type='button'
-                        onClick={handleAuthModeToggle}
+                        onClick={() => dispatch('toggleAuthMode')}
                       >
                         Sign in.
                       </button>
@@ -174,7 +181,7 @@ const LandingPage = () => {
                   </>
                 )}
 
-                {isPasswordResetMode && (
+                {authMode === 'passwordReset' && (
                   <>
                     <h2>Reset Password</h2>
 
@@ -192,7 +199,7 @@ const LandingPage = () => {
                       Remembered it?{' '}
                       <button
                         type='button'
-                        onClick={handleBackToLogin}
+                        onClick={() => dispatch('showLogin')}
                       >
                         Back to login.
                       </button>
@@ -203,9 +210,9 @@ const LandingPage = () => {
             </section>
           </div>
         )}
+        {isLoading && <LoadingScreen />}
       </>
     );
-  }
 };
 
 export default LandingPage;

@@ -1,13 +1,23 @@
 .loading-screen {
-  min-height: 100vh;
-  background-color: white;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  min-height: 100dvh;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+.loading-modal {
+  display: grid;
+  place-items: center;
+}
+
 .loading-logo {
-  width: 150px;
+  width: min(150px, 34vw);
   animation: spin-logo 0.6s ease-in-out infinite;
 }
 
