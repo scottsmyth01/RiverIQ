@@ -1,5 +1,4 @@
 import './Navbar.css';
-import logo from '../../../public/logo.png';
 
 const Navbar = () => {
   return (
@@ -9,7 +8,7 @@ const Navbar = () => {
         href='/'
       >
         <img
-          src={logo}
+          src='/logo.png'
           alt='RiverIQ logo'
         />
         <h2>RiverIQ</h2>

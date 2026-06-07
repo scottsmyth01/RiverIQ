@@ -1,4 +1,3 @@
-import logo from '../../../public/logo.png';
 import './LoadingScreen.css';
 
 const LoadingScreen = () => {
@@ -12,7 +11,7 @@ const LoadingScreen = () => {
       <div className='loading-modal'>
         <img
           className='loading-logo'
-          src={logo}
+          src='/logo.png'
           alt='RiverIQ loading'
         />
       </div>
