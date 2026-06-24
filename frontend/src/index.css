@@ -41,7 +41,7 @@ button.btn-primary {
   color: white;
   border-radius: 20px;
   border: none;
-  padding: 5px 27px;
+  padding: 10px 27px;
   font-weight: bold;
 }
 
@@ -50,7 +50,7 @@ button.btn-secondary {
   color: #142131;
   border-radius: 20px;
   border: none;
-  padding: 5px 27px;
+  padding: 10px 27px;
   font-weight: bold;
 }
 

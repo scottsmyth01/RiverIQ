@@ -1,0 +1,18 @@
+{
+  "editor.tokenColorCustomizations": {
+    "comments": "#14b8a6",
+    "textMateRules": [
+      {
+        "scope": [
+          "comment",
+          "comment.block.documentation",
+          "comment.line.double-slash",
+          "punctuation.definition.comment"
+        ],
+        "settings": {
+          "foreground": "#14b8a6"
+        }
+      }
+    ]
+  }
+}

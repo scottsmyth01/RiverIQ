@@ -1,19 +1,21 @@
-import { useReducer } from 'react';
-import LoadingScreen from '../../components/LoadingScreen/LoadingScreen';
 import './LandingPage.css';
+import LoadingScreen from '../../components/LoadingScreen/LoadingScreen';
+import { type SubmitEvent, useEffect, useReducer } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type AuthMode = 'home' | 'login' | 'register' | 'passwordReset';
 type LandingAction =
-  | 'showLogin'
-  | 'showPasswordReset'
-  | 'toggleAuthMode'
-  | 'startSubmit'
-  | 'finishSubmit';
+  | { type: 'setAuthMode'; authMode: AuthMode }
+  | { type: 'showLogin' }
+  | { type: 'showPasswordReset' }
+  | { type: 'toggleAuthMode' }
+  | { type: 'startSubmit' }
+  | { type: 'finishSubmit' };
 
-type LandingState = {
+interface LandingState {
   authMode: AuthMode;
   isLoading: boolean;
-};
+}
 
 const initialLandingState: LandingState = {
   authMode: 'home',
@@ -21,16 +23,9 @@ const initialLandingState: LandingState = {
 };
 
 function reducer(state: LandingState, action: LandingAction): LandingState {
-  switch (action) {
-    case 'showLogin':
-      return { ...state, authMode: 'login' };
-    case 'showPasswordReset':
-      return { ...state, authMode: 'passwordReset' };
-    case 'toggleAuthMode':
-      return {
-        ...state,
-        authMode: state.authMode === 'login' ? 'register' : 'login',
-      };
+  switch (action.type) {
+    case 'setAuthMode':
+      return { ...state, authMode: action.authMode };
     case 'startSubmit':
       return { ...state, isLoading: true };
     case 'finishSubmit':
@@ -40,180 +35,163 @@ function reducer(state: LandingState, action: LandingAction): LandingState {
   }
 }
 
-const LandingPage = () => {
-  const [{ authMode, isLoading }, dispatch] = useReducer(
-    reducer,
-    initialLandingState,
-  );
+const LandingPage = ({ initialAuthMode }) => {
+  const [{ authMode, isLoading }, dispatch] = useReducer(reducer, {
+    ...initialLandingState,
+    authMode: initialAuthMode,
+  });
 
-  function handleSubmit(event) {
+  useEffect(() => {
+    dispatch({ type: 'setAuthMode', authMode: initialAuthMode });
+  }, [initialAuthMode]);
+
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    dispatch('startSubmit');
+    dispatch({ type: 'startSubmit' });
 
     const form = new FormData(event.currentTarget);
     const values = Object.fromEntries(form.entries());
 
-    setTimeout(() => {
-      dispatch('finishSubmit');
-
-      console.log(values);
-    }, 2500);
+    dispatch({ type: 'finishSubmit' });
   }
+  const navigate = useNavigate();
 
   return (
-    <>
+    <main className='landing-page'>
+      {/* HOME SCREEN */}
       {authMode === 'home' && (
-        <div className='landing-hero'>
-          <div className='landing-form'>
-            <h1>RiverIQ</h1>
-            <div className='landing-form-slogan'>
-              <h4>Poker.</h4>
-              <h4>Simply.</h4>
+        <div className='landing-page__hero'>
+          <div className='landing-page__home-card'>
+            <h1 className='landing-page__home-title'>RiverIQ</h1>
+            <div className='landing-page__home-slogan'>
+              <h4 className='landing-page__home-slogan-line'>Poker.</h4>
+              <h4 className='landing-page__home-slogan-line'>Simply.</h4>
             </div>
-            <button
-              onClick={() => dispatch('showLogin')}
-              className='btn-primary'
-            >
+            <button onClick={() => navigate('/login')} className='landing-page__cta btn-primary'>
               Try Now
             </button>
           </div>
         </div>
       )}
       {authMode !== 'home' && (
-        <div className='register-page'>
+        <div className='landing-page__auth'>
           <section
-            className={`register-panel ${
-              authMode === 'login' || authMode === 'passwordReset'
-                ? 'login-mode'
-                : ''
+            className={`landing-page__auth-panel ${
+              authMode === 'login' || authMode === 'passwordReset' ? 'landing-page__auth-panel--login' : ''
             }`}
           >
-            <div className='register-brand'>
-              <h1>RiverIQ</h1>
-              <p>
+            <div className='landing-page__brand'>
+              <h1 className='landing-page__brand-title'>RiverIQ</h1>
+              <p className='landing-page__brand-slogan'>
                 Poker.
-                <span>Simply.</span>
+                <span className='landing-page__brand-slogan-line'>Simply.</span>
               </p>
               <br />
-              <img
-                src='../../../public/logo.png'
-                style={{ width: '75px' }}
-              />
+              <img className='landing-page__brand-logo' src='/logo.png' alt='RiverIQ logo' />
             </div>
 
-            <form
-              className='register-form'
-              onSubmit={handleSubmit}
-            >
+            <form className='landing-page__auth-form' onSubmit={handleSubmit}>
+              {/* <LOGIN FORM */}
               {authMode === 'login' && (
                 <>
-                  <h2>Login</h2>
+                  <h2 className='landing-page__form-title'>Login</h2>
 
-                  <label htmlFor='login-username'>Email</label>
+                  <label className='landing-page__form-label' htmlFor='login-email'>
+                    Email
+                  </label>
                   <input
+                    className='landing-page__form-input'
                     id='login-email'
                     name='login-email'
                     type='text'
                     required
                   />
 
-                  <label htmlFor='login-password'>Password</label>
+                  <label className='landing-page__form-label' htmlFor='login-password'>
+                    Password
+                  </label>
                   <input
+                    className='landing-page__form-input'
                     id='login-password'
                     type='password'
                     name='password'
                     required
                   />
-                  <p
-                    style={{ textAlign: 'left', marginTop: '15px' }}
-                    className='member-prompt'
-                  >
+                  <p className='landing-page__member-prompt landing-page__member-prompt--forgot'>
                     <button
-                      style={{
-                        fontWeight: '300',
-                        textDecoration: 'none',
-                      }}
-                      onClick={() => dispatch('showPasswordReset')}
+                      className='landing-page__member-action landing-page__member-action--subtle'
+                      onClick={() => navigate('/resetPassword')}
                       type='button'
                     >
                       Forgot Password?
                     </button>
                   </p>
-                  <button type='submit'>Login</button>
+                  <button className='landing-page__submit' type='submit'>
+                    Login
+                  </button>
 
-                  <p className='member-prompt'>
+                  <p className='landing-page__member-prompt'>
                     Need an account?{' '}
-                    <button
-                      type='button'
-                      onClick={() => dispatch('toggleAuthMode')}
-                    >
+                    <button className='landing-page__member-action' type='button' onClick={() => navigate('/register')}>
                       Register now.
                     </button>
                   </p>
                 </>
               )}
-
+              {/* REGISTER FORM */}
               {authMode === 'register' && (
                 <>
-                  <h2>Register</h2>
+                  <h2 className='landing-page__form-title'>Register</h2>
 
-                  <label htmlFor='username'>Name</label>
-                  <input
-                    id='username'
-                    name='username'
-                    type='text'
-                    required
-                  />
+                  <label className='landing-page__form-label' htmlFor='username'>
+                    Name
+                  </label>
+                  <input className='landing-page__form-input' id='username' name='username' type='text' required />
 
-                  <label htmlFor='email'>Email</label>
-                  <input
-                    id='email'
-                    name='email'
-                    type='email'
-                    required
-                  />
+                  <label className='landing-page__form-label' htmlFor='email'>
+                    Email
+                  </label>
+                  <input className='landing-page__form-input' id='email' name='email' type='email' required />
 
-                  <label htmlFor='password'>Password</label>
-                  <input
-                    id='password'
-                    type='password'
-                    name='password'
-                    required
-                  />
-                  <button type='submit'>Sign Up</button>
+                  <label className='landing-page__form-label' htmlFor='password'>
+                    Password
+                  </label>
+                  <input className='landing-page__form-input' id='password' type='password' name='password' required />
+                  <button className='landing-page__submit' type='submit'>
+                    Sign Up
+                  </button>
 
-                  <p className='member-prompt'>
+                  <p className='landing-page__member-prompt'>
                     Already a member?{' '}
-                    <button
-                      type='button'
-                      onClick={() => dispatch('toggleAuthMode')}
-                    >
+                    <button className='landing-page__member-action' type='button' onClick={() => navigate('/login')}>
                       Sign in.
                     </button>
                   </p>
                 </>
               )}
-
+              {/* PASSWORD RESET FORM */}
               {authMode === 'passwordReset' && (
                 <>
-                  <h2>Reset Password</h2>
+                  <h2 className='landing-page__form-title'>Reset Password</h2>
 
-                  <label htmlFor='reset-email'>Email</label>
+                  <label className='landing-page__form-label' htmlFor='reset-email'>
+                    Email
+                  </label>
                   <input
+                    className='landing-page__form-input'
                     id='reset-email'
                     name='reset-email'
                     type='email'
                     required
                   />
 
-                  <button type='submit'>Send Reset Link</button>
+                  <button className='landing-page__submit' type='submit'>
+                    Send Reset Link
+                  </button>
 
-                  <p className='member-prompt'>
+                  <p className='landing-page__member-prompt'>
                     Remembered it?{' '}
-                    <button
-                      type='button'
-                      onClick={() => dispatch('showLogin')}
-                    >
+                    <button className='landing-page__member-action' type='button' onClick={() => navigate('/login')}>
                       Back to login.
                     </button>
                   </p>
@@ -223,8 +201,9 @@ const LandingPage = () => {
           </section>
         </div>
       )}
+      {/* show loading modal if isLoading is true */}
       {isLoading && <LoadingScreen />}
-    </>
+    </main>
   );
 };
 
