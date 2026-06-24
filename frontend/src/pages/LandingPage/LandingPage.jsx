@@ -1,60 +1,19 @@
+import { useState } from 'react';
 import './LandingPage.css';
-import LoadingScreen from '../../components/LoadingScreen/LoadingScreen';
-import { type SubmitEvent, useEffect, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type AuthMode = 'home' | 'login' | 'register' | 'passwordReset';
-type LandingAction =
-  | { type: 'setAuthMode'; authMode: AuthMode }
-  | { type: 'showLogin' }
-  | { type: 'showPasswordReset' }
-  | { type: 'toggleAuthMode' }
-  | { type: 'startSubmit' }
-  | { type: 'finishSubmit' };
-
-interface LandingState {
-  authMode: AuthMode;
-  isLoading: boolean;
-}
-
-const initialLandingState: LandingState = {
-  authMode: 'home',
-  isLoading: false,
-};
-
-function reducer(state: LandingState, action: LandingAction): LandingState {
-  switch (action.type) {
-    case 'setAuthMode':
-      return { ...state, authMode: action.authMode };
-    case 'startSubmit':
-      return { ...state, isLoading: true };
-    case 'finishSubmit':
-      return { ...state, isLoading: false };
-    default:
-      return state;
-  }
-}
-
-const LandingPage = ({ initialAuthMode }) => {
-  const [{ authMode, isLoading }, dispatch] = useReducer(reducer, {
-    ...initialLandingState,
-    authMode: initialAuthMode,
-  });
-
-  useEffect(() => {
-    dispatch({ type: 'setAuthMode', authMode: initialAuthMode });
-  }, [initialAuthMode]);
-
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    dispatch({ type: 'startSubmit' });
-
-    const form = new FormData(event.currentTarget);
-    const values = Object.fromEntries(form.entries());
-
-    dispatch({ type: 'finishSubmit' });
-  }
+const LandingPage = ({ authMode }) => {
   const navigate = useNavigate();
+
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [registerUsername, setRegisterUsername] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+
+  const handleSubmit = function (e) {
+    e.preventDefault();
+  };
 
   return (
     <main className='landing-page'>
@@ -105,6 +64,8 @@ const LandingPage = ({ initialAuthMode }) => {
                     name='login-email'
                     type='text'
                     required
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
                   />
 
                   <label className='landing-page__form-label' htmlFor='login-password'>
@@ -116,7 +77,10 @@ const LandingPage = ({ initialAuthMode }) => {
                     type='password'
                     name='password'
                     required
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
                   />
+
                   <p className='landing-page__member-prompt landing-page__member-prompt--forgot'>
                     <button
                       className='landing-page__member-action landing-page__member-action--subtle'
@@ -143,17 +107,32 @@ const LandingPage = ({ initialAuthMode }) => {
                 <>
                   <h2 className='landing-page__form-title'>Register</h2>
 
-                  <label className='landing-page__form-label' htmlFor='username'>
-                    Name
+                  <label
+                    className='landing-page__form-label'
+                    htmlFor='username'
+                    value={registerUsername}
+                    onChange={(e) => setRegisterUsername(e.target.value)}
+                  >
+                    Username
                   </label>
                   <input className='landing-page__form-input' id='username' name='username' type='text' required />
 
-                  <label className='landing-page__form-label' htmlFor='email'>
+                  <label
+                    className='landing-page__form-label'
+                    htmlFor='email'
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                  >
                     Email
                   </label>
                   <input className='landing-page__form-input' id='email' name='email' type='email' required />
 
-                  <label className='landing-page__form-label' htmlFor='password'>
+                  <label
+                    className='landing-page__form-label'
+                    htmlFor='password'
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                  >
                     Password
                   </label>
                   <input className='landing-page__form-input' id='password' type='password' name='password' required />
@@ -202,7 +181,7 @@ const LandingPage = ({ initialAuthMode }) => {
         </div>
       )}
       {/* show loading modal if isLoading is true */}
-      {isLoading && <LoadingScreen />}
+      {/* {isLoading && <LoadingScreen />} */}
     </main>
   );
 };

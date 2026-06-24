@@ -241,6 +241,12 @@
   opacity: 1;
 }
 
+.landing-page__error {
+  color: red;
+  margin: -5px 0px 15px 0px;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 567px) {
   .landing-page__home-card {
     width: min(90vw, 420px);

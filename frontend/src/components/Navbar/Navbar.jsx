@@ -1,6 +1,6 @@
 import './Navbar.css';
 
-const Navbar = ({ isLoggedIn, handleLogout }) => {
+const Navbar = () => {
   return (
     <div className='nav-container '>
       <a
