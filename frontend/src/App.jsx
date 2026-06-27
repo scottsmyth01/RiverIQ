@@ -1,26 +1,38 @@
-import { useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import ProtectedRoute from './utils/ProtectedRoute';
+import FeaturePage from './pages/FeaturePage';
 import Navbar from './components/Navbar/Navbar';
-import LandingPage from './pages/LandingPage/LandingPage';
+import PricingPage from './pages/PricingPage';
+import AboutPage from './pages/AboutPage';
+import UserAuthPage from './pages/UserAuthPage';
 
-function Homepage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+function AppRoutes() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
-  function handleLogout() {
-    setIsLoggedIn(false);
-  }
+  return (
+    <>
+      {!isAuthPage && <Navbar />}
+      <Routes>
+        <Route path='/' element={<Navigate to='/features' replace />} />
+        <Route path='/features' element={<FeaturePage />} />
+        <Route path='/pricing' element={<PricingPage />} />
+        <Route path='/about' element={<AboutPage />} />
+        <Route path='/login' element={<UserAuthPage />} />
+        <Route path='/register' element={<UserAuthPage />} />
+        <Route path='*' element={<FeaturePage />} />
+      </Routes>
+    </>
+  );
+}
+
+function App() {
   return (
     <BrowserRouter>
-      <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
-
-      <Routes>
-        <Route path='/' element={<LandingPage authMode='home' />} />
-        <Route path='/login' element={<LandingPage authMode='login' />} />
-        <Route path='/register' element={<LandingPage authMode='register' />} />
-        <Route path='/resetPassword' element={<LandingPage authMode='passwordReset' />} />
-      </Routes>
+      <AppRoutes />
     </BrowserRouter>
   );
 }
 
-export default Homepage;
+export default App;

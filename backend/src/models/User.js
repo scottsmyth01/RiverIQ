@@ -2,24 +2,63 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
-    userName: {
+    username: {
       type: String,
-      required: true,
+      required: [true, 'Username is required'],
+      unique: true,
       trim: true,
     },
     email: {
       type: String,
-      required: true,
+      required: [true, 'Email is required'],
       unique: true,
-      trim: true,
       lowercase: true,
+      trim: true,
     },
     password: {
       type: String,
-      required: true,
+      required: [true, 'Password is required'],
+      minlength: [8, 'Password must be at least 8 characters long'],
+      select: false,
+    },
+
+    // poker dashboard fields
+    subscription: {
+      type: String,
+      default: 'free',
+    },
+    bankroll: {
+      type: Number,
+      default: 0,
+    },
+    totalProfit: {
+      type: Number,
+      default: 0,
+    },
+    totalHandsPlayed: {
+      type: Number,
+      default: 0,
+    },
+    totalSessionsPlayed: {
+      type: Number,
+      default: 0,
+    },
+    winRate: {
+      type: Number,
+      default: 0,
+    },
+    role: {
+      type: String,
+      default: 'user',
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },
 );
 
-export default mongoose.mondel('User', userSchema);
+const User = mongoose.model('User', userSchema);
+
+export default User;
