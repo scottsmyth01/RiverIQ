@@ -311,6 +311,22 @@
   border-color: var(--color-primary);
 }
 
+.auth-field.has-error > div {
+  border-color: #ff5a5a;
+}
+
+.auth-field-error {
+  display: block;
+  margin-top: 0.4rem;
+  color: #ff6b6b;
+  font-size: var(--font-size-xs);
+  line-height: 1.35;
+}
+
+.auth-form-error {
+  margin-bottom: -0.5rem;
+}
+
 .auth-field svg {
   width: 18px;
   height: 18px;
@@ -331,6 +347,16 @@
 
 .auth-field input::placeholder {
   color: #697584;
+}
+
+.auth-field input:-webkit-autofill,
+.auth-field input:-webkit-autofill:hover,
+.auth-field input:-webkit-autofill:focus,
+.auth-field input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text-primary);
+  caret-color: var(--text-primary);
+  -webkit-box-shadow: 0 0 0 1000px #08131e inset;
+  box-shadow: 0 0 0 1000px #08131e inset;
 }
 
 .password-toggle {
@@ -432,10 +458,12 @@
 }
 
 .apple-mark {
-  width: 20px;
+  width: 17px;
   height: 20px;
+  flex: 0 0 17px;
+  display: block;
   color: white;
-  stroke-width: 2;
+  fill: currentColor;
 }
 
 .auth-mode-prompt {

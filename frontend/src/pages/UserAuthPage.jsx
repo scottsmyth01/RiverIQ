@@ -1,16 +1,71 @@
 import React, { useState } from 'react';
-import { BarChart3, CloudUpload, Eye, Lock, Mail, ShieldCheck, Spade } from 'lucide-react';
+import { BarChart3, Clock, CloudUpload, Eye, Lock, Mail, ShieldCheck, Spade } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './UserAuthPage.css';
+import { useAuth } from '../context/AuthContext';
+import { ToastContainer, toast } from 'react-toastify';
 
 const UserAuthPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [authMode, setAuthMode] = useState(location.pathname === '/register' ? 'register' : 'login');
 
+  const { register, login } = useAuth();
+
   const changeAuthMode = (mode) => {
     setAuthMode(mode);
+    setFieldErrors({});
     navigate(mode === 'register' ? '/register' : '/login');
+  };
+
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    passwordConfirm: '',
+  });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((currentFormData) => ({
+      ...currentFormData,
+      [name]: value,
+    }));
+
+    setFieldErrors((currentErrors) => ({
+      ...currentErrors,
+      [name]: '',
+      form: '',
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setFieldErrors({});
+
+    const { username, email, password, passwordConfirm } = formData;
+
+    if (authMode === 'register') {
+      try {
+        await register({ username, email, password, passwordConfirm });
+        toast.success('Registration Successful');
+      } catch (error) {
+        const field = error.field && Object.hasOwn(formData, error.field) ? error.field : 'form';
+        setFieldErrors({ [field]: error.message });
+      }
+    }
+
+    if (authMode === 'login') {
+      try {
+        await login({ email, password });
+        toast.success('Login Successful');
+      } catch (error) {
+        const field = error.field && Object.hasOwn(formData, error.field) ? error.field : 'form';
+        setFieldErrors({ [field]: error.message });
+      }
+    }
   };
 
   return (
@@ -125,7 +180,7 @@ const UserAuthPage = () => {
             </button>
           </div>
 
-          <form className='auth-form'>
+          <form className='auth-form' onSubmit={handleSubmit}>
             <div className='auth-form-heading'>
               <h2>
                 {authMode === 'login'
@@ -144,48 +199,96 @@ const UserAuthPage = () => {
             </div>
 
             {authMode === 'register' && (
-              <label className='auth-field'>
+              <label className={`auth-field ${fieldErrors.username ? 'has-error' : ''}`}>
                 <span>Username</span>
                 <div>
                   <Spade aria-hidden='true' />
-                  <input type='text' placeholder='Choose a username' autoComplete='username' />
+                  <input
+                    type='text'
+                    name='username'
+                    placeholder='Choose a username'
+                    onChange={handleChange}
+                    autoComplete='username'
+                    autoCapitalize='none'
+                    spellCheck='false'
+                  />
                 </div>
+                {fieldErrors.username && (
+                  <small className='auth-field-error' role='alert'>
+                    {fieldErrors.username}
+                  </small>
+                )}
               </label>
             )}
 
-            <label className='auth-field'>
+            <label className={`auth-field ${fieldErrors.email ? 'has-error' : ''}`}>
               <span>Email</span>
               <div>
                 <Mail aria-hidden='true' />
-                <input type='email' placeholder='Enter your email' autoComplete='email' />
+                <input
+                  type='email'
+                  name='email'
+                  placeholder='Enter your email'
+                  onChange={handleChange}
+                  autoComplete='email'
+                />
               </div>
+              {fieldErrors.email && (
+                <small className='auth-field-error' role='alert'>
+                  {fieldErrors.email}
+                </small>
+              )}
             </label>
 
             {authMode !== 'forgot' && (
-              <label className='auth-field'>
+              <label className={`auth-field ${fieldErrors.password ? 'has-error' : ''}`}>
                 <span>Password</span>
                 <div>
                   <Lock aria-hidden='true' />
                   <input
                     type='password'
                     placeholder='Enter your password'
+                    name='password'
+                    onChange={handleChange}
                     autoComplete={authMode === 'login' ? 'current-password' : 'new-password'}
                   />
                   <button className='password-toggle' type='button' aria-label='Show password'>
                     <Eye aria-hidden='true' />
                   </button>
                 </div>
+                {fieldErrors.password && (
+                  <small className='auth-field-error' role='alert'>
+                    {fieldErrors.password}
+                  </small>
+                )}
               </label>
             )}
 
             {authMode === 'register' && (
-              <label className='auth-field'>
+              <label className={`auth-field ${fieldErrors.passwordConfirm ? 'has-error' : ''}`}>
                 <span>Confirm Password</span>
                 <div>
                   <Lock aria-hidden='true' />
-                  <input type='password' placeholder='Confirm your password' autoComplete='new-password' />
+                  <input
+                    type='password'
+                    name='passwordConfirm'
+                    placeholder='Confirm your password'
+                    onChange={handleChange}
+                    autoComplete='new-password'
+                  />
                 </div>
+                {fieldErrors.passwordConfirm && (
+                  <small className='auth-field-error' role='alert'>
+                    {fieldErrors.passwordConfirm}
+                  </small>
+                )}
               </label>
+            )}
+
+            {fieldErrors.form && (
+              <p className='auth-field-error auth-form-error' role='alert'>
+                {fieldErrors.form}
+              </p>
             )}
 
             {authMode === 'login' && (
@@ -200,7 +303,7 @@ const UserAuthPage = () => {
               </div>
             )}
 
-            <button className='auth-submit' type='button'>
+            <button className='auth-submit' type='submit'>
               {authMode === 'login' ? 'Log In' : authMode === 'register' ? 'Create Account' : 'Send Reset Link'}
             </button>
 
@@ -213,15 +316,6 @@ const UserAuthPage = () => {
                 <button className='social-auth-button' type='button'>
                   <span className='google-mark'>G</span>
                   Continue with Google
-                </button>
-                <button className='social-auth-button' type='button'>
-                  <svg className='apple-mark' viewBox='0 0 24 24' aria-hidden='true'>
-                    <path
-                      fill='currentColor'
-                      d='M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2.01.77-3.28.82-1.31.05-2.3-1.32-3.14-2.53C3.44 15.53 2.8 9.3 4.47 6.39c.83-1.44 2.3-2.35 3.9-2.38 1.29-.03 2.5.87 3.29.87.78 0 2.26-1.08 3.81-.92.65.03 2.47.26 3.64 1.97-.09.06-2.17 1.28-2.15 3.82.03 3.04 2.66 4.05 2.69 4.06-.02.07-.42 1.44-1.39 2.91M13 3.5C13.73 2.67 14.94 2.04 16 2c.14 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.17-1.15.41-2.35.99-3.11z'
-                    />
-                  </svg>
-                  Continue with Apple
                 </button>
               </>
             )}
@@ -248,6 +342,7 @@ const UserAuthPage = () => {
           <a href='#contact'>Contact Us</a>
         </nav>
       </footer>
+      <ToastContainer />
     </main>
   );
 };

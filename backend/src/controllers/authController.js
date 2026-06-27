@@ -1,18 +1,21 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import generateToken from '../utils/generateToken.js';
+import generateToken, { getCookieOptions } from '../utils/generateToken.js';
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
 
 export const registerUser = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, passwordConfirm } = req.body;
   try {
     //BASIC VALIDATION
-    if (!username || !email || !password)
+    const missingField = ['username', 'email', 'password', 'passwordConfirm'].find((field) => !req.body[field]);
+
+    if (missingField)
       return res.status(400).json({
         status: 'failed',
+        field: missingField,
         message: 'Please fill in all fields',
       });
 
@@ -21,6 +24,7 @@ export const registerUser = async (req, res) => {
 
     if (!passwordRegex.test(password)) {
       return res.status(400).json({
+        field: 'password',
         message: 'Password must be at least 8 characters long and contain at least one letter and one number',
       });
     }
@@ -30,6 +34,7 @@ export const registerUser = async (req, res) => {
     if (emailExists)
       return res.status(400).json({
         status: 'failed',
+        field: 'email',
         message: 'Email already in use',
       });
 
@@ -38,6 +43,7 @@ export const registerUser = async (req, res) => {
     if (userNameExists)
       return res.status(400).json({
         status: 'failed',
+        field: 'username',
         message: 'Username already in use',
       });
 
@@ -83,17 +89,17 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    console.log(email, password);
     // BASIC VALIDATION
-    if (!email || !password) return res.status(400).json({ message: 'Please provide email and password' });
+    if (!email) return res.status(400).json({ field: 'email', message: 'Please provide your email' });
+    if (!password) return res.status(400).json({ field: 'password', message: 'Please provide your password' });
 
     // CHECK FOR USER IN DB
     const user = await User.findOne({ email }).select('+password');
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!user) return res.status(401).json({ field: 'email', message: 'Invalid email' });
 
     //CHECK PASSWORD
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid email or password' });
+    if (!isMatch) return res.status(401).json({ field: 'password', message: 'Invalid password' });
 
     // set jwt cookie
     generateToken(res, user._id);
@@ -124,11 +130,7 @@ export const loginUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
   try {
-    res.clearCookie('token', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    });
+    res.clearCookie('token', getCookieOptions());
 
     return res.status(200).json({ message: 'Logged out successfully' });
   } catch (error) {

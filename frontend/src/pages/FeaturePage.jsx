@@ -370,7 +370,7 @@ const FeaturePage = () => {
                 <h3>Pro</h3>
                 <div className='plan-price'>
                   <span className='popular-badge'>Most Popular</span>
-                  <strong>$9.99</strong>
+                  <strong>$19.99</strong>
                   <span>per month</span>
                 </div>
               </div>

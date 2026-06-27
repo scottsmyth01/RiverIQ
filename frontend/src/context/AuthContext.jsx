@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext();
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -9,7 +10,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/auth/me', {
+        const res = await fetch(`${API_URL}/api/auth/me`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -33,7 +34,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = async (formData) => {
-    const res = await fetch('http://localhost:5000/api/auth/register', {
+    const res = await fetch(`${API_URL}/api/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -45,7 +46,9 @@ export function AuthProvider({ children }) {
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.message || 'Registration failed');
+      const error = new Error(data.message || 'Registration failed');
+      error.field = data.field;
+      throw error;
     }
 
     setUser(data.user);
@@ -53,7 +56,7 @@ export function AuthProvider({ children }) {
   };
 
   const login = async (formData) => {
-    const res = await fetch('http://localhost:5000/api/auth/login', {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -65,7 +68,9 @@ export function AuthProvider({ children }) {
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.message || 'Login failed');
+      const error = new Error(data.message || 'Login failed');
+      error.field = data.field;
+      throw error;
     }
 
     setUser(data.user);
@@ -74,7 +79,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await fetch('http://localhost:5000/api/auth/logout', {
+      await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include',
       });

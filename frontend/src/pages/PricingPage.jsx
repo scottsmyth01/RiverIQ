@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Check, Database, Headphones, LockKeyhole, Monitor, Pencil, ShieldCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import './PricingPage.css';
 
 const freeFeatures = [
@@ -17,14 +18,12 @@ const proFeatures = [
   'Upload hand histories',
   'AI-powered leak detection',
   'Advanced statistics',
-  'AI coaching & insights',
   'Advanced filters & search',
   'Goal tracking',
   'Session notes & tags',
   'Export to CSV / Excel',
   'Profit by stake, game, site, day, hour',
   'Cloud sync across devices',
-  'Priority support',
 ];
 
 const trustItems = [
@@ -47,14 +46,17 @@ const trustItems = [
 
 const PricingPage = () => {
   const [isYearly, setIsYearly] = useState(false);
-  const proPrice = isYearly ? '7.99' : '9.99';
+  const proPrice = isYearly ? '15.99' : '19.99';
 
   return (
     <main className='pricing-page'>
       <div className='pricing-container'>
         <header className='pricing-page-header'>
           <h1>Choose Your Edge</h1>
-          <p>Start free and upgrade anytime. All plans include bankroll tracking and powerful insights to help you win more.</p>
+          <p>
+            Start free and upgrade anytime. All plans include bankroll tracking and powerful insights to help you win
+            more.
+          </p>
 
           <div className='billing-selector'>
             <span className={!isYearly ? 'active' : ''}>Pay Monthly</span>
@@ -68,7 +70,9 @@ const PricingPage = () => {
             >
               <span></span>
             </button>
-            <span className={isYearly ? 'active' : ''}>Pay Yearly <small>(Save 20%)</small></span>
+            <span className={isYearly ? 'active' : ''}>
+              Pay Yearly <small>(Save 20%)</small>
+            </span>
           </div>
         </header>
 
@@ -110,9 +114,9 @@ const PricingPage = () => {
               </span>
             </div>
 
-            <button className='get-started-button' type='button'>
+            <Link className='get-started-button' to='/register'>
               Get Started Free
-            </button>
+            </Link>
           </article>
 
           <article className='pricing-card pro-card'>

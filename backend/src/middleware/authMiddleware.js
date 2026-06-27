@@ -8,6 +8,7 @@ This middleware:
   3. finds the user
   4. attaches the user to req.user
 */
+
 const protect = async (req, res, next) => {
   try {
     // CHECK IF COOKIE EXISTS

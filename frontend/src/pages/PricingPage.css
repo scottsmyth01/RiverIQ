@@ -232,6 +232,10 @@
   color: var(--text-primary);
   background: linear-gradient(180deg, #152131, #101a27);
   border: 1px solid var(--border-light);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .start-trial-button {
