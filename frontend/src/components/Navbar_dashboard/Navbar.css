@@ -1,0 +1,213 @@
+.dashboard-navbar {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  min-height: 64px;
+  padding: 0 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text-primary);
+  background: rgba(5, 15, 24, 0.96);
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-navbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1.65rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.04em;
+}
+
+.dashboard-navbar__brand img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.dashboard-navbar__brand strong {
+  color: var(--color-primary);
+}
+
+.dashboard-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+.dashboard-navbar__new-session {
+  height: 36px;
+  padding: 0 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  color: var(--text-primary);
+  background: linear-gradient(180deg, #111e2c, #0c1723);
+  border: 1px solid #263747;
+  border-radius: 5px;
+  box-shadow: var(--shadow-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  transition:
+    border-color var(--transition),
+    background var(--transition),
+    transform var(--transition);
+}
+
+.dashboard-navbar__new-session:hover {
+  background: #132232;
+  border-color: rgba(0, 200, 83, 0.45);
+  transform: translateY(-1px);
+}
+
+.dashboard-navbar__new-session svg {
+  width: 15px;
+  height: 15px;
+  color: var(--color-primary);
+  stroke-width: 3;
+}
+
+.dashboard-navbar__notification {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: #bcc5cf;
+  border-radius: 50%;
+  transition:
+    color var(--transition),
+    background var(--transition);
+}
+
+.dashboard-navbar__notification:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-navbar__notification svg {
+  width: 19px;
+  height: 19px;
+}
+
+.dashboard-navbar__account {
+  position: relative;
+}
+
+.dashboard-navbar__account-trigger {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.dashboard-navbar__avatar {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: #e7ebef;
+  background: linear-gradient(145deg, #4c5969, #333e4c);
+  border: 1px solid #586575;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.dashboard-navbar__account-trigger > svg {
+  width: 15px;
+  height: 15px;
+  color: #7f8a97;
+  transition: transform var(--transition);
+}
+
+.dashboard-navbar__account-trigger > svg.open {
+  transform: rotate(180deg);
+}
+
+.dashboard-navbar__menu {
+  position: absolute;
+  top: calc(100% + 0.65rem);
+  right: 0;
+  width: 170px;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  background: #0b1723;
+  border: 1px solid #263747;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+}
+
+.dashboard-navbar__menu a,
+.dashboard-navbar__menu button {
+  width: 100%;
+  padding: 0.65rem 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #aeb8c4;
+  border-radius: 5px;
+  font-size: var(--font-size-xs);
+  text-align: left;
+  transition:
+    color var(--transition),
+    background var(--transition);
+}
+
+.dashboard-navbar__menu a:hover,
+.dashboard-navbar__menu button:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dashboard-navbar__menu svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 600px) {
+  .dashboard-navbar {
+    min-height: 56px;
+    padding: 0 0.75rem;
+  }
+
+  .dashboard-navbar__brand {
+    font-size: 1.2rem;
+  }
+
+  .dashboard-navbar__brand img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .dashboard-navbar__actions {
+    gap: 0.35rem;
+  }
+
+  .dashboard-navbar__new-session {
+    width: 34px;
+    padding: 0;
+  }
+
+  .dashboard-navbar__new-session span,
+  .dashboard-navbar__name {
+    display: none;
+  }
+
+  .dashboard-navbar__account-trigger {
+    gap: 0.3rem;
+  }
+
+  .dashboard-navbar__avatar {
+    width: 30px;
+    height: 30px;
+  }
+}
