@@ -384,9 +384,9 @@ const FeaturePage = () => {
                 ))}
               </ul>
 
-              <button className='pro-plan-button' type='button'>
+              <Link className='pro-plan-button' to='/subscription/payment'>
                 Start Pro Trial
-              </button>
+              </Link>
               <p className='cancel-note'>
                 <LockKeyhole aria-hidden='true' />
                 Cancel anytime. No risk.

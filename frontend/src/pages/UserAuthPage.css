@@ -284,6 +284,55 @@
   font-size: var(--font-size-sm);
 }
 
+.auth-reset-success,
+.auth-email-success {
+  min-height: 430px;
+  padding: 3rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.auth-reset-success > svg,
+.auth-email-success > svg {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 1.5rem;
+  padding: 0.8rem;
+  color: var(--color-primary);
+  background: rgba(0, 200, 83, 0.1);
+  border: 1px solid rgba(0, 200, 83, 0.25);
+  border-radius: 50%;
+}
+
+.auth-reset-success h2,
+.auth-email-success h2 {
+  max-width: 390px;
+  font-size: clamp(1.4rem, 3vw, 1.85rem);
+  line-height: 1.3;
+}
+
+.auth-reset-success p,
+.auth-email-success p {
+  max-width: 390px;
+  margin-top: 0.75rem;
+  color: #8993a0;
+  font-size: var(--font-size-sm);
+}
+
+.auth-email-success strong {
+  color: var(--text-primary);
+}
+
+.auth-reset-success button,
+.auth-email-success button {
+  margin-top: 1.5rem;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+}
+
 .auth-field {
   margin-top: 1rem;
   display: block;

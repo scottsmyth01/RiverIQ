@@ -239,6 +239,9 @@
 }
 
 .start-trial-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #04180b;
   background: linear-gradient(90deg, var(--color-primary-hover), var(--color-primary));
 }

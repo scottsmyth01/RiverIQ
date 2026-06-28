@@ -21,7 +21,13 @@ const userSchema = new mongoose.Schema(
       minlength: [8, 'Password must be at least 8 characters long'],
       select: false,
     },
-
+    verifyEmailToken: {
+      type: String,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
     // poker dashboard fields
     subscription: {
       type: String,
@@ -50,10 +56,6 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       default: 'user',
-    },
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
     },
   },
   { timestamps: true },

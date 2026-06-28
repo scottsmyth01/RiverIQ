@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
-import { BarChart3, Clock, CloudUpload, Eye, Lock, Mail, ShieldCheck, Spade } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { BarChart3, Clock, CloudUpload, Eye, Lock, Mail, MailCheck, ShieldCheck, Spade } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './UserAuthPage.css';
 import { useAuth } from '../context/AuthContext';
 import { ToastContainer, toast } from 'react-toastify';
 
+const authModeByPath = {
+  '/login': 'login',
+  '/register': 'register',
+  '/forgot-password': 'forgot',
+};
+
 const UserAuthPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [authMode, setAuthMode] = useState(location.pathname === '/register' ? 'register' : 'login');
+  const [authMode, setAuthMode] = useState(authModeByPath[location.pathname] || 'login');
 
-  const { register, login } = useAuth();
+  const { register, login, forgotPassword } = useAuth();
 
   const changeAuthMode = (mode) => {
     setAuthMode(mode);
     setFieldErrors({});
-    navigate(mode === 'register' ? '/register' : '/login');
+    setResetLinkSent(false);
+    setRegistrationEmail('');
+    navigate(mode === 'register' ? '/register' : mode === 'forgot' ? '/forgot-password' : '/login');
   };
 
   const [formData, setFormData] = useState({
@@ -25,6 +33,15 @@ const UserAuthPage = () => {
     passwordConfirm: '',
   });
   const [fieldErrors, setFieldErrors] = useState({});
+  const [resetLinkSent, setResetLinkSent] = useState(false);
+  const [registrationEmail, setRegistrationEmail] = useState('');
+
+  useEffect(() => {
+    setAuthMode(authModeByPath[location.pathname] || 'login');
+    setFieldErrors({});
+    setResetLinkSent(false);
+    setRegistrationEmail('');
+  }, [location.pathname]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,7 +67,7 @@ const UserAuthPage = () => {
     if (authMode === 'register') {
       try {
         await register({ username, email, password, passwordConfirm });
-        toast.success('Registration Successful');
+        setRegistrationEmail(email);
       } catch (error) {
         const field = error.field && Object.hasOwn(formData, error.field) ? error.field : 'form';
         setFieldErrors({ [field]: error.message });
@@ -61,6 +78,15 @@ const UserAuthPage = () => {
       try {
         await login({ email, password });
         toast.success('Login Successful');
+      } catch (error) {
+        const field = error.field && Object.hasOwn(formData, error.field) ? error.field : 'form';
+        setFieldErrors({ [field]: error.message });
+      }
+    }
+    if (authMode === 'forgot') {
+      try {
+        await forgotPassword({ email });
+        setResetLinkSent(true);
       } catch (error) {
         const field = error.field && Object.hasOwn(formData, error.field) ? error.field : 'form';
         setFieldErrors({ [field]: error.message });
@@ -180,7 +206,29 @@ const UserAuthPage = () => {
             </button>
           </div>
 
-          <form className='auth-form' onSubmit={handleSubmit}>
+          {authMode === 'register' && registrationEmail ? (
+            <div className='auth-email-success' role='status'>
+              <MailCheck aria-hidden='true' />
+              <h2>Verification email sent</h2>
+              <p>
+                We sent a verification email to <strong>{registrationEmail}</strong>. Check your inbox and follow the
+                link to verify your account.
+              </p>
+              <button type='button' onClick={() => changeAuthMode('login')}>
+                Back to login
+              </button>
+            </div>
+          ) : authMode === 'forgot' && resetLinkSent ? (
+            <div className='auth-reset-success' role='status'>
+              <MailCheck aria-hidden='true' />
+              <h2>Password reset link sent to specified email</h2>
+              <p>Check your inbox and follow the link to reset your password.</p>
+              <button type='button' onClick={() => changeAuthMode('login')}>
+                Back to login
+              </button>
+            </div>
+          ) : (
+            <form className='auth-form' onSubmit={handleSubmit}>
             <div className='auth-form-heading'>
               <h2>
                 {authMode === 'login'
@@ -297,7 +345,7 @@ const UserAuthPage = () => {
                   <input type='checkbox' defaultChecked />
                   <span>Remember me</span>
                 </label>
-                <button type='button' onClick={() => setAuthMode('forgot')}>
+                <button type='button' onClick={() => changeAuthMode('forgot')}>
                   Forgot password?
                 </button>
               </div>
@@ -330,7 +378,8 @@ const UserAuthPage = () => {
                 {authMode === 'login' ? 'Create one' : 'Log in'}
               </button>
             </p>
-          </form>
+            </form>
+          )}
         </section>
       </div>
 

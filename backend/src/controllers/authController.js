@@ -1,10 +1,37 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import crypto from 'crypto';
 import generateToken, { getCookieOptions } from '../utils/generateToken.js';
+import { Resend } from 'resend';
+import { passwordResetEmail, verifyEmail } from '../globals/resend.js';
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
+
+const sendPasswordResetEmail = async (email, resetLink) => {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const { error } = await resend.emails.send({
+    from: 'RiverIQ <onboarding@resend.dev>',
+    to: email,
+    subject: 'Reset your RiverIQ password',
+    html: passwordResetEmail(email, resetLink),
+  });
+
+  if (error) throw new Error(`Reset email failed: ${error.message}`);
+};
+
+const sendVerifyEmail = async (email, verifyLink) => {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const { error } = await resend.emails.send({
+    from: 'RiverIQ <onboarding@resend.dev>',
+    to: email,
+    subject: 'Verify your RiverIQ email',
+    html: verifyEmail(email, verifyLink),
+  });
+
+  if (error) throw new Error(`Verification email failed: ${error.message}`);
+};
 
 export const registerUser = async (req, res) => {
   const { username, email, password, passwordConfirm } = req.body;
@@ -51,11 +78,21 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // 1. Create raw token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    // 2. Hash token before storing it
+    const hashedVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+    const link = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+
+    // SEND USER VERIFICATION LINK
+    await sendVerifyEmail(email, link);
+
     // CREATE USER IN DB
     const user = await User.create({
       username,
       email,
       password: hashedPassword,
+      verifyEmailToken: hashedVerificationToken,
     });
 
     // SET THE JWT TOKEN
@@ -78,6 +115,29 @@ export const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.error('registerUser error:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const validateEmail = async (req, res) => {
+  try {
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+    const user = await User.findOne({
+      verifyEmailToken: hashedToken,
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid token' });
+    }
+
+    if (!user.isEmailVerified) {
+      user.isEmailVerified = true;
+      await user.save();
+    }
+
+    return res.json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.error('validateEmail error:', error);
     return res.status(500).json({ message: 'Server error' });
   }
 };
@@ -163,5 +223,82 @@ export const getMe = async (req, res) => {
   } catch (error) {
     console.error('getMe error:', error);
     return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) return res.status(400).json({ field: 'email', message: 'Please provide your email' });
+
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) return res.status(401).json({ field: 'email', message: 'Invalid email' });
+
+    const secret = process.env.JWT_SECRET + user.password;
+    const token = jwt.sign({ email: user.email, id: user._id }, secret, {
+      expiresIn: '5m',
+    });
+    const link = `${process.env.FRONTEND_URL}/reset-password/${user._id}/${token}`;
+    await sendPasswordResetEmail(user.email, link);
+
+    return res.status(200).json({ message: 'Password reset link sent to specified email' });
+  } catch (error) {
+    console.error('forgotPassword error:', error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const validateResetToken = async (req, res) => {
+  try {
+    const { id, token } = req.params;
+    const user = await User.findById(id).select('+password');
+
+    if (!user) return res.status(400).json({ message: 'Invalid password reset link' });
+
+    const secret = process.env.JWT_SECRET + user.password;
+    jwt.verify(token, secret);
+
+    return res.status(200).json({
+      message: 'Password reset link is valid',
+      userId: user._id,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link',
+    });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { id, token } = req.params;
+    const { password, passwordConfirm } = req.body;
+
+    if (!password) return res.status(400).json({ field: 'password', message: 'Please provide a new password' });
+    if (password !== passwordConfirm)
+      return res.status(400).json({ field: 'passwordConfirm', message: 'Passwords do not match' });
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(password))
+      return res.status(400).json({
+        field: 'password',
+        message: 'Password must be at least 8 characters long and contain at least one letter and one number',
+      });
+
+    const user = await User.findById(id).select('+password');
+    if (!user) return res.status(400).json({ message: 'Invalid password reset link' });
+
+    const secret = process.env.JWT_SECRET + user.password;
+    jwt.verify(token, secret);
+
+    user.password = await bcrypt.hash(password, 10);
+    await user.save();
+
+    return res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    return res.status(400).json({
+      message: error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link',
+    });
   }
 };
