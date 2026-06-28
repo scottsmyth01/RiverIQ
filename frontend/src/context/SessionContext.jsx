@@ -16,7 +16,10 @@ export function SessionProvider({ children }) {
           credentials: 'include',
         });
         const data = await res.json();
-        console.log(data);
+        if (!res.ok) throw new Error(data.message || 'Unable to load sessions');
+
+        setSessions(data.sessions);
+        console.log(data.sessions);
       } catch (error) {
         console.log(error);
         setSessions(null);
