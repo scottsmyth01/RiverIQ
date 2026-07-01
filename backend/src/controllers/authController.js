@@ -33,7 +33,7 @@ const sendVerifyEmail = async (email, verifyLink) => {
   if (error) throw new Error(`Verification email failed: ${error.message}`);
 };
 
-export const registerUser = async (req, res) => {
+export const registerUser = async (req, res, next) => {
   const { username, email, password, passwordConfirm } = req.body;
   try {
     //BASIC VALIDATION
@@ -114,12 +114,11 @@ export const registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('registerUser error:', error);
-    return res.status(500).json({ message: 'Server error' });
+    return next(error);
   }
 };
 
-export const validateEmail = async (req, res) => {
+export const validateEmail = async (req, res, next) => {
   try {
     const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
     const user = await User.findOne({
@@ -137,15 +136,14 @@ export const validateEmail = async (req, res) => {
 
     return res.json({ message: 'Email verified successfully' });
   } catch (error) {
-    console.error('validateEmail error:', error);
-    return res.status(500).json({ message: 'Server error' });
+    return next(error);
   }
 };
 
 // @desc    Login user
 // @route   POST /api/auth/login
 
-export const loginUser = async (req, res) => {
+export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -180,29 +178,27 @@ export const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('loginUser error:', error);
-    return res.status(500).json({ message: 'Server error' });
+    return next(error);
   }
 };
 // @desc    Logout user
 // @route   POST /api/auth/logout
 // @access  Public
 
-export const logoutUser = async (req, res) => {
+export const logoutUser = async (req, res, next) => {
   try {
     res.clearCookie('token', getCookieOptions());
 
     return res.status(200).json({ message: 'Logged out successfully' });
   } catch (error) {
-    console.error('logoutUser error:', error);
-    return res.status(500).json({ message: 'Server error' });
+    return next(error);
   }
 };
 
 // @desc    Get current logged-in user
 // @route   GET /api/auth/me
 
-export const getMe = async (req, res) => {
+export const getMe = async (req, res, next) => {
   try {
     return res.status(200).json({
       user: {
@@ -221,12 +217,11 @@ export const getMe = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('getMe error:', error);
-    return res.status(500).json({ message: 'Server error' });
+    return next(error);
   }
 };
 
-export const forgotPassword = async (req, res) => {
+export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
 
@@ -244,12 +239,11 @@ export const forgotPassword = async (req, res) => {
 
     return res.status(200).json({ message: 'Password reset link sent to specified email' });
   } catch (error) {
-    console.error('forgotPassword error:', error);
-    return res.status(500).json({ message: 'Server error' });
+    return next(error);
   }
 };
 
-export const validateResetToken = async (req, res) => {
+export const validateResetToken = async (req, res, next) => {
   try {
     const { id, token } = req.params;
     const user = await User.findById(id).select('+password');
@@ -264,13 +258,13 @@ export const validateResetToken = async (req, res) => {
       userId: user._id,
     });
   } catch (error) {
-    return res.status(400).json({
-      message: error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link',
-    });
+    error.statusCode = 400;
+    error.message = error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link';
+    return next(error);
   }
 };
 
-export const resetPassword = async (req, res) => {
+export const resetPassword = async (req, res, next) => {
   try {
     const { id, token } = req.params;
     const { password, passwordConfirm } = req.body;
@@ -297,8 +291,8 @@ export const resetPassword = async (req, res) => {
 
     return res.status(200).json({ message: 'Password reset successfully' });
   } catch (error) {
-    return res.status(400).json({
-      message: error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link',
-    });
+    error.statusCode = 400;
+    error.message = error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link';
+    return next(error);
   }
 };

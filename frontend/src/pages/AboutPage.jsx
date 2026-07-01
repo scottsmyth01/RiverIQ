@@ -1,6 +1,6 @@
 import React from 'react';
 import { BarChart3, Brain, Globe2, LockKeyhole, Spade, Target, TrendingUp, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import './AboutPage.css';
 
 const beliefs = [

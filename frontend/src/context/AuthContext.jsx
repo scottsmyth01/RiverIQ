@@ -24,7 +24,6 @@ export function AuthProvider({ children }) {
         const data = await res.json();
         setUser(data.user);
       } catch (error) {
-        console.error(error);
         setUser(null);
       } finally {
         setLoading(false);
@@ -51,7 +50,7 @@ export function AuthProvider({ children }) {
       error.field = data.field;
       throw error;
     }
-
+    setUser(data.user);
     return data;
   };
 
@@ -94,7 +93,7 @@ export function AuthProvider({ children }) {
         credentials: 'include',
       });
     } catch (error) {
-      console.error(error);
+      console.log(error);
     } finally {
       setUser(null);
     }

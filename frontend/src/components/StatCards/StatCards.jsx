@@ -1,12 +1,9 @@
 import Card from '../Card/Card';
-import { useSessions } from '../../context/SessionContext';
 import { getStatCards } from './StatCardsData';
 import './StatCards.css';
-import { useState } from 'react';
 
-const StatCards = () => {
-  const { sessions, loading } = useSessions();
-  const cards = getStatCards(sessions || []);
+const StatCards = ({ sessions }) => {
+  const cards = getStatCards(sessions);
 
   function handleChange(e) {
     console.log(e.target.value);

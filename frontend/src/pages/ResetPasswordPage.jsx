@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle2, Lock, Spade } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 import './ResetPasswordPage.css';

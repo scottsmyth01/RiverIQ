@@ -1,8 +1,9 @@
 import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
 import './index.css';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
-import { SessionProvider } from './context/SessionContext';
+import store from './store/store';
 
 const rootElement = document.getElementById('root');
 
@@ -11,9 +12,9 @@ if (!rootElement) {
 }
 
 createRoot(rootElement).render(
-  <AuthProvider>
-    <SessionProvider>
+  <Provider store={store}>
+    <AuthProvider>
       <App />
-    </SessionProvider>
-  </AuthProvider>,
+    </AuthProvider>
+  </Provider>,
 );

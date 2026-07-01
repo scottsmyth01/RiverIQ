@@ -1,6 +1,6 @@
 import React from 'react';
 import { BarChart3, BookOpen, Check, LockKeyhole, Plus, Spade } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import './FeaturePage.css';
 import features from '../assets/feature-grid.jsx';
 

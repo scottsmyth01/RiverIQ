@@ -1,8 +1,11 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router';
 import Navbar from './components/Navbar/Navbar';
 import LoadingScreen from './components/LoadingScreen/LoadingScreen';
 import { useAuth } from './context/AuthContext';
+import { selectSessionsLoading } from './store/sessionSlice';
+import ProtectedRoute from './utils/ProtectedRoute';
 
 const FeaturePage = lazy(() => import('./pages/FeaturePage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
@@ -26,7 +29,11 @@ function AppRoutes() {
   const { pathname } = useLocation();
   const { isAuthenticated, isEmailVerified, loading, loginLoading } = useAuth();
 
-  if (loading) return <LoadingScreen />;
+  const sessionsLoading = useSelector(selectSessionsLoading);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   if (isAuthenticated && isEmailVerified && !pathname.startsWith('/dashboard')) {
     return <Navigate to='/dashboard' replace />;
@@ -38,7 +45,7 @@ function AppRoutes() {
 
   return (
     <>
-      {loginLoading && <LoadingScreen />}
+      {(loginLoading || sessionsLoading) && <LoadingScreen />}
       {!isAuthenticated && <Navbar />}
       <Suspense fallback={<LoadingScreen />}>
         <Routes>

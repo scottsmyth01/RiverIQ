@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/authRoutes.js';
 import sessionRoutes from './routes/sessionRoutes.js';
+import { globalErrorHandler, notFound } from './middleware/errorMiddleware.js';
 
 const app = express();
 
@@ -18,7 +19,10 @@ app.use(
       if (!requestOrigin || getAllowedOrigins().includes(requestOrigin)) {
         return callback(null, true);
       }
-      return callback(new Error(`CORS blocked origin: ${requestOrigin}`));
+
+      const error = new Error(`CORS blocked origin: ${requestOrigin}`);
+      error.statusCode = 403;
+      return callback(error);
     },
     credentials: true,
   }),
@@ -28,5 +32,8 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
+
+app.use(notFound);
+app.use(globalErrorHandler);
 
 export default app;

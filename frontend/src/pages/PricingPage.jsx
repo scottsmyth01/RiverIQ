@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Check, Database, Headphones, LockKeyhole, Monitor, Pencil, ShieldCheck } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import './PricingPage.css';
 
 const freeFeatures = [
