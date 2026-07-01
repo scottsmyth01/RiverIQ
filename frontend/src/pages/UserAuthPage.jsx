@@ -3,92 +3,63 @@ import { BarChart3, Clock, CloudUpload, Eye, Lock, Mail, MailCheck, ShieldCheck,
 import { Link, useLocation, useNavigate } from 'react-router';
 import './UserAuthPage.css';
 import { useAuth } from '../context/AuthContext';
-
-const authModeByPath = {
-  '/login': 'login',
-  '/register': 'register',
-  '/forgot-password': 'forgot',
-};
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 const UserAuthPage = () => {
+  const modeByPath = {
+    '/login': 'login',
+    '/register': 'register',
+    '/forgot-password': 'forgot',
+  };
   const location = useLocation();
   const navigate = useNavigate();
-  const [authMode, setAuthMode] = useState(authModeByPath[location.pathname] || 'login');
+  const [resetLinkSent, setResetLinkSent] = useState(false);
+  const [registrationEmail, setRegistrationEmail] = useState('');
+  const [authMode, setAuthMode] = useState('login');
 
-  const { register, login, forgotPassword } = useAuth();
+  const { register: registerUser, login, forgotPassword } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors: fieldErrors },
+  } = useForm();
 
   const changeAuthMode = (mode) => {
     setAuthMode(mode);
-    setFieldErrors({});
     setResetLinkSent(false);
     setRegistrationEmail('');
     navigate(mode === 'register' ? '/register' : mode === 'forgot' ? '/forgot-password' : '/login');
   };
 
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    passwordConfirm: '',
-  });
-  const [fieldErrors, setFieldErrors] = useState({});
-  const [resetLinkSent, setResetLinkSent] = useState(false);
-  const [registrationEmail, setRegistrationEmail] = useState('');
-
   useEffect(() => {
-    setAuthMode(authModeByPath[location.pathname] || 'login');
-    setFieldErrors({});
+    setAuthMode(modeByPath[location.pathname] || 'login');
     setResetLinkSent(false);
     setRegistrationEmail('');
   }, [location.pathname]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((currentFormData) => ({
-      ...currentFormData,
-      [name]: value,
-    }));
-
-    setFieldErrors((currentErrors) => ({
-      ...currentErrors,
-      [name]: '',
-      form: '',
-    }));
-  };
-
-  const handleSubmit = async (data) => {
-    setFieldErrors({});
-
-    const { username, email, password, passwordConfirm } = formData;
+  const submitForm = async (data) => {
+    const { username, email, password, passwordConfirm } = data;
+    toast('Event has been created');
 
     if (authMode === 'register') {
       try {
-        await register({ username, email, password, passwordConfirm });
+        await registerUser({ username, email, password, passwordConfirm });
         setRegistrationEmail(email);
-      } catch (error) {
-        const field = error.field && Object.hasOwn(formData, error.field) ? error.field : 'form';
-        setFieldErrors({ [field]: error.message });
-      }
+      } catch (error) {}
     }
 
-    if (authMode === 'login') {
-      try {
-        await login({ email, password });
-      } catch (error) {
-        const field = error.field && Object.hasOwn(formData, error.field) ? error.field : 'form';
-        setFieldErrors({ [field]: error.message });
-      }
-    }
-    if (authMode === 'forgot') {
-      try {
-        await forgotPassword({ email });
-        setResetLinkSent(true);
-      } catch (error) {
-        const field = error.field && Object.hasOwn(formData, error.field) ? error.field : 'form';
-        setFieldErrors({ [field]: error.message });
-      }
-    }
+    // if (authMode === 'login') {
+    //   try {
+    //     await login({ email, password });
+    //   } catch (error) {}
+    // }
+    // if (authMode === 'forgot') {
+    //   try {
+    //     await forgotPassword({ email });
+    //     setResetLinkSent(true);
+    //   } catch (error) {}
+    // }
   };
 
   return (
@@ -225,7 +196,7 @@ const UserAuthPage = () => {
               </button>
             </div>
           ) : (
-            <form className='auth-form' onSubmit={handleSubmit}>
+            <form className='auth-form' onSubmit={handleSubmit(submitForm)}>
               <div className='auth-form-heading'>
                 <h2>
                   {authMode === 'login'
@@ -251,8 +222,8 @@ const UserAuthPage = () => {
                     <input
                       type='text'
                       name='username'
+                      {...register('username')}
                       placeholder='Choose a username'
-                      onChange={handleChange}
                       autoComplete='username'
                       autoCapitalize='none'
                       spellCheck='false'
@@ -274,7 +245,7 @@ const UserAuthPage = () => {
                     type='email'
                     name='email'
                     placeholder='Enter your email'
-                    onChange={handleChange}
+                    {...register('email')}
                     autoComplete='email'
                   />
                 </div>
@@ -294,7 +265,7 @@ const UserAuthPage = () => {
                       type='password'
                       placeholder='Enter your password'
                       name='password'
-                      onChange={handleChange}
+                      {...register('password')}
                       autoComplete={authMode === 'login' ? 'current-password' : 'new-password'}
                     />
                     <button className='password-toggle' type='button' aria-label='Show password'>
@@ -318,7 +289,7 @@ const UserAuthPage = () => {
                       type='password'
                       name='passwordConfirm'
                       placeholder='Confirm your password'
-                      onChange={handleChange}
+                      {...register('passwordConfirm')}
                       autoComplete='new-password'
                     />
                   </div>

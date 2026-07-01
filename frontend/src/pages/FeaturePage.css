@@ -13,7 +13,7 @@
   color: var(--color-primary);
 }
 .header {
-  margin: 15px;
+  margin: 2rem 0 3rem;
   width: 65%;
 }
 
@@ -757,6 +757,273 @@
   width: 13px;
   height: 13px;
   color: var(--color-primary);
+}
+
+@media (max-width: 800px) {
+  .feature-container {
+    width: min(100% - 2rem, 680px);
+  }
+
+  .header {
+    width: 100%;
+    margin: 2.5rem 0;
+  }
+
+  .header h2 {
+    font-size: clamp(2rem, 8vw, 2.75rem);
+    line-height: 1.15;
+  }
+
+  .header p {
+    max-width: 34rem;
+    margin: 1rem auto 0;
+  }
+
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feature-item {
+    min-width: 0;
+    padding: 1.25rem;
+  }
+
+  .feature-item:nth-child(3n) {
+    border-right: 1px solid var(--border);
+  }
+
+  .feature-item:nth-last-child(-n + 3) {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .feature-item:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .feature-item:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .results-section,
+  .analytics-section,
+  .insights-section,
+  .goals-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+
+  .results-section {
+    margin: 4rem 0;
+  }
+
+  .analytics-section,
+  .insights-section,
+  .goals-section {
+    margin-bottom: 4rem;
+  }
+
+  .results-copy,
+  .analytics-copy > p,
+  .insights-copy > p,
+  .goals-copy > p {
+    max-width: 36rem;
+  }
+
+  .results-copy,
+  .insights-copy {
+    order: -1;
+  }
+
+  .results-copy h2,
+  .analytics-copy h2,
+  .insights-copy h2,
+  .goals-copy h2 {
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
+  }
+
+  .pricing-cta {
+    margin-bottom: 3rem;
+    padding: 1.5rem;
+  }
+
+  .pricing-plans {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .feature-container {
+    width: calc(100% - 1.5rem);
+  }
+
+  .header {
+    margin: 2rem 0;
+  }
+
+  .header h2 {
+    font-size: clamp(1.85rem, 9vw, 2.35rem);
+  }
+
+  .header p {
+    font-size: 0.9rem;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    border-right: 0;
+  }
+
+  .feature-item:nth-child(3n),
+  .feature-item:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .feature-item:nth-last-child(-n + 2) {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .feature-item:last-child {
+    border-bottom: 0;
+  }
+
+  .feature-icon {
+    height: 40px;
+    min-width: 40px;
+    display: grid;
+    place-items: center;
+    background: rgba(0, 200, 83, 0.08);
+    border: 1px solid rgba(0, 200, 83, 0.2);
+    border-radius: var(--radius-sm);
+  }
+
+  .feature-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .feature-item h3 {
+    font-size: 1rem;
+  }
+
+  .feature-text {
+    margin-top: 0.25rem;
+    line-height: 1.55;
+  }
+
+  .results-section {
+    margin: 3.5rem 0;
+  }
+
+  .analytics-section,
+  .insights-section,
+  .goals-section {
+    margin-bottom: 3.5rem;
+  }
+
+  .results-section,
+  .analytics-section,
+  .insights-section,
+  .goals-section {
+    gap: 1.5rem;
+  }
+
+  .results-list {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
+  .profit-card,
+  .position-card,
+  .leak-card,
+  .goals-card {
+    border-radius: var(--radius-sm);
+  }
+
+  .profit-card-header strong {
+    font-size: 1.25rem;
+  }
+
+  .profit-chart {
+    margin-top: 0.35rem;
+  }
+
+  .profit-chart svg {
+    min-height: 190px;
+  }
+
+  .chart-value {
+    top: 8%;
+  }
+
+  .stat-pills {
+    gap: 0.5rem;
+  }
+
+  .stat-pills span {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .position-card {
+    padding: 1rem 0.85rem 0.7rem;
+  }
+
+  .position-table-wrapper {
+    margin-right: -0.85rem;
+    padding-right: 0.85rem;
+  }
+
+  .leak-card-body {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 1.5rem;
+  }
+
+  .leak-details {
+    width: 100%;
+  }
+
+  .goals-card-header h3 {
+    font-size: 1rem;
+  }
+
+  .goals-card-header button {
+    padding: 0.45rem 0.6rem;
+  }
+
+  .goal-row {
+    align-items: flex-start;
+  }
+
+  .goal-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .goal-meta strong {
+    white-space: normal;
+  }
+
+  .pricing-cta {
+    margin-bottom: 2rem;
+    padding: 1.25rem 0.75rem;
+  }
+
+  .pricing-heading h2 {
+    font-size: 1.65rem;
+    line-height: 1.2;
+  }
+
+  .pricing-plans {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {

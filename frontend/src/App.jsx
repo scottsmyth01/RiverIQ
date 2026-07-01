@@ -30,12 +30,13 @@ function AppRoutes() {
   const { isAuthenticated, isEmailVerified, loading, loginLoading } = useAuth();
 
   const sessionsLoading = useSelector(selectSessionsLoading);
+  const isDashboardRoute = pathname.startsWith('/dashboard');
 
-  if (loading) {
+  if (loading && isDashboardRoute) {
     return <LoadingScreen />;
   }
 
-  if (isAuthenticated && isEmailVerified && !pathname.startsWith('/dashboard')) {
+  if (isAuthenticated && isEmailVerified && !isDashboardRoute) {
     return <Navigate to='/dashboard' replace />;
   }
 
@@ -47,7 +48,7 @@ function AppRoutes() {
     <>
       {(loginLoading || sessionsLoading) && <LoadingScreen />}
       {!isAuthenticated && <Navbar />}
-      <Suspense fallback={<LoadingScreen />}>
+      <Suspense fallback={isDashboardRoute ? <LoadingScreen /> : null}>
         <Routes>
           <Route path='/' element={<Navigate to='/features' replace />} />
           <Route path='/features' element={<FeaturePage />} />

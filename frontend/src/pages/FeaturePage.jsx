@@ -84,8 +84,7 @@ const FeaturePage = () => {
           </h2>
           <p>Powerful features designed for poker players who want to win more. </p>
         </header>
-        <br />
-        <br />
+
         <section className='feature-grid'>
           {features.map((feature) => (
             <article className='feature-item' key={feature.title}>
