@@ -31,6 +31,8 @@ function AppRoutes() {
 
   const sessionsLoading = useSelector(selectSessionsLoading);
   const isDashboardRoute = pathname.startsWith('/dashboard');
+  const isVerifyEmailRoute = pathname.startsWith('/verify-email');
+  const showLoadingScreen = loginLoading || sessionsLoading;
 
   if (loading && isDashboardRoute) {
     return <LoadingScreen />;
@@ -40,14 +42,14 @@ function AppRoutes() {
     return <Navigate to='/dashboard' replace />;
   }
 
-  if (isAuthenticated && !isEmailVerified) {
+  if (isAuthenticated && !isEmailVerified && !isVerifyEmailRoute) {
     return <Navigate to='/verify-email' replace />;
   }
 
   return (
     <>
-      {(loginLoading || sessionsLoading) && <LoadingScreen />}
-      {!isAuthenticated && <Navbar />}
+      {showLoadingScreen && <LoadingScreen />}
+      {!isAuthenticated && !showLoadingScreen && <Navbar />}
       <Suspense fallback={isDashboardRoute ? <LoadingScreen /> : null}>
         <Routes>
           <Route path='/' element={<Navigate to='/features' replace />} />

@@ -7,6 +7,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loginLoading, setLoginLoading] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -34,30 +35,34 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = async (formData) => {
-    const res = await fetch(`${API_URL}/api/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      const error = new Error(data.message || 'Registration failed');
-      error.field = data.field;
-      throw error;
+      if (!res.ok) {
+        const error = new Error(data.message || 'Registration failed');
+        error.field = data.field;
+        throw error;
+      }
+
+      setRegisterLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setUser(data.user);
+      return data;
+    } finally {
+      setRegisterLoading(false);
     }
-    setUser(data.user);
-    return data;
   };
 
   const login = async (formData) => {
-    const startedAt = Date.now();
-    setLoginLoading(true);
-
     try {
       const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
@@ -76,8 +81,8 @@ export function AuthProvider({ children }) {
         throw error;
       }
 
-      const remainingDelay = Math.max(0, 2000 - (Date.now() - startedAt));
-      await new Promise((resolve) => setTimeout(resolve, remainingDelay));
+      setLoginLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setUser(data.user);
       return data;
@@ -169,6 +174,7 @@ export function AuthProvider({ children }) {
         user,
         loading,
         loginLoading,
+        registerLoading,
         isAuthenticated: !!user,
         isEmailVerified: !!user?.isEmailVerified,
         register,

@@ -6,12 +6,12 @@
     <meta name="x-apple-disable-message-reformatting" />
     <meta name="color-scheme" content="dark" />
     <meta name="supported-color-schemes" content="dark" />
-    <title>Welcome to RiverIQ</title>
+    <title>Verify your RiverIQ email</title>
 
     <!--
       Replace these placeholders before sending:
       {{customer_name}}  - customer's first name or username
-      {{dashboard_url}}  - full URL to the RiverIQ dashboard
+      {{verify_url}}     - unique email verification URL
       {{current_year}}   - current four-digit year
     -->
 
@@ -67,7 +67,7 @@
         font-size: 1px;
       "
     >
-      Your RiverIQ account is ready. Start tracking your sessions and improving your game.
+      Welcome to RiverIQ! Verify your email to activate your account and start tracking your game.
     </div>
 
     <table
@@ -118,10 +118,7 @@
             </tr>
 
             <tr>
-              <td
-                class="email-body"
-                style="padding: 42px 36px 40px; font-family: Arial, Helvetica, sans-serif"
-              >
+              <td class="email-body" style="padding: 42px 36px 40px; font-family: Arial, Helvetica, sans-serif">
                 <p
                   style="
                     margin: 0 0 10px;
@@ -132,20 +129,14 @@
                     text-transform: uppercase;
                   "
                 >
-                  Welcome to RiverIQ
+                  One last step
                 </p>
 
                 <h1
                   class="hero-title"
-                  style="
-                    margin: 0;
-                    color: #ffffff;
-                    font-size: 36px;
-                    line-height: 1.18;
-                    letter-spacing: -0.8px;
-                  "
+                  style="margin: 0; color: #ffffff; font-size: 36px; line-height: 1.18; letter-spacing: -0.8px"
                 >
-                  Your edge starts here.
+                  Welcome to RiverIQ.
                 </h1>
 
                 <p style="margin: 20px 0 0; color: #a6b0bb; font-size: 16px; line-height: 1.7">
@@ -153,8 +144,9 @@
                 </p>
 
                 <p style="margin: 10px 0 28px; color: #a6b0bb; font-size: 16px; line-height: 1.7">
-                  Welcome to RiverIQ. You now have one place to track your poker results, understand your game, and
-                  turn every session into a smarter next decision.
+                  We’re glad you’re here. Please verify your email address to activate your account, then you can start
+                  tracking your results, understanding your game, and turning every session into a smarter next
+                  decision.
                 </p>
 
                 <table role="presentation" cellspacing="0" cellpadding="0" border="0">
@@ -162,7 +154,7 @@
                     <td style="border-radius: 6px; background-color: #00c853">
                       <a
                         class="cta-link"
-                        href="{{dashboard_url}}"
+                        href="{{verify_url}}"
                         target="_blank"
                         style="
                           display: inline-block;
@@ -174,11 +166,20 @@
                           text-decoration: none;
                         "
                       >
-                        Go to my dashboard&nbsp; →
+                        Verify my email&nbsp; →
                       </a>
                     </td>
                   </tr>
                 </table>
+
+                <p style="margin: 22px 0 8px; color: #697584; font-size: 12px; line-height: 1.55">
+                  If the button does not work, copy and paste this link into your browser:
+                </p>
+                <p style="margin: 0; word-break: break-all; color: #00c853; font-size: 12px; line-height: 1.55">
+                  <a href="{{verify_url}}" target="_blank" style="color: #00c853; text-decoration: none">
+                    {{verify_url}}
+                  </a>
+                </p>
 
                 <table
                   role="presentation"
@@ -191,7 +192,7 @@
                   <tr>
                     <td style="padding-bottom: 14px">
                       <p style="margin: 0; color: #ffffff; font-size: 15px; font-weight: 700; line-height: 1.5">
-                        Three good places to begin
+                        Here’s what’s waiting for you
                       </p>
                     </td>
                   </tr>
@@ -271,20 +272,26 @@
                   cellspacing="0"
                   cellpadding="0"
                   border="0"
-                  style="width: 100%; margin-top: 30px; background-color: #07111b; border: 1px solid #242d38; border-radius: 8px"
+                  style="
+                    width: 100%;
+                    margin-top: 30px;
+                    background-color: #07111b;
+                    border: 1px solid #242d38;
+                    border-radius: 8px;
+                  "
                 >
                   <tr>
                     <td style="padding: 18px">
                       <p style="margin: 0; color: #a6b0bb; font-size: 13px; line-height: 1.65">
-                        <strong style="color: #ffffff">A quick tip:</strong> consistency beats perfect data. Log every
-                        session—even the rough ones—and RiverIQ will give you a clearer picture over time.
+                        <strong style="color: #ffffff">Didn’t create this account?</strong> You can safely ignore this
+                        email. Your address will not be verified unless you use the link above.
                       </p>
                     </td>
                   </tr>
                 </table>
 
                 <p style="margin: 28px 0 0; color: #a6b0bb; font-size: 14px; line-height: 1.7">
-                  Here’s to better decisions and a stronger game.<br />
+                  We’ll see you inside.<br />
                   <strong style="color: #ffffff">The RiverIQ team</strong>
                 </p>
               </td>
@@ -304,9 +311,7 @@
                 "
               >
                 <p style="margin: 0">© {{current_year}} RiverIQ. Poker performance, made clearer.</p>
-                <p style="margin: 5px 0 0">
-                  You received this email because you created a RiverIQ account.
-                </p>
+                <p style="margin: 5px 0 0">You received this email because you created a RiverIQ account.</p>
               </td>
             </tr>
           </table>

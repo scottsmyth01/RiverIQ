@@ -1,8 +1,8 @@
 .card-container {
   position: relative;
-  min-height: 130px;
+  min-height: 115px;
   min-width: 0;
   background-color: var(--bg-secondary);
-  padding: 25px 115px 25px 25px;
+  padding: 18px 76px 18px 18px;
   border: 1px solid black;
 }

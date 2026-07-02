@@ -19,7 +19,7 @@ const test2Payload = JSON.stringify({
 
 const test2 = `curl -X POST \
   "https://api.cloudflare.com/client/v4/accounts/a6dbd6263cba6aeb30176d034c765748/email/sending/send" \
-  -H "Authorization: Bearer cfat_FseQUw0CgpYSmDRXNq23PUSS4RoVr6PZzF0bPe4E1e6641bc" \
+  -H "Authorization: Bearer " \
   -H "Content-Type: application/json" \
   --data-raw ${JSON.stringify(test2Payload)}`;
 console.log(test2);

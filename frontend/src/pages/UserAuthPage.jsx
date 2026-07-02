@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart3, Clock, CloudUpload, Eye, Lock, Mail, MailCheck, ShieldCheck, Spade } from 'lucide-react';
+import {
+  BarChart3,
+  Clock,
+  CloudUpload,
+  Eye,
+  LoaderCircle,
+  Lock,
+  Mail,
+  MailCheck,
+  ShieldCheck,
+  Spade,
+} from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import './UserAuthPage.css';
 import { useAuth } from '../context/AuthContext';
@@ -15,51 +26,64 @@ const UserAuthPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [resetLinkSent, setResetLinkSent] = useState(false);
-  const [registrationEmail, setRegistrationEmail] = useState('');
   const [authMode, setAuthMode] = useState('login');
 
-  const { register: registerUser, login, forgotPassword } = useAuth();
+  const { register: registerUser, registerLoading, login, forgotPassword } = useAuth();
   const {
     register,
     handleSubmit,
+    setError,
+    getValues,
     formState: { errors: fieldErrors },
   } = useForm();
 
   const changeAuthMode = (mode) => {
     setAuthMode(mode);
     setResetLinkSent(false);
-    setRegistrationEmail('');
     navigate(mode === 'register' ? '/register' : mode === 'forgot' ? '/forgot-password' : '/login');
   };
 
   useEffect(() => {
     setAuthMode(modeByPath[location.pathname] || 'login');
     setResetLinkSent(false);
-    setRegistrationEmail('');
   }, [location.pathname]);
 
   const submitForm = async (data) => {
     const { username, email, password, passwordConfirm } = data;
-    toast('Event has been created');
 
     if (authMode === 'register') {
       try {
         await registerUser({ username, email, password, passwordConfirm });
-        setRegistrationEmail(email);
-      } catch (error) {}
+      } catch (error) {
+        setError(error.field || 'form', {
+          type: 'server',
+          message: error.message,
+        });
+      }
     }
 
-    // if (authMode === 'login') {
-    //   try {
-    //     await login({ email, password });
-    //   } catch (error) {}
-    // }
-    // if (authMode === 'forgot') {
-    //   try {
-    //     await forgotPassword({ email });
-    //     setResetLinkSent(true);
-    //   } catch (error) {}
-    // }
+    if (authMode === 'login') {
+      try {
+        await login({ email, password });
+      } catch (error) {
+        setError(error.field || 'form', {
+          type: 'server',
+          message: error.message,
+        });
+      }
+    }
+
+    if (authMode === 'forgot') {
+      try {
+        await forgotPassword({ email });
+        setResetLinkSent(true);
+      } catch (error) {
+        setError(error.field || 'form', {
+          type: 'server',
+          message: error.message,
+        });
+      }
+    }
   };
 
   return (
@@ -174,19 +198,7 @@ const UserAuthPage = () => {
             </button>
           </div>
 
-          {authMode === 'register' && registrationEmail ? (
-            <div className='auth-email-success' role='status'>
-              <MailCheck aria-hidden='true' />
-              <h2>Verification email sent</h2>
-              <p>
-                We sent a verification email to <strong>{registrationEmail}</strong>. Check your inbox and follow the
-                link to verify your account.
-              </p>
-              <button type='button' onClick={() => changeAuthMode('login')}>
-                Back to login
-              </button>
-            </div>
-          ) : authMode === 'forgot' && resetLinkSent ? (
+          {authMode === 'forgot' && resetLinkSent ? (
             <div className='auth-reset-success' role='status'>
               <MailCheck aria-hidden='true' />
               <h2>Password reset link sent to specified email</h2>
@@ -195,8 +207,12 @@ const UserAuthPage = () => {
                 Back to login
               </button>
             </div>
+          ) : authMode === 'register' && registerLoading ? (
+            <div className='auth-register-loading' role='status' aria-label='Creating your account'>
+              <LoaderCircle aria-hidden='true' />
+            </div>
           ) : (
-            <form className='auth-form' onSubmit={handleSubmit(submitForm)}>
+            <form noValidate className='auth-form' onSubmit={handleSubmit(submitForm)}>
               <div className='auth-form-heading'>
                 <h2>
                   {authMode === 'login'
@@ -221,17 +237,26 @@ const UserAuthPage = () => {
                     <Spade aria-hidden='true' />
                     <input
                       type='text'
-                      name='username'
-                      {...register('username')}
+                      {...register('username', {
+                        required: 'Username is required',
+                        minLength: {
+                          value: 3,
+                          message: 'Username must be at least 3 characters',
+                        },
+                        maxLength: {
+                          value: 15,
+                          message: 'Username must be 15 characters or fewer',
+                        },
+                      })}
                       placeholder='Choose a username'
                       autoComplete='username'
                       autoCapitalize='none'
                       spellCheck='false'
                     />
                   </div>
-                  {fieldErrors.username && (
+                  {fieldErrors.username?.message && (
                     <small className='auth-field-error' role='alert'>
-                      {fieldErrors.username}
+                      {fieldErrors.username.message}
                     </small>
                   )}
                 </label>
@@ -243,15 +268,20 @@ const UserAuthPage = () => {
                   <Mail aria-hidden='true' />
                   <input
                     type='email'
-                    name='email'
                     placeholder='Enter your email'
-                    {...register('email')}
+                    {...register('email', {
+                      required: 'Email is required',
+                      pattern: {
+                        value: /^\S+@\S+\.\S+$/,
+                        message: 'Enter a valid email address',
+                      },
+                    })}
                     autoComplete='email'
                   />
                 </div>
-                {fieldErrors.email && (
+                {fieldErrors.email?.message && (
                   <small className='auth-field-error' role='alert'>
-                    {fieldErrors.email}
+                    {fieldErrors.email.message}
                   </small>
                 )}
               </label>
@@ -264,17 +294,31 @@ const UserAuthPage = () => {
                     <input
                       type='password'
                       placeholder='Enter your password'
-                      name='password'
-                      {...register('password')}
+                      {...register(
+                        'password',
+                        authMode === 'register'
+                          ? {
+                              required: 'Password is required',
+                              minLength: {
+                                value: 8,
+                                message: 'Password must be at least 8 characters',
+                              },
+                              pattern: {
+                                value: /^(?=.*[A-Za-z])(?=.*\d).+$/,
+                                message: 'Password must contain at least one letter and one number',
+                              },
+                            }
+                          : {},
+                      )}
                       autoComplete={authMode === 'login' ? 'current-password' : 'new-password'}
                     />
                     <button className='password-toggle' type='button' aria-label='Show password'>
                       <Eye aria-hidden='true' />
                     </button>
                   </div>
-                  {fieldErrors.password && (
+                  {fieldErrors.password?.message && (
                     <small className='auth-field-error' role='alert'>
-                      {fieldErrors.password}
+                      {fieldErrors.password.message}
                     </small>
                   )}
                 </label>
@@ -287,15 +331,17 @@ const UserAuthPage = () => {
                     <Lock aria-hidden='true' />
                     <input
                       type='password'
-                      name='passwordConfirm'
                       placeholder='Confirm your password'
-                      {...register('passwordConfirm')}
+                      {...register('passwordConfirm', {
+                        required: 'Please confirm your password',
+                        validate: (value) => value === getValues('password') || 'Passwords do not match',
+                      })}
                       autoComplete='new-password'
                     />
                   </div>
-                  {fieldErrors.passwordConfirm && (
+                  {fieldErrors.passwordConfirm?.message && (
                     <small className='auth-field-error' role='alert'>
-                      {fieldErrors.passwordConfirm}
+                      {fieldErrors.passwordConfirm.message}
                     </small>
                   )}
                 </label>

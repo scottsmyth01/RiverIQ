@@ -5,6 +5,7 @@ import StatCards from '../components/StatCards/StatCards';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSessions, selectSessions, selectSessionsStatus } from '../store/sessionSlice';
 import { useEffect } from 'react';
+import ProfitChart from '../components/ProfitChart/ProfitChart';
 
 const DashboardPage = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const DashboardPage = () => {
           <div className='stat-cards'>
             <StatCards sessions={sessions} />
           </div>
+          <ProfitChart sessions={sessions} />
         </section>
       </div>
     </main>

@@ -2,35 +2,72 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import crypto from 'crypto';
+import { readFileSync } from 'node:fs';
 import generateToken, { getCookieOptions } from '../utils/generateToken.js';
-import { Resend } from 'resend';
-import { passwordResetEmail, verifyEmail } from '../globals/resend.js';
+import Cloudflare from 'cloudflare';
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
 
-const sendPasswordResetEmail = async (email, resetLink) => {
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  const { error } = await resend.emails.send({
-    from: 'RiverIQ <onboarding@resend.dev>',
-    to: email,
-    subject: 'Reset your RiverIQ password',
-    html: passwordResetEmail(email, resetLink),
-  });
+const escapeHtml = (value) =>
+  String(value).replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      })[character],
+  );
 
-  if (error) throw new Error(`Reset email failed: ${error.message}`);
+const sendPasswordResetEmail = async (email, resetLink) => {
+  const apiToken = process.env.CLOUDFLARE_KEY;
+  if (!apiToken) {
+    throw new Error('Cloudflare API token is not configured');
+  }
+  const client = new Cloudflare({
+    apiToken,
+  });
+  const pwResetEmail = readFileSync(new URL('../data/password-reset-email.html', import.meta.url), 'utf8')
+    .replaceAll('{{reset_url}}', () => escapeHtml(resetLink))
+    .replaceAll('{{current_year}}', () => escapeHtml(new Date().getFullYear().toString()));
+
+  const response = await client.emailSending.send({
+    account_id: 'a6dbd6263cba6aeb30176d034c765748',
+    from: 'RiverIQ <support@riveriq.app>',
+    to: email,
+    subject: 'RiverIQ - Here is your password reset link',
+    html: pwResetEmail,
+  });
 };
 
-const sendVerifyEmail = async (email, verifyLink) => {
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  const { error } = await resend.emails.send({
-    from: 'RiverIQ <onboarding@resend.dev>',
+const sendVerifyEmail = async (username, email, verifyLink) => {
+  const apiToken = process.env.CLOUDFLARE_KEY;
+
+  if (!apiToken) {
+    throw new Error('Cloudflare API token is not configured');
+  }
+
+  const client = new Cloudflare({
+    apiToken,
+  });
+  const verificationEmail = readFileSync(new URL('../data/welcome-email.html', import.meta.url), 'utf8')
+    .replaceAll('{{customer_name}}', () => escapeHtml(username))
+    .replaceAll('{{verify_url}}', () => escapeHtml(verifyLink))
+    .replaceAll('{{current_year}}', new Date().getFullYear().toString());
+
+  const response = await client.emailSending.send({
+    account_id: 'a6dbd6263cba6aeb30176d034c765748',
+    from: 'RiverIQ <welcome@riveriq.app>',
     to: email,
-    subject: 'Verify your RiverIQ email',
-    html: verifyEmail(email, verifyLink),
+    subject: 'Welcome to RiverIQ — verify your email',
+    html: verificationEmail,
+    text: `Welcome to RiverIQ, ${username}! Verify your email to activate your account: ${verifyLink}`,
   });
 
-  if (error) throw new Error(`Verification email failed: ${error.message}`);
+  console.log(response.delivered);
 };
 
 export const registerUser = async (req, res, next) => {
@@ -45,6 +82,13 @@ export const registerUser = async (req, res, next) => {
         field: missingField,
         message: 'Please fill in all fields',
       });
+
+    if (password !== passwordConfirm) {
+      return res.status(400).json({
+        field: 'passwordConfirm',
+        message: 'Passwords do not match',
+      });
+    }
 
     // PASSWORD VALIDATION (8 chars + letters + numbers)
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
@@ -85,7 +129,7 @@ export const registerUser = async (req, res, next) => {
     const link = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
 
     // SEND USER VERIFICATION LINK
-    await sendVerifyEmail(email, link);
+    await sendVerifyEmail(username, email, link);
 
     // CREATE USER IN DB
     const user = await User.create({
@@ -129,10 +173,9 @@ export const validateEmail = async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid token' });
     }
 
-    if (!user.isEmailVerified) {
-      user.isEmailVerified = true;
-      await user.save();
-    }
+    user.isEmailVerified = true;
+    user.verifyEmailToken = undefined;
+    await user.save();
 
     return res.json({ message: 'Email verified successfully' });
   } catch (error) {
@@ -149,7 +192,7 @@ export const loginUser = async (req, res, next) => {
 
     // BASIC VALIDATION
     if (!email) return res.status(400).json({ field: 'email', message: 'Please provide your email' });
-    if (!password) return res.status(400).json({ field: 'password', message: 'Please provide your password' });
+    if (!password) return res.status(400).json({ field: 'password', message: 'Invalid password' });
 
     // CHECK FOR USER IN DB
     const user = await User.findOne({ email }).select('+password');
@@ -235,6 +278,7 @@ export const forgotPassword = async (req, res, next) => {
       expiresIn: '5m',
     });
     const link = `${process.env.FRONTEND_URL}/reset-password/${user._id}/${token}`;
+
     await sendPasswordResetEmail(user.email, link);
 
     return res.status(200).json({ message: 'Password reset link sent to specified email' });
@@ -259,7 +303,8 @@ export const validateResetToken = async (req, res, next) => {
     });
   } catch (error) {
     error.statusCode = 400;
-    error.message = error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link';
+    error.message =
+      error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link';
     return next(error);
   }
 };
@@ -292,7 +337,8 @@ export const resetPassword = async (req, res, next) => {
     return res.status(200).json({ message: 'Password reset successfully' });
   } catch (error) {
     error.statusCode = 400;
-    error.message = error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link';
+    error.message =
+      error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link';
     return next(error);
   }
 };

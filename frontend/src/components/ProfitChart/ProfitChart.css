@@ -1,0 +1,102 @@
+.profit-card {
+  width: 100%;
+  min-width: 0;
+  margin-top: 1rem;
+  box-sizing: border-box;
+  background: #111923;
+  border: 1px solid #243241;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.profit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.profit-header h2 {
+  color: white;
+  font-size: 22px;
+  transform: translateY(-6px);
+}
+
+.profit-period-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.profit-period-buttons button {
+  padding: 7px 10px;
+  color: #8993a0;
+  background: #0a1119;
+  border: 1px solid #243241;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.profit-period-buttons button:hover {
+  color: #ffffff;
+  border-color: #3a4b5d;
+}
+
+.profit-period-buttons button.active {
+  color: #04180b;
+  background: #39ff64;
+  border-color: #39ff64;
+  font-weight: 700;
+}
+
+.profit-period-buttons button:focus-visible {
+  outline: 2px solid #39ff64;
+  outline-offset: 2px;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: clamp(260px, 34vh, 340px);
+}
+
+.chart-wrapper canvas {
+  max-width: 100% !important;
+}
+
+@media (max-width: 760px) {
+  .profit-card {
+    padding: 16px;
+  }
+
+  .profit-header h2 {
+    font-size: 18px;
+  }
+
+  .profit-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profit-period-buttons {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .profit-period-buttons button {
+    padding-inline: 4px;
+    font-size: 0.64rem;
+  }
+
+  .chart-wrapper {
+    height: 260px;
+  }
+}
