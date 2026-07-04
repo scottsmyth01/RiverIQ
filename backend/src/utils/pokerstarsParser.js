@@ -8,9 +8,34 @@ const __dirname = path.dirname(__filename);
 const filePath = path.join(__dirname, '../data/pokerstars_150_hands_sample.txt');
 const fileText = await fs.readFile(filePath, 'utf8');
 
+// GLOBALS
+// 1) GET STAKES
+export function getSessionStakes(handText) {
+  const match = handText.match(/\$([\d.]+)\/\$([\d.]+)\s([A-Z]{3})/);
+  if (!match) return null;
+  return {
+    smallBlind: Number(match[1]),
+    bigBlind: Number(match[2]),
+    currency: match[3],
+    stakeString: `${match[1]}/${match[2]}`,
+  };
+}
+
 // FUNCTION 1 - get array of hands
 function splitIntoHands(fileText) {
   return fileText.split(/(?=PokerStars Hand #)/).filter((hand) => hand.trim() !== '');
+}
+
+function getStakes(handText) {
+  const match = handText.match(/\$([\d.]+)\/\$([\d.]+)\s([A-Z]{3})/);
+  if (!match) return null;
+
+  return {
+    smallBlind: Number(match[1]),
+    bigBlind: Number(match[2]),
+    currency: match[3],
+    stakeString: `${match[1]}/${match[2]}`,
+  };
 }
 
 function getHeroInvested(hand, hero = 'Hero') {
@@ -65,3 +90,16 @@ function getTotalProfit(fileText, hero = 'Hero') {
   }
   return Number(totalProfit.toFixed(2));
 }
+
+// GET BB/100 - **WORKING
+function getbb100(fileText) {
+  const data = {
+    totalProfit: getTotalProfit(fileText),
+    stakes: getSessionStakes(fileText),
+    handsPlayed: splitIntoHands(fileText).length,
+  };
+
+  const bb100 = (data.totalProfit * 100) / (data.stakes.bigBlind * data.handsPlayed);
+}
+
+// GET VPIP - **WORKING
