@@ -25,7 +25,7 @@ export const fetchSessions = createAsyncThunk('sessions/fetchSessions', async ()
 
 export const addSession = createAsyncThunk('sessions/addSession', async (sessionData) => {
   try {
-    const res = await fetch(`${API_URL}/api/sessions`, {
+    const res = await fetch(`${API_URL}/api/sessions/new`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

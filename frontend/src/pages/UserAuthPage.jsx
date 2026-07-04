@@ -27,8 +27,9 @@ const UserAuthPage = () => {
   const navigate = useNavigate();
   const [resetLinkSent, setResetLinkSent] = useState(false);
   const [authMode, setAuthMode] = useState('login');
+  const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false);
 
-  const { register: registerUser, registerLoading, login, forgotPassword } = useAuth();
+  const { register: registerUser, login, forgotPassword } = useAuth();
   const {
     register,
     handleSubmit,
@@ -52,9 +53,12 @@ const UserAuthPage = () => {
     const { username, email, password, passwordConfirm } = data;
 
     if (authMode === 'register') {
+      setIsRegisterSubmitting(true);
+
       try {
         await registerUser({ username, email, password, passwordConfirm });
       } catch (error) {
+        setIsRegisterSubmitting(false);
         setError(error.field || 'form', {
           type: 'server',
           message: error.message,
@@ -207,7 +211,7 @@ const UserAuthPage = () => {
                 Back to login
               </button>
             </div>
-          ) : authMode === 'register' && registerLoading ? (
+          ) : authMode === 'register' && isRegisterSubmitting ? (
             <div className='auth-register-loading' role='status' aria-label='Creating your account'>
               <LoaderCircle aria-hidden='true' />
             </div>

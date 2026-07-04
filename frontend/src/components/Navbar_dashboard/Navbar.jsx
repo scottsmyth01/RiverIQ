@@ -40,10 +40,10 @@ const Navbar = () => {
       </Link>
 
       <div className='dashboard-navbar__actions'>
-        <button className='dashboard-navbar__new-session' type='button'>
+        <Link className='dashboard-navbar__new-session' to='/dashboard/sessions/new'>
           <Plus aria-hidden='true' />
           <span>New Session</span>
-        </button>
+        </Link>
 
         <button className='dashboard-navbar__notification' type='button' aria-label='Notifications'>
           <Bell aria-hidden='true' />

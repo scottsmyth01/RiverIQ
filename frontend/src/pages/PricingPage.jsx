@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Check, Database, Headphones, LockKeyhole, Monitor, Pencil, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Check, Database, Headphones, LockKeyhole, Monitor, Pencil, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router';
+import { useAuth } from '../context/AuthContext';
 import './PricingPage.css';
 
 const freeFeatures = [
+  '100 sessions',
   'Bankroll tracking',
   'Profit over time graph',
   'Manual session entry',
   'Recent sessions',
   'Total profit, hands, sessions, BB/100',
-  'Basic graphs & filters (30d / 90d / All)',
+  'Basic graphs & filters (1w / 30d / All)',
 ];
 
 const proFeatures = [
@@ -46,11 +48,20 @@ const trustItems = [
 
 const PricingPage = () => {
   const [isYearly, setIsYearly] = useState(false);
+  const { user } = useAuth();
   const proPrice = isYearly ? '15.99' : '19.99';
+  const isCurrentFreeTier = user?.subscription === 'free';
 
   return (
     <main className='pricing-page'>
       <div className='pricing-container'>
+        {user && (
+          <Link className='pricing-back-dashboard' to='/dashboard'>
+            <ArrowLeft aria-hidden='true' />
+            Back to Dashboard
+          </Link>
+        )}
+
         <header className='pricing-page-header'>
           <h1>Choose Your Edge</h1>
           <p>
@@ -115,7 +126,7 @@ const PricingPage = () => {
             </div>
 
             <Link className='get-started-button' to='/register'>
-              Get Started Free
+              {isCurrentFreeTier ? 'Current tier' : 'Get Started Free'}
             </Link>
           </article>
 

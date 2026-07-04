@@ -6,6 +6,10 @@ import LoadingScreen from './components/LoadingScreen/LoadingScreen';
 import { useAuth } from './context/AuthContext';
 import { selectSessionsLoading } from './store/sessionSlice';
 import ProtectedRoute from './utils/ProtectedRoute';
+import SessionsPage from './pages/SessionsPage';
+import DashboardLayout from './components/DashboardLayout/DashboardLayout';
+import DashboardSectionPage from './pages/DashboardSectionPage';
+import AddSessionPage from './pages/AddSessionPage';
 
 const FeaturePage = lazy(() => import('./pages/FeaturePage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
@@ -31,6 +35,7 @@ function AppRoutes() {
 
   const sessionsLoading = useSelector(selectSessionsLoading);
   const isDashboardRoute = pathname.startsWith('/dashboard');
+  const isPricingRoute = pathname === '/pricing';
   const isVerifyEmailRoute = pathname.startsWith('/verify-email');
   const showLoadingScreen = loginLoading || sessionsLoading;
 
@@ -38,7 +43,7 @@ function AppRoutes() {
     return <LoadingScreen />;
   }
 
-  if (isAuthenticated && isEmailVerified && !isDashboardRoute) {
+  if (isAuthenticated && isEmailVerified && !isDashboardRoute && !isPricingRoute) {
     return <Navigate to='/dashboard' replace />;
   }
 
@@ -66,50 +71,18 @@ function AppRoutes() {
             path='/dashboard'
             element={
               <ProtectedRoute>
-                <DashboardPage />
+                <DashboardLayout />
               </ProtectedRoute>
             }
-          />
-          <Route
-            path='/dashboard/sessions'
-            element={
-              <ProtectedRoute>
-                <DashboardPage current='sessions' />
-              </ProtectedRoute>
-            }
-          ></Route>
-          <Route
-            path='/dashboard/analytics'
-            element={
-              <ProtectedRoute>
-                <DashboardPage current='analytics' />
-              </ProtectedRoute>
-            }
-          ></Route>
-          <Route
-            path='/dashboard/reports'
-            element={
-              <ProtectedRoute>
-                <DashboardPage current='reports' />
-              </ProtectedRoute>
-            }
-          ></Route>
-          <Route
-            path='/dashboard/goals'
-            element={
-              <ProtectedRoute>
-                <DashboardPage current='goals' />
-              </ProtectedRoute>
-            }
-          ></Route>
-          <Route
-            path='/dashboard/settings'
-            element={
-              <ProtectedRoute>
-                <DashboardPage current='settings' />
-              </ProtectedRoute>
-            }
-          ></Route>
+          >
+            <Route index element={<DashboardPage />} />
+            <Route path='sessions' element={<SessionsPage />} />
+            <Route path='analytics' element={<SessionsPage />} />
+            <Route path='reports' element={<SessionsPage />} />
+            <Route path='goals' element={<SessionsPage />} />
+            <Route path='hand-history' element={<SessionsPage />} />
+            <Route path='sessions/new' element={<AddSessionPage />} />
+          </Route>
           <Route path='*' element={<FeaturePage />} />
         </Routes>
       </Suspense>

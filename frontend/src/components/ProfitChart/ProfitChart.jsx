@@ -65,6 +65,11 @@ export default function ProfitChart({ sessions }) {
         fill: true,
         tension: 0,
         pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHitRadius: 16,
+        pointHoverBackgroundColor: '#39ff64',
+        pointHoverBorderColor: '#ffffff',
+        pointHoverBorderWidth: 2,
         borderWidth: 2,
       },
     ],
@@ -73,19 +78,31 @@ export default function ProfitChart({ sessions }) {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
 
     plugins: {
       legend: {
         display: false,
       },
       tooltip: {
+        enabled: true,
+        mode: 'index',
+        intersect: false,
         backgroundColor: '#0f1720',
         titleColor: '#ffffff',
         bodyColor: '#d1d5db',
         borderColor: '#263545',
         borderWidth: 1,
+        displayColors: false,
         callbacks: {
-          label: (context) => `$${context.raw.toLocaleString()}`,
+          label: (context) =>
+            `Profit: ${context.raw < 0 ? '-' : ''}$${Math.abs(context.raw).toLocaleString('en-US', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}`,
         },
       },
     },

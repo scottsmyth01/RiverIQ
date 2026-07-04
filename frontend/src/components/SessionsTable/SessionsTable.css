@@ -1,0 +1,267 @@
+.sessions-card {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin-top: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #111923;
+  border: 1px solid #243241;
+  border-radius: 14px;
+}
+
+.sessions-card-header {
+  flex: 0 0 auto;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid #243241;
+}
+
+.sessions-card-header span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--color-primary);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sessions-card-header h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.sessions-table-wrapper {
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 0;
+  overflow: visible;
+}
+
+.sessions-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  color: #d8dee6;
+  font-size: 0.76rem;
+}
+
+.sessions-table th,
+.sessions-table td {
+  width: calc(100% / 7);
+}
+
+.sessions-table th,
+.sessions-table td {
+  padding: 10px 18px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.sessions-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: #7f8b98;
+  background: #0a1119;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sessions-table tbody tr {
+  border-top: 1px solid rgba(36, 50, 65, 0.7);
+  transition: background-color 160ms ease;
+}
+
+.sessions-table tbody tr:hover {
+  background: rgba(57, 255, 100, 0.04);
+}
+
+.sessions-table th:nth-child(n + 3),
+.sessions-table td:nth-child(n + 3) {
+  text-align: right;
+}
+
+.session-result {
+  font-weight: 700;
+}
+
+.session-result--positive {
+  color: var(--color-primary);
+}
+
+.session-result--negative {
+  color: #ff6b6b;
+}
+
+.session-date-mobile {
+  display: none;
+}
+
+.sessions-card-footer {
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid #243241;
+}
+
+.sessions-card-footer p {
+  margin: 0;
+  color: #7f8b98;
+  font-size: 0.75rem;
+}
+
+.sessions-pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sessions-pagination button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: #c4ccd5;
+  background: #0d1620;
+  border: 1px solid #243241;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.sessions-pagination button:hover {
+  color: #ffffff;
+  background: #15212d;
+  border-color: #3a4b5d;
+  transform: translateY(-1px);
+}
+
+.sessions-pagination button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.sessions-pagination button.active {
+  color: #ffffff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 14px rgba(0, 200, 83, 0.24);
+  font-weight: 700;
+}
+
+.sessions-pagination button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.sessions-pagination button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sessions-pagination span {
+  width: 24px;
+  color: #7f8b98;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+@media (min-width: 761px) and (max-height: 800px) {
+  .sessions-card {
+    margin-top: 8px;
+  }
+
+  .sessions-card-header {
+    padding: 8px 14px;
+  }
+
+  .sessions-table th,
+  .sessions-table td {
+    padding-block: 7px;
+  }
+
+  .sessions-card-footer {
+    padding-block: 7px;
+  }
+
+  .sessions-pagination button {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 760px) {
+  .sessions-card {
+    border-radius: 10px;
+  }
+
+  .sessions-card-header {
+    padding: 12px;
+  }
+
+  .sessions-table {
+    font-size: 0.7rem;
+  }
+
+  .sessions-table th,
+  .sessions-table td {
+    width: 25%;
+    padding: 9px 8px;
+  }
+
+  .sessions-table th {
+    font-size: 0.56rem;
+    letter-spacing: 0.04em;
+  }
+
+  .sessions-table th:nth-child(3),
+  .sessions-table td:nth-child(3),
+  .sessions-table th:nth-child(4),
+  .sessions-table td:nth-child(4),
+  .sessions-table th:nth-child(7),
+  .sessions-table td:nth-child(7) {
+    display: none;
+  }
+
+  .session-date-desktop {
+    display: none;
+  }
+
+  .session-date-mobile {
+    display: inline;
+  }
+
+  .sessions-card-footer {
+    padding: 10px;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sessions-pagination {
+    align-self: stretch;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .sessions-pagination button {
+    width: 32px;
+    height: 32px;
+  }
+}

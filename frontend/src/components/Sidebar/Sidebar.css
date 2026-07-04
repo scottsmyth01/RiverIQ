@@ -3,15 +3,19 @@
   width: 220px;
   flex: 0 0 220px;
   padding: 1rem 0.75rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   color: #aeb8c4;
   background: rgba(5, 15, 24, 0.96);
   border-right: 1px solid var(--border);
 }
 
 .sidebar__nav {
-  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 0.35rem;
 }
 
@@ -56,11 +60,6 @@
   transform: translateY(-50%);
 }
 
-.sidebar__item:last-child {
-  margin-top: auto;
-  border-top-color: var(--border);
-}
-
 .sidebar__icon {
   width: 19px;
   height: 19px;
@@ -77,6 +76,79 @@
 
 .sidebar__title {
   line-height: 1;
+}
+
+.sidebar-pro-card {
+  padding: 0.85rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  flex: 0 0 auto;
+  gap: 0.65rem;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 0, rgba(0, 200, 83, 0.18), transparent 55%),
+    linear-gradient(145deg, #111e2b, #0a1520);
+  border: 1px solid rgba(0, 200, 83, 0.22);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--transition),
+    transform var(--transition);
+}
+
+.sidebar-pro-card:hover {
+  border-color: rgba(0, 200, 83, 0.55);
+  transform: translateY(-2px);
+}
+
+.sidebar-pro-card__icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--color-primary);
+  background: rgba(0, 200, 83, 0.12);
+  border-radius: 50%;
+}
+
+.sidebar-pro-card__icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.sidebar-pro-card__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.sidebar-pro-card__copy strong {
+  color: var(--text-primary);
+  font-size: var(--font-size-xs);
+}
+
+.sidebar-pro-card__copy > span {
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  line-height: 1.4;
+}
+
+.sidebar-pro-card__action {
+  width: 100%;
+  min-height: 32px;
+  display: grid;
+  place-items: center;
+  color: #04150b;
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  border-radius: 6px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.sidebar__item--settings {
+  flex: 0 0 auto;
+  border-top-color: var(--border);
 }
 
 @media (max-width: 760px) {
@@ -102,5 +174,23 @@
     overflow: hidden;
     clip: rect(0 0 0 0);
     white-space: nowrap;
+  }
+
+  .sidebar-pro-card {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    align-self: center;
+  }
+
+  .sidebar-pro-card__copy,
+  .sidebar-pro-card__action {
+    display: none;
+  }
+
+  .sidebar-pro-card__icon {
+    background: transparent;
   }
 }

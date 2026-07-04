@@ -1,4 +1,4 @@
-import { ChartSpline, House, ClipboardList, StickyNoteCheck, Settings, Target } from 'lucide-react';
+import { ChartSpline, House, ClipboardList, StickyNoteCheck, Settings, Target, History } from 'lucide-react';
 
 export const SidebarData = [
   {
@@ -25,6 +25,11 @@ export const SidebarData = [
     title: 'Goals',
     icon: <Target />,
     link: '/dashboard/goals',
+  },
+  {
+    title: 'Hand History',
+    icon: <History />,
+    link: '/dashboard/hand-history',
   },
   {
     title: 'Settings',

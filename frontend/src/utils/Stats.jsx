@@ -44,7 +44,7 @@ export const calculateTotalWinRate = (sessions = []) => {
   sessions.map((session) => {
     totalWinrate += session.bb100;
   });
-  return totalWinrate;
+  return totalWinrate / sessions.length;
 };
 
 export const calculateMonthlyWinRate = (sessions = []) => {
@@ -62,7 +62,7 @@ export const calculateMonthlyWinRate = (sessions = []) => {
     totalWinRate += session.bb100;
   });
 
-  return totalWinRate;
+  return totalWinRate / sessions.length;
 };
 
 export const calculateWeeklyWinRate = (sessions = []) => {
@@ -80,7 +80,7 @@ export const calculateWeeklyWinRate = (sessions = []) => {
     totalWinRate += session.bb100;
   });
 
-  return totalWinRate;
+  return totalWinRate / sessions.length;
 };
 
 export const calculateTotalHands = (sessions) => {
