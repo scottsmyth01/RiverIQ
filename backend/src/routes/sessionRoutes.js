@@ -1,18 +1,17 @@
 import express from 'express';
 const router = express.Router();
 import protect from '../middleware/authMiddleware.js';
-import { getSessions } from '../controllers/sessionController.js';
-import { uploadHandHistory } from '../controllers/uploadController.js';
+import { addSession, getSessions, parseHandHistoryStats } from '../controllers/sessionController.js';
+import { uploadHandHistory, uploadHandHistoryToR2 } from '../middleware/uploadToR2Middleware.js';
 import { upload } from '../middleware/uploadMiddleware.js';
 
 router.get('/', protect, getSessions);
-router.post('/upload', protect, upload.single('handHistory'), uploadHandHistory);
+router.post('/addSession', protect, upload.single('handHistory'), uploadHandHistoryToR2, addSession);
 
 export default router;
 
 /*
 upload.single()
-
 Its job is to:
 1. Look for a file in the incoming request.
 2. Read that file.

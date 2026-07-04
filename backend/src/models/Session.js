@@ -1,6 +1,3 @@
-// models/sessionModel.js
-import mongoose from 'mongoose';
-
 const sessionSchema = new mongoose.Schema(
   {
     user: {
@@ -8,42 +5,37 @@ const sessionSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
-    date: {
-      type: Date,
-      required: true,
-      default: Date.now,
+
+    sessionName: String,
+    date: Date,
+    pokerSite: String,
+    gameType: String,
+    stakes: String,
+    currency: String,
+    buyIn: Number,
+    notes: String,
+
+    handHistory: {
+      originalFileName: String,
+      r2Key: String,
+      fileSize: Number,
+      contentType: String,
+      uploadedAt: Date,
     },
-    game: {
-      type: String,
-      required: true,
-      enum: ['NLHE', 'PLO'],
-      default: 'NLHE',
-    },
-    stakes: {
-      type: String,
-      required: true,
-    },
-    hands: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
-    profit: {
-      type: Number,
-      required: true,
-    },
-    bb100: {
-      type: Number,
-      required: true,
-    },
-    duration: {
-      type: Number,
-      required: true,
+
+    stats: {
+      hands: { type: Number, default: 0 },
+      profit: { type: Number, default: 0 },
+      bb100: { type: Number, default: 0 },
+      vpip: { type: Number, default: 0 },
+      pfr: { type: Number, default: 0 },
+      threeBet: { type: Number, default: 0 },
+      foldToThreeBet: { type: Number, default: 0 },
+      cBetFlop: { type: Number, default: 0 },
+      foldToCBetFlop: { type: Number, default: 0 },
+      wentToShowdown: { type: Number, default: 0 },
+      wonAtShowdown: { type: Number, default: 0 },
     },
   },
   { timestamps: true },
 );
-
-const Session = mongoose.model('Session', sessionSchema);
-
-export default Session;

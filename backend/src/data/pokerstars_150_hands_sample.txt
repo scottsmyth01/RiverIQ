@@ -1,0 +1,3890 @@
+PokerStars Hand #200000000000: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:00:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($12.06 in chips)
+Seat 3: Villain2 ($14.83 in chips)
+Seat 4: Villain3 ($19.27 in chips)
+Seat 5: Villain4 ($15.90 in chips)
+Seat 6: Villain5 ($19.79 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qc 3s]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2d Ks 6d]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000001: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:01:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.62 in chips)
+Seat 3: Villain2 ($17.95 in chips)
+Seat 4: Villain3 ($12.85 in chips)
+Seat 5: Villain4 ($15.34 in chips)
+Seat 6: Villain5 ($11.79 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Kd 3c]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2h Qh 5h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [2h Qh 5h] [6h]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [2h Qh 5h 6h] [3d]
+Villain2: bets $2.00
+Hero: folds
+
+Villain2 collected $5.80 from pot
+
+*** SUMMARY ***
+Total pot $5.95 | Rake $0.15
+
+
+PokerStars Hand #200000000002: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:02:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($20.05 in chips)
+Seat 3: Villain2 ($21.15 in chips)
+Seat 4: Villain3 ($7.37 in chips)
+Seat 5: Villain4 ($13.78 in chips)
+Seat 6: Villain5 ($7.11 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [4c Tc]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [9s 3d 2s]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [9s 3d 2s] [3s]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000003: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:03:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($9.05 in chips)
+Seat 3: Villain2 ($7.55 in chips)
+Seat 4: Villain3 ($12.90 in chips)
+Seat 5: Villain4 ($12.78 in chips)
+Seat 6: Villain5 ($13.47 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ad 4c]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Ah Qh 9h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Ah Qh 9h] [Ts]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000004: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:05:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($10.75 in chips)
+Seat 3: Villain2 ($21.50 in chips)
+Seat 4: Villain3 ($15.27 in chips)
+Seat 5: Villain4 ($14.68 in chips)
+Seat 6: Villain5 ($17.97 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qs Qd]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000005: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:06:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.34 in chips)
+Seat 3: Villain2 ($17.26 in chips)
+Seat 4: Villain3 ($15.79 in chips)
+Seat 5: Villain4 ($21.80 in chips)
+Seat 6: Villain5 ($16.46 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Jd 9h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000006: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:07:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($9.36 in chips)
+Seat 3: Villain2 ($9.99 in chips)
+Seat 4: Villain3 ($7.64 in chips)
+Seat 5: Villain4 ($18.48 in chips)
+Seat 6: Villain5 ($20.15 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ts 6s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000007: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:08:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($18.58 in chips)
+Seat 3: Villain2 ($12.98 in chips)
+Seat 4: Villain3 ($21.75 in chips)
+Seat 5: Villain4 ($7.85 in chips)
+Seat 6: Villain5 ($20.39 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Js Ks]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000008: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:10:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($10.54 in chips)
+Seat 3: Villain2 ($16.62 in chips)
+Seat 4: Villain3 ($15.91 in chips)
+Seat 5: Villain4 ($7.49 in chips)
+Seat 6: Villain5 ($21.23 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2h Kd]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000009: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:11:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($10.44 in chips)
+Seat 3: Villain2 ($18.44 in chips)
+Seat 4: Villain3 ($13.75 in chips)
+Seat 5: Villain4 ($9.83 in chips)
+Seat 6: Villain5 ($13.04 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6s 5h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [5c 4d 2d]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [5c 4d 2d] [2h]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000010: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:12:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.55 in chips)
+Seat 3: Villain2 ($20.51 in chips)
+Seat 4: Villain3 ($15.47 in chips)
+Seat 5: Villain4 ($16.61 in chips)
+Seat 6: Villain5 ($7.34 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [5s 6d]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000011: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:13:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($15.21 in chips)
+Seat 3: Villain2 ($20.53 in chips)
+Seat 4: Villain3 ($12.00 in chips)
+Seat 5: Villain4 ($21.06 in chips)
+Seat 6: Villain5 ($9.17 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [9d 4s]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2s 6c 8c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000012: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:15:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($11.20 in chips)
+Seat 3: Villain2 ($13.80 in chips)
+Seat 4: Villain3 ($11.68 in chips)
+Seat 5: Villain4 ($10.13 in chips)
+Seat 6: Villain5 ($10.47 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qc 5s]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [3h Kc 6s]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000013: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:16:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.32 in chips)
+Seat 3: Villain2 ($10.74 in chips)
+Seat 4: Villain3 ($11.77 in chips)
+Seat 5: Villain4 ($10.84 in chips)
+Seat 6: Villain5 ($17.33 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6d Ts]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000014: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:17:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.84 in chips)
+Seat 3: Villain2 ($21.16 in chips)
+Seat 4: Villain3 ($9.32 in chips)
+Seat 5: Villain4 ($9.38 in chips)
+Seat 6: Villain5 ($16.57 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2h 2s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000015: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:18:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.41 in chips)
+Seat 3: Villain2 ($9.66 in chips)
+Seat 4: Villain3 ($16.79 in chips)
+Seat 5: Villain4 ($19.77 in chips)
+Seat 6: Villain5 ($15.39 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [4s Ts]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000016: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:20:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($18.16 in chips)
+Seat 3: Villain2 ($9.26 in chips)
+Seat 4: Villain3 ($14.79 in chips)
+Seat 5: Villain4 ($20.84 in chips)
+Seat 6: Villain5 ($13.01 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ac Qs]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [6d Jc 2h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000017: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:21:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.69 in chips)
+Seat 3: Villain2 ($13.29 in chips)
+Seat 4: Villain3 ($11.15 in chips)
+Seat 5: Villain4 ($9.02 in chips)
+Seat 6: Villain5 ($17.16 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [3s 2d]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Qc Jh 5s]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000018: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:22:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($7.58 in chips)
+Seat 3: Villain2 ($16.14 in chips)
+Seat 4: Villain3 ($19.96 in chips)
+Seat 5: Villain4 ($13.10 in chips)
+Seat 6: Villain5 ($17.10 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [5h Ad]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [8h 2h 7c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [8h 2h 7c] [9h]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [8h 2h 7c 9h] [Kd]
+Villain2: checks
+Hero: checks
+
+*** SHOW DOWN ***
+Hero: shows [5h Ad] (a pair)
+Villain2: mucks hand
+Hero collected $3.80 from pot
+
+*** SUMMARY ***
+Total pot $3.95 | Rake $0.15
+
+
+PokerStars Hand #200000000019: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:23:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.88 in chips)
+Seat 3: Villain2 ($10.72 in chips)
+Seat 4: Villain3 ($21.65 in chips)
+Seat 5: Villain4 ($16.53 in chips)
+Seat 6: Villain5 ($10.39 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2h 7c]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2s 6h 7h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000020: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:25:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.59 in chips)
+Seat 3: Villain2 ($13.28 in chips)
+Seat 4: Villain3 ($16.77 in chips)
+Seat 5: Villain4 ($16.76 in chips)
+Seat 6: Villain5 ($15.35 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qs Ad]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Ks 2s Jh]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Ks 2s Jh] [9s]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000021: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:26:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($10.41 in chips)
+Seat 3: Villain2 ($21.49 in chips)
+Seat 4: Villain3 ($21.18 in chips)
+Seat 5: Villain4 ($19.19 in chips)
+Seat 6: Villain5 ($7.47 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7s 3h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000022: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:27:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.69 in chips)
+Seat 3: Villain2 ($18.53 in chips)
+Seat 4: Villain3 ($19.87 in chips)
+Seat 5: Villain4 ($14.34 in chips)
+Seat 6: Villain5 ($13.33 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qc Jh]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2d 2s 7d]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [2d 2s 7d] [5s]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [2d 2s 7d 5s] [4c]
+Villain2: bets $2.00
+Hero: folds
+
+Villain2 collected $5.80 from pot
+
+*** SUMMARY ***
+Total pot $5.95 | Rake $0.15
+
+
+PokerStars Hand #200000000023: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:28:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.31 in chips)
+Seat 3: Villain2 ($7.49 in chips)
+Seat 4: Villain3 ($7.55 in chips)
+Seat 5: Villain4 ($17.82 in chips)
+Seat 6: Villain5 ($18.99 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2s 9h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [8d 8s Qs]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000024: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:30:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.55 in chips)
+Seat 3: Villain2 ($7.47 in chips)
+Seat 4: Villain3 ($14.49 in chips)
+Seat 5: Villain4 ($12.02 in chips)
+Seat 6: Villain5 ($13.26 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Jd Ts]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000025: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:31:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($9.68 in chips)
+Seat 3: Villain2 ($14.94 in chips)
+Seat 4: Villain3 ($16.69 in chips)
+Seat 5: Villain4 ($11.67 in chips)
+Seat 6: Villain5 ($12.35 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6s Kh]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [7c Jc Jh]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [7c Jc Jh] [3d]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000026: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:32:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($16.49 in chips)
+Seat 3: Villain2 ($8.83 in chips)
+Seat 4: Villain3 ($18.37 in chips)
+Seat 5: Villain4 ($13.91 in chips)
+Seat 6: Villain5 ($18.07 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8s 2d]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [9d 3c 7c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [9d 3c 7c] [Jc]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000027: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:33:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($8.76 in chips)
+Seat 3: Villain2 ($9.96 in chips)
+Seat 4: Villain3 ($13.00 in chips)
+Seat 5: Villain4 ($13.03 in chips)
+Seat 6: Villain5 ($14.36 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [9c Qs]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000028: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:35:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($11.47 in chips)
+Seat 3: Villain2 ($18.26 in chips)
+Seat 4: Villain3 ($9.07 in chips)
+Seat 5: Villain4 ($22.00 in chips)
+Seat 6: Villain5 ($8.48 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7s 6h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000029: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:36:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.99 in chips)
+Seat 3: Villain2 ($14.87 in chips)
+Seat 4: Villain3 ($7.64 in chips)
+Seat 5: Villain4 ($19.53 in chips)
+Seat 6: Villain5 ($19.62 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ah 3h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000030: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:37:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($16.22 in chips)
+Seat 3: Villain2 ($15.96 in chips)
+Seat 4: Villain3 ($7.00 in chips)
+Seat 5: Villain4 ($19.39 in chips)
+Seat 6: Villain5 ($14.00 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ac 4h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000031: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:38:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($9.23 in chips)
+Seat 3: Villain2 ($18.66 in chips)
+Seat 4: Villain3 ($20.17 in chips)
+Seat 5: Villain4 ($11.05 in chips)
+Seat 6: Villain5 ($10.96 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qc Tc]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000032: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:40:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($20.59 in chips)
+Seat 3: Villain2 ($15.84 in chips)
+Seat 4: Villain3 ($12.96 in chips)
+Seat 5: Villain4 ($16.23 in chips)
+Seat 6: Villain5 ($18.66 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Th 9h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000033: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:41:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.98 in chips)
+Seat 3: Villain2 ($9.20 in chips)
+Seat 4: Villain3 ($8.17 in chips)
+Seat 5: Villain4 ($7.18 in chips)
+Seat 6: Villain5 ($8.76 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qh Qc]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [8d 7s Tc]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [8d 7s Tc] [Qs]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000034: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:42:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($8.06 in chips)
+Seat 3: Villain2 ($14.05 in chips)
+Seat 4: Villain3 ($19.89 in chips)
+Seat 5: Villain4 ($19.30 in chips)
+Seat 6: Villain5 ($14.29 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [3d Qs]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000035: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:43:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($8.53 in chips)
+Seat 3: Villain2 ($12.65 in chips)
+Seat 4: Villain3 ($13.43 in chips)
+Seat 5: Villain4 ($11.44 in chips)
+Seat 6: Villain5 ($8.30 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [4h 7c]
+Hero: calls $0.10
+Villain2: calls $0.30
+
+*** FLOP *** [Kd 5h 7h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Kd 5h 7h] [Td]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000036: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:45:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.49 in chips)
+Seat 3: Villain2 ($16.76 in chips)
+Seat 4: Villain3 ($10.57 in chips)
+Seat 5: Villain4 ($6.13 in chips)
+Seat 6: Villain5 ($7.72 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7c Kh]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000037: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:46:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.85 in chips)
+Seat 3: Villain2 ($17.83 in chips)
+Seat 4: Villain3 ($10.79 in chips)
+Seat 5: Villain4 ($11.38 in chips)
+Seat 6: Villain5 ($19.25 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6c Kh]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000038: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:47:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.53 in chips)
+Seat 3: Villain2 ($14.74 in chips)
+Seat 4: Villain3 ($16.81 in chips)
+Seat 5: Villain4 ($19.88 in chips)
+Seat 6: Villain5 ($16.89 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Kd Jc]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [6s 9h 2d]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [6s 9h 2d] [7s]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000039: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:48:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.50 in chips)
+Seat 3: Villain2 ($16.21 in chips)
+Seat 4: Villain3 ($6.84 in chips)
+Seat 5: Villain4 ($12.61 in chips)
+Seat 6: Villain5 ($17.48 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6c Js]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000040: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:50:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.50 in chips)
+Seat 3: Villain2 ($6.23 in chips)
+Seat 4: Villain3 ($11.39 in chips)
+Seat 5: Villain4 ($10.72 in chips)
+Seat 6: Villain5 ($16.79 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ad 4c]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000041: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:51:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.82 in chips)
+Seat 3: Villain2 ($11.98 in chips)
+Seat 4: Villain3 ($17.23 in chips)
+Seat 5: Villain4 ($20.60 in chips)
+Seat 6: Villain5 ($18.12 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Js Qc]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [8d 8s Tc]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [8d 8s Tc] [7c]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000042: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:52:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($7.02 in chips)
+Seat 3: Villain2 ($21.91 in chips)
+Seat 4: Villain3 ($20.95 in chips)
+Seat 5: Villain4 ($7.10 in chips)
+Seat 6: Villain5 ($20.94 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [5d Ac]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000043: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:53:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($16.75 in chips)
+Seat 3: Villain2 ($19.96 in chips)
+Seat 4: Villain3 ($9.92 in chips)
+Seat 5: Villain4 ($6.71 in chips)
+Seat 6: Villain5 ($13.02 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8h 4s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000044: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:55:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.48 in chips)
+Seat 3: Villain2 ($14.92 in chips)
+Seat 4: Villain3 ($8.15 in chips)
+Seat 5: Villain4 ($9.89 in chips)
+Seat 6: Villain5 ($9.25 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ac Ad]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2s 4c Tc]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000045: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:56:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($11.12 in chips)
+Seat 3: Villain2 ($9.25 in chips)
+Seat 4: Villain3 ($11.01 in chips)
+Seat 5: Villain4 ($6.73 in chips)
+Seat 6: Villain5 ($19.83 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [9c 7s]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [3d Th Kh]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [3d Th Kh] [5c]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000046: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:57:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($15.89 in chips)
+Seat 3: Villain2 ($16.67 in chips)
+Seat 4: Villain3 ($15.86 in chips)
+Seat 5: Villain4 ($13.73 in chips)
+Seat 6: Villain5 ($13.81 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2d 6c]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000047: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 18:58:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($20.42 in chips)
+Seat 3: Villain2 ($17.08 in chips)
+Seat 4: Villain3 ($15.07 in chips)
+Seat 5: Villain4 ($10.34 in chips)
+Seat 6: Villain5 ($20.79 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ts 8h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2c 2d Td]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000048: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:00:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.41 in chips)
+Seat 3: Villain2 ($7.31 in chips)
+Seat 4: Villain3 ($8.47 in chips)
+Seat 5: Villain4 ($17.39 in chips)
+Seat 6: Villain5 ($16.14 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6d Th]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Jc Qh 2h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Jc Qh 2h] [4s]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000049: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:01:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($18.52 in chips)
+Seat 3: Villain2 ($11.78 in chips)
+Seat 4: Villain3 ($21.11 in chips)
+Seat 5: Villain4 ($17.53 in chips)
+Seat 6: Villain5 ($13.93 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7c 7s]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [3h 3d 2c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000050: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:02:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($18.73 in chips)
+Seat 3: Villain2 ($12.55 in chips)
+Seat 4: Villain3 ($13.99 in chips)
+Seat 5: Villain4 ($16.13 in chips)
+Seat 6: Villain5 ($9.87 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [9d 3h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [4c 6s 2c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000051: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:03:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($7.37 in chips)
+Seat 3: Villain2 ($19.30 in chips)
+Seat 4: Villain3 ($17.68 in chips)
+Seat 5: Villain4 ($11.57 in chips)
+Seat 6: Villain5 ($11.49 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Kd 8s]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [8c 3c 9c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [8c 3c 9c] [Jh]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000052: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:05:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($7.82 in chips)
+Seat 3: Villain2 ($16.73 in chips)
+Seat 4: Villain3 ($13.83 in chips)
+Seat 5: Villain4 ($21.45 in chips)
+Seat 6: Villain5 ($11.01 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Td 9h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000053: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:06:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($13.87 in chips)
+Seat 3: Villain2 ($17.36 in chips)
+Seat 4: Villain3 ($13.10 in chips)
+Seat 5: Villain4 ($8.68 in chips)
+Seat 6: Villain5 ($15.05 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8d Jd]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [3s 7h Ac]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [3s 7h Ac] [9d]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000054: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:07:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($15.55 in chips)
+Seat 3: Villain2 ($8.69 in chips)
+Seat 4: Villain3 ($21.66 in chips)
+Seat 5: Villain4 ($10.68 in chips)
+Seat 6: Villain5 ($15.16 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [5h 6h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2h 6d As]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [2h 6d As] [Th]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [2h 6d As Th] [Ah]
+Villain2: bets $2.00
+Hero: folds
+
+Villain2 collected $5.80 from pot
+
+*** SUMMARY ***
+Total pot $5.95 | Rake $0.15
+
+
+PokerStars Hand #200000000055: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:08:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($15.25 in chips)
+Seat 3: Villain2 ($15.06 in chips)
+Seat 4: Villain3 ($13.77 in chips)
+Seat 5: Villain4 ($11.50 in chips)
+Seat 6: Villain5 ($16.92 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Tc Qs]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000056: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:10:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($9.66 in chips)
+Seat 3: Villain2 ($7.43 in chips)
+Seat 4: Villain3 ($18.90 in chips)
+Seat 5: Villain4 ($7.65 in chips)
+Seat 6: Villain5 ($11.88 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [3h Qc]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000057: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:11:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.87 in chips)
+Seat 3: Villain2 ($20.37 in chips)
+Seat 4: Villain3 ($21.27 in chips)
+Seat 5: Villain4 ($13.92 in chips)
+Seat 6: Villain5 ($7.80 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8c Ad]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000058: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:12:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.54 in chips)
+Seat 3: Villain2 ($6.93 in chips)
+Seat 4: Villain3 ($7.38 in chips)
+Seat 5: Villain4 ($12.95 in chips)
+Seat 6: Villain5 ($13.25 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Jh 3c]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Td 2c 7s]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000059: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:13:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.81 in chips)
+Seat 3: Villain2 ($9.91 in chips)
+Seat 4: Villain3 ($13.55 in chips)
+Seat 5: Villain4 ($12.13 in chips)
+Seat 6: Villain5 ($8.40 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6s Qh]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Ks Ah Ad]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Ks Ah Ad] [4s]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [Ks Ah Ad 4s] [3s]
+Villain2: checks
+Hero: checks
+
+*** SHOW DOWN ***
+Hero: shows [6s Qh] (a pair)
+Villain2: mucks hand
+Hero collected $3.80 from pot
+
+*** SUMMARY ***
+Total pot $3.95 | Rake $0.15
+
+
+PokerStars Hand #200000000060: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:15:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.66 in chips)
+Seat 3: Villain2 ($16.18 in chips)
+Seat 4: Villain3 ($17.10 in chips)
+Seat 5: Villain4 ($6.15 in chips)
+Seat 6: Villain5 ($11.36 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2h Ts]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Kd Ks Qd]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Kd Ks Qd] [8h]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000061: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:16:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($8.63 in chips)
+Seat 3: Villain2 ($13.46 in chips)
+Seat 4: Villain3 ($12.50 in chips)
+Seat 5: Villain4 ($14.57 in chips)
+Seat 6: Villain5 ($21.43 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8c Ks]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000062: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:17:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($16.34 in chips)
+Seat 3: Villain2 ($18.95 in chips)
+Seat 4: Villain3 ($7.47 in chips)
+Seat 5: Villain4 ($19.56 in chips)
+Seat 6: Villain5 ($18.94 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6s 9d]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000063: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:18:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($15.55 in chips)
+Seat 3: Villain2 ($6.47 in chips)
+Seat 4: Villain3 ($18.97 in chips)
+Seat 5: Villain4 ($10.49 in chips)
+Seat 6: Villain5 ($18.94 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [9d 2s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000064: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:20:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($20.70 in chips)
+Seat 3: Villain2 ($19.51 in chips)
+Seat 4: Villain3 ($11.18 in chips)
+Seat 5: Villain4 ($6.35 in chips)
+Seat 6: Villain5 ($15.39 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7h Ad]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Jd 5h 4h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Jd 5h 4h] [3h]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [Jd 5h 4h 3h] [5s]
+Villain2: checks
+Hero: checks
+
+*** SHOW DOWN ***
+Hero: shows [7h Ad] (a pair)
+Villain2: mucks hand
+Hero collected $3.80 from pot
+
+*** SUMMARY ***
+Total pot $3.95 | Rake $0.15
+
+
+PokerStars Hand #200000000065: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:21:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($20.17 in chips)
+Seat 3: Villain2 ($7.42 in chips)
+Seat 4: Villain3 ($17.34 in chips)
+Seat 5: Villain4 ($16.23 in chips)
+Seat 6: Villain5 ($20.19 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ad 3s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000066: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:22:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($16.46 in chips)
+Seat 3: Villain2 ($15.72 in chips)
+Seat 4: Villain3 ($12.95 in chips)
+Seat 5: Villain4 ($6.86 in chips)
+Seat 6: Villain5 ($11.30 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6c 5d]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [5s Kc 3c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [5s Kc 3c] [7h]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [5s Kc 3c 7h] [As]
+Villain2: bets $2.00
+Hero: folds
+
+Villain2 collected $5.80 from pot
+
+*** SUMMARY ***
+Total pot $5.95 | Rake $0.15
+
+
+PokerStars Hand #200000000067: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:23:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($13.13 in chips)
+Seat 3: Villain2 ($10.21 in chips)
+Seat 4: Villain3 ($13.44 in chips)
+Seat 5: Villain4 ($9.62 in chips)
+Seat 6: Villain5 ($10.30 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8h Kc]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000068: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:25:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.90 in chips)
+Seat 3: Villain2 ($14.83 in chips)
+Seat 4: Villain3 ($19.71 in chips)
+Seat 5: Villain4 ($14.32 in chips)
+Seat 6: Villain5 ($20.67 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ac Kc]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000069: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:26:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($9.65 in chips)
+Seat 3: Villain2 ($10.81 in chips)
+Seat 4: Villain3 ($17.90 in chips)
+Seat 5: Villain4 ($18.38 in chips)
+Seat 6: Villain5 ($11.13 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Kc Js]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Jd Td 8h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Jd Td 8h] [3s]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000070: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:27:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($10.14 in chips)
+Seat 3: Villain2 ($19.29 in chips)
+Seat 4: Villain3 ($7.45 in chips)
+Seat 5: Villain4 ($6.44 in chips)
+Seat 6: Villain5 ($6.79 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Jh Qd]
+Hero: calls $0.10
+Villain2: calls $0.30
+
+*** FLOP *** [3d 5c 9c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [3d 5c 9c] [5d]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000071: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:28:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.24 in chips)
+Seat 3: Villain2 ($16.42 in chips)
+Seat 4: Villain3 ($9.01 in chips)
+Seat 5: Villain4 ($14.28 in chips)
+Seat 6: Villain5 ($9.84 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ad 5d]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000072: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:30:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.86 in chips)
+Seat 3: Villain2 ($15.34 in chips)
+Seat 4: Villain3 ($21.11 in chips)
+Seat 5: Villain4 ($7.14 in chips)
+Seat 6: Villain5 ($20.23 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [As Jh]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000073: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:31:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($9.98 in chips)
+Seat 3: Villain2 ($17.10 in chips)
+Seat 4: Villain3 ($11.51 in chips)
+Seat 5: Villain4 ($8.06 in chips)
+Seat 6: Villain5 ($12.14 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qs 8c]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Td 6s 8h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000074: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:32:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($16.97 in chips)
+Seat 3: Villain2 ($6.15 in chips)
+Seat 4: Villain3 ($12.73 in chips)
+Seat 5: Villain4 ($7.62 in chips)
+Seat 6: Villain5 ($14.32 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [4h 3c]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2h 6s 6h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000075: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:33:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.64 in chips)
+Seat 3: Villain2 ($11.76 in chips)
+Seat 4: Villain3 ($16.83 in chips)
+Seat 5: Villain4 ($12.82 in chips)
+Seat 6: Villain5 ($7.85 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Kc 4c]
+Hero: calls $0.10
+Villain2: calls $0.30
+
+*** FLOP *** [8h 3h Tc]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [8h 3h Tc] [Kh]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000076: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:35:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($11.03 in chips)
+Seat 3: Villain2 ($17.27 in chips)
+Seat 4: Villain3 ($16.85 in chips)
+Seat 5: Villain4 ($18.28 in chips)
+Seat 6: Villain5 ($15.23 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2h 2c]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [4c Qh Qd]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000077: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:36:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.28 in chips)
+Seat 3: Villain2 ($12.46 in chips)
+Seat 4: Villain3 ($6.57 in chips)
+Seat 5: Villain4 ($14.79 in chips)
+Seat 6: Villain5 ($19.21 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qh 7d]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Td Ad Kc]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Td Ad Kc] [Ks]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000078: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:37:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($7.72 in chips)
+Seat 3: Villain2 ($12.63 in chips)
+Seat 4: Villain3 ($20.83 in chips)
+Seat 5: Villain4 ($19.40 in chips)
+Seat 6: Villain5 ($15.42 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Js Qc]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [6s Tc Ts]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [6s Tc Ts] [5d]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000079: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:38:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($8.12 in chips)
+Seat 3: Villain2 ($17.37 in chips)
+Seat 4: Villain3 ($21.60 in chips)
+Seat 5: Villain4 ($8.85 in chips)
+Seat 6: Villain5 ($14.68 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [9c 9d]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Qh Jd Tc]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000080: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:40:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($18.61 in chips)
+Seat 3: Villain2 ($16.96 in chips)
+Seat 4: Villain3 ($21.45 in chips)
+Seat 5: Villain4 ($6.86 in chips)
+Seat 6: Villain5 ($17.90 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Kd 3s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000081: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:41:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.31 in chips)
+Seat 3: Villain2 ($14.33 in chips)
+Seat 4: Villain3 ($18.58 in chips)
+Seat 5: Villain4 ($8.55 in chips)
+Seat 6: Villain5 ($14.69 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ad 9c]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000082: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:42:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($16.07 in chips)
+Seat 3: Villain2 ($9.41 in chips)
+Seat 4: Villain3 ($16.97 in chips)
+Seat 5: Villain4 ($19.37 in chips)
+Seat 6: Villain5 ($9.29 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7h 5h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [5d Qh 7d]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [5d Qh 7d] [Ks]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000083: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:43:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.54 in chips)
+Seat 3: Villain2 ($8.18 in chips)
+Seat 4: Villain3 ($12.26 in chips)
+Seat 5: Villain4 ($18.76 in chips)
+Seat 6: Villain5 ($14.73 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ks Ad]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [8s Qd 3c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [8s Qd 3c] [Qs]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [8s Qd 3c Qs] [4d]
+Villain2: bets $2.00
+Hero: folds
+
+Villain2 collected $5.80 from pot
+
+*** SUMMARY ***
+Total pot $5.95 | Rake $0.15
+
+
+PokerStars Hand #200000000084: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:45:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($16.49 in chips)
+Seat 3: Villain2 ($7.60 in chips)
+Seat 4: Villain3 ($15.91 in chips)
+Seat 5: Villain4 ($20.40 in chips)
+Seat 6: Villain5 ($11.08 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [4d 6s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000085: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:46:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.83 in chips)
+Seat 3: Villain2 ($14.70 in chips)
+Seat 4: Villain3 ($21.98 in chips)
+Seat 5: Villain4 ($13.55 in chips)
+Seat 6: Villain5 ($18.40 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Js Qh]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000086: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:47:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($10.21 in chips)
+Seat 3: Villain2 ($14.71 in chips)
+Seat 4: Villain3 ($8.78 in chips)
+Seat 5: Villain4 ($16.46 in chips)
+Seat 6: Villain5 ($11.84 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [5h Ad]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Jd Kh 6h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000087: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:48:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($8.35 in chips)
+Seat 3: Villain2 ($8.66 in chips)
+Seat 4: Villain3 ($20.76 in chips)
+Seat 5: Villain4 ($14.27 in chips)
+Seat 6: Villain5 ($12.49 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [3c Td]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [6c 8c 5h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [6c 8c 5h] [Ah]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [6c 8c 5h Ah] [8d]
+Villain2: bets $2.00
+Hero: folds
+
+Villain2 collected $5.80 from pot
+
+*** SUMMARY ***
+Total pot $5.95 | Rake $0.15
+
+
+PokerStars Hand #200000000088: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:50:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($11.93 in chips)
+Seat 3: Villain2 ($6.70 in chips)
+Seat 4: Villain3 ($14.48 in chips)
+Seat 5: Villain4 ($9.67 in chips)
+Seat 6: Villain5 ($18.84 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qc 2d]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Kh Ad Qh]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Kh Ad Qh] [6h]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000089: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:51:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($10.91 in chips)
+Seat 3: Villain2 ($11.51 in chips)
+Seat 4: Villain3 ($17.29 in chips)
+Seat 5: Villain4 ($17.77 in chips)
+Seat 6: Villain5 ($19.68 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8c 7h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Jd Ks Kc]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000090: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:52:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($11.76 in chips)
+Seat 3: Villain2 ($16.48 in chips)
+Seat 4: Villain3 ($21.61 in chips)
+Seat 5: Villain4 ($7.39 in chips)
+Seat 6: Villain5 ($10.41 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ks 5h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000091: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:53:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($9.68 in chips)
+Seat 3: Villain2 ($11.05 in chips)
+Seat 4: Villain3 ($21.29 in chips)
+Seat 5: Villain4 ($14.26 in chips)
+Seat 6: Villain5 ($6.16 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qh 8d]
+Hero: calls $0.10
+Villain2: calls $0.30
+
+*** FLOP *** [Ah Jd 5c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Ah Jd 5c] [Td]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000092: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:55:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($18.79 in chips)
+Seat 3: Villain2 ($13.65 in chips)
+Seat 4: Villain3 ($14.65 in chips)
+Seat 5: Villain4 ($14.04 in chips)
+Seat 6: Villain5 ($12.30 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [5s 6h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [3d 8d Qs]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000093: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:56:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.16 in chips)
+Seat 3: Villain2 ($12.74 in chips)
+Seat 4: Villain3 ($8.15 in chips)
+Seat 5: Villain4 ($20.29 in chips)
+Seat 6: Villain5 ($16.09 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [4s 9d]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000094: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:57:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($15.80 in chips)
+Seat 3: Villain2 ($12.48 in chips)
+Seat 4: Villain3 ($20.51 in chips)
+Seat 5: Villain4 ($7.27 in chips)
+Seat 6: Villain5 ($11.50 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7c Ah]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000095: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 19:58:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.77 in chips)
+Seat 3: Villain2 ($11.20 in chips)
+Seat 4: Villain3 ($13.62 in chips)
+Seat 5: Villain4 ($21.60 in chips)
+Seat 6: Villain5 ($14.65 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qd 6h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000096: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:00:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($8.61 in chips)
+Seat 3: Villain2 ($17.79 in chips)
+Seat 4: Villain3 ($12.24 in chips)
+Seat 5: Villain4 ($12.05 in chips)
+Seat 6: Villain5 ($10.21 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [9c 4c]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000097: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:01:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.51 in chips)
+Seat 3: Villain2 ($7.28 in chips)
+Seat 4: Villain3 ($18.01 in chips)
+Seat 5: Villain4 ($8.34 in chips)
+Seat 6: Villain5 ($10.26 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [5s Td]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000098: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:02:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.67 in chips)
+Seat 3: Villain2 ($18.54 in chips)
+Seat 4: Villain3 ($13.60 in chips)
+Seat 5: Villain4 ($15.54 in chips)
+Seat 6: Villain5 ($11.94 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Th 9h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000099: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:03:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($13.27 in chips)
+Seat 3: Villain2 ($18.41 in chips)
+Seat 4: Villain3 ($14.10 in chips)
+Seat 5: Villain4 ($17.74 in chips)
+Seat 6: Villain5 ($20.13 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [4h 9s]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [3d Qs Js]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000100: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:05:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.31 in chips)
+Seat 3: Villain2 ($13.49 in chips)
+Seat 4: Villain3 ($16.22 in chips)
+Seat 5: Villain4 ($11.77 in chips)
+Seat 6: Villain5 ($17.90 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7s Ad]
+Hero: calls $0.10
+Villain2: calls $0.30
+
+*** FLOP *** [Js 5s 7c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Js 5s 7c] [Kh]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000101: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:06:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($12.89 in chips)
+Seat 3: Villain2 ($17.61 in chips)
+Seat 4: Villain3 ($15.73 in chips)
+Seat 5: Villain4 ($15.01 in chips)
+Seat 6: Villain5 ($9.42 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7s Ah]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Kd 2s Js]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Kd 2s Js] [6d]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000102: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:07:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.03 in chips)
+Seat 3: Villain2 ($15.22 in chips)
+Seat 4: Villain3 ($20.52 in chips)
+Seat 5: Villain4 ($15.52 in chips)
+Seat 6: Villain5 ($10.81 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ks 6c]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [7s 9c Ac]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [7s 9c Ac] [8d]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000103: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:08:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($8.09 in chips)
+Seat 3: Villain2 ($8.16 in chips)
+Seat 4: Villain3 ($14.95 in chips)
+Seat 5: Villain4 ($13.81 in chips)
+Seat 6: Villain5 ($16.44 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Jc 8c]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000104: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:10:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.84 in chips)
+Seat 3: Villain2 ($9.39 in chips)
+Seat 4: Villain3 ($14.74 in chips)
+Seat 5: Villain4 ($18.01 in chips)
+Seat 6: Villain5 ($14.78 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Js Ks]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Td 5s Ac]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000105: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:11:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($12.29 in chips)
+Seat 3: Villain2 ($8.51 in chips)
+Seat 4: Villain3 ($11.55 in chips)
+Seat 5: Villain4 ($11.63 in chips)
+Seat 6: Villain5 ($16.00 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [4d Kc]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000106: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:12:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($18.25 in chips)
+Seat 3: Villain2 ($20.08 in chips)
+Seat 4: Villain3 ($12.62 in chips)
+Seat 5: Villain4 ($12.58 in chips)
+Seat 6: Villain5 ($13.09 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Tc 6d]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2s Qc 6c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [2s Qc 6c] [8c]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [2s Qc 6c 8c] [2d]
+Villain2: checks
+Hero: checks
+
+*** SHOW DOWN ***
+Hero: shows [Tc 6d] (a pair)
+Villain2: mucks hand
+Hero collected $3.80 from pot
+
+*** SUMMARY ***
+Total pot $3.95 | Rake $0.15
+
+
+PokerStars Hand #200000000107: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:13:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.87 in chips)
+Seat 3: Villain2 ($20.20 in chips)
+Seat 4: Villain3 ($12.84 in chips)
+Seat 5: Villain4 ($18.42 in chips)
+Seat 6: Villain5 ($15.73 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qc Ks]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [6d 4d 5c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [6d 4d 5c] [3h]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000108: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:15:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.40 in chips)
+Seat 3: Villain2 ($13.26 in chips)
+Seat 4: Villain3 ($20.35 in chips)
+Seat 5: Villain4 ($20.33 in chips)
+Seat 6: Villain5 ($20.12 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Kh 7c]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000109: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:16:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($15.42 in chips)
+Seat 3: Villain2 ($13.61 in chips)
+Seat 4: Villain3 ($12.56 in chips)
+Seat 5: Villain4 ($7.27 in chips)
+Seat 6: Villain5 ($15.60 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7c Kc]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000110: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:17:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.75 in chips)
+Seat 3: Villain2 ($11.27 in chips)
+Seat 4: Villain3 ($12.62 in chips)
+Seat 5: Villain4 ($9.36 in chips)
+Seat 6: Villain5 ($9.34 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ts 6d]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000111: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:18:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($11.18 in chips)
+Seat 3: Villain2 ($6.10 in chips)
+Seat 4: Villain3 ($16.97 in chips)
+Seat 5: Villain4 ($11.46 in chips)
+Seat 6: Villain5 ($17.59 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Jc Kh]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Qc Td 3d]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000112: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:20:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($10.84 in chips)
+Seat 3: Villain2 ($7.80 in chips)
+Seat 4: Villain3 ($18.56 in chips)
+Seat 5: Villain4 ($18.44 in chips)
+Seat 6: Villain5 ($20.61 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2d 4s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000113: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:21:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.95 in chips)
+Seat 3: Villain2 ($7.64 in chips)
+Seat 4: Villain3 ($14.68 in chips)
+Seat 5: Villain4 ($14.79 in chips)
+Seat 6: Villain5 ($10.34 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2d 9h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Tc 4d 5c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Tc 4d 5c] [7d]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [Tc 4d 5c 7d] [Ah]
+Villain2: checks
+Hero: checks
+
+*** SHOW DOWN ***
+Hero: shows [2d 9h] (a pair)
+Villain2: mucks hand
+Hero collected $3.80 from pot
+
+*** SUMMARY ***
+Total pot $3.95 | Rake $0.15
+
+
+PokerStars Hand #200000000114: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:22:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($20.33 in chips)
+Seat 3: Villain2 ($10.13 in chips)
+Seat 4: Villain3 ($11.82 in chips)
+Seat 5: Villain4 ($8.93 in chips)
+Seat 6: Villain5 ($20.68 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [As 6h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000115: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:23:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.39 in chips)
+Seat 3: Villain2 ($19.39 in chips)
+Seat 4: Villain3 ($7.83 in chips)
+Seat 5: Villain4 ($15.54 in chips)
+Seat 6: Villain5 ($11.21 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7c 9d]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000116: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:25:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.24 in chips)
+Seat 3: Villain2 ($12.31 in chips)
+Seat 4: Villain3 ($11.09 in chips)
+Seat 5: Villain4 ($12.12 in chips)
+Seat 6: Villain5 ($12.11 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [9c 4s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000117: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:26:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.61 in chips)
+Seat 3: Villain2 ($13.73 in chips)
+Seat 4: Villain3 ($11.90 in chips)
+Seat 5: Villain4 ($15.28 in chips)
+Seat 6: Villain5 ($21.39 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qh 4s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000118: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:27:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($10.50 in chips)
+Seat 3: Villain2 ($19.73 in chips)
+Seat 4: Villain3 ($6.23 in chips)
+Seat 5: Villain4 ($7.78 in chips)
+Seat 6: Villain5 ($8.79 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Kh As]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Td Ac 6d]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000119: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:28:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($13.18 in chips)
+Seat 3: Villain2 ($16.86 in chips)
+Seat 4: Villain3 ($21.39 in chips)
+Seat 5: Villain4 ($16.93 in chips)
+Seat 6: Villain5 ($6.66 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [4d Qh]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [9c 7s 4s]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [9c 7s 4s] [6c]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [9c 7s 4s 6c] [Kc]
+Villain2: checks
+Hero: checks
+
+*** SHOW DOWN ***
+Hero: shows [4d Qh] (a pair)
+Villain2: mucks hand
+Hero collected $3.80 from pot
+
+*** SUMMARY ***
+Total pot $3.95 | Rake $0.15
+
+
+PokerStars Hand #200000000120: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:30:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.13 in chips)
+Seat 3: Villain2 ($10.05 in chips)
+Seat 4: Villain3 ($13.47 in chips)
+Seat 5: Villain4 ($20.98 in chips)
+Seat 6: Villain5 ($16.22 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qc 7h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [8s Js Qd]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [8s Js Qd] [6d]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [8s Js Qd 6d] [7d]
+Villain2: checks
+Hero: checks
+
+*** SHOW DOWN ***
+Hero: shows [Qc 7h] (a pair)
+Villain2: mucks hand
+Hero collected $3.80 from pot
+
+*** SUMMARY ***
+Total pot $3.95 | Rake $0.15
+
+
+PokerStars Hand #200000000121: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:31:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.20 in chips)
+Seat 3: Villain2 ($20.47 in chips)
+Seat 4: Villain3 ($15.19 in chips)
+Seat 5: Villain4 ($14.25 in chips)
+Seat 6: Villain5 ($21.04 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6d Ad]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000122: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:32:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($14.65 in chips)
+Seat 3: Villain2 ($10.92 in chips)
+Seat 4: Villain3 ($14.54 in chips)
+Seat 5: Villain4 ($19.35 in chips)
+Seat 6: Villain5 ($13.19 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8s 8d]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Kh 3c Th]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Kh 3c Th] [5h]
+Villain2: checks
+Hero: bets $1.10
+Villain2: calls $1.10
+
+*** RIVER *** [Kh 3c Th 5h] [2c]
+Villain2: bets $2.00
+Hero: folds
+
+Villain2 collected $5.80 from pot
+
+*** SUMMARY ***
+Total pot $5.95 | Rake $0.15
+
+
+PokerStars Hand #200000000123: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:33:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.61 in chips)
+Seat 3: Villain2 ($15.22 in chips)
+Seat 4: Villain3 ($8.20 in chips)
+Seat 5: Villain4 ($19.38 in chips)
+Seat 6: Villain5 ($18.69 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2h 7d]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [2s Ah Kh]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [2s Ah Kh] [As]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000124: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:35:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.07 in chips)
+Seat 3: Villain2 ($9.77 in chips)
+Seat 4: Villain3 ($7.88 in chips)
+Seat 5: Villain4 ($14.48 in chips)
+Seat 6: Villain5 ($7.53 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Jd 4s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000125: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:36:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($9.79 in chips)
+Seat 3: Villain2 ($12.60 in chips)
+Seat 4: Villain3 ($9.20 in chips)
+Seat 5: Villain4 ($20.26 in chips)
+Seat 6: Villain5 ($7.18 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ac Th]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Tc 5h 9d]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000126: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:37:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($9.56 in chips)
+Seat 3: Villain2 ($20.84 in chips)
+Seat 4: Villain3 ($21.14 in chips)
+Seat 5: Villain4 ($20.62 in chips)
+Seat 6: Villain5 ($20.37 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2s 8s]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000127: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:38:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.17 in chips)
+Seat 3: Villain2 ($15.80 in chips)
+Seat 4: Villain3 ($15.20 in chips)
+Seat 5: Villain4 ($9.31 in chips)
+Seat 6: Villain5 ($16.95 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [2h As]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [9h Kh Tc]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000128: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:40:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.13 in chips)
+Seat 3: Villain2 ($18.94 in chips)
+Seat 4: Villain3 ($21.05 in chips)
+Seat 5: Villain4 ($7.05 in chips)
+Seat 6: Villain5 ($20.27 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7d Ks]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000129: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:41:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.53 in chips)
+Seat 3: Villain2 ($18.32 in chips)
+Seat 4: Villain3 ($6.76 in chips)
+Seat 5: Villain4 ($11.65 in chips)
+Seat 6: Villain5 ($13.29 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [3d 8d]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000130: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:42:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($10.64 in chips)
+Seat 3: Villain2 ($21.10 in chips)
+Seat 4: Villain3 ($21.69 in chips)
+Seat 5: Villain4 ($15.18 in chips)
+Seat 6: Villain5 ($8.35 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [4h Kd]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Th 6h 4s]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000131: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:43:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($11.62 in chips)
+Seat 3: Villain2 ($21.64 in chips)
+Seat 4: Villain3 ($19.99 in chips)
+Seat 5: Villain4 ($7.40 in chips)
+Seat 6: Villain5 ($17.65 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [9c 7d]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000132: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:45:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.35 in chips)
+Seat 3: Villain2 ($13.56 in chips)
+Seat 4: Villain3 ($16.46 in chips)
+Seat 5: Villain4 ($20.28 in chips)
+Seat 6: Villain5 ($12.67 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8h 9c]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000133: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:46:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.23 in chips)
+Seat 3: Villain2 ($16.96 in chips)
+Seat 4: Villain3 ($10.82 in chips)
+Seat 5: Villain4 ($16.97 in chips)
+Seat 6: Villain5 ($17.01 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Kc Qd]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000134: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:47:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($12.80 in chips)
+Seat 3: Villain2 ($18.21 in chips)
+Seat 4: Villain3 ($7.79 in chips)
+Seat 5: Villain4 ($6.30 in chips)
+Seat 6: Villain5 ($13.75 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Jd 7h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000135: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:48:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.32 in chips)
+Seat 3: Villain2 ($8.89 in chips)
+Seat 4: Villain3 ($11.68 in chips)
+Seat 5: Villain4 ($12.07 in chips)
+Seat 6: Villain5 ($9.43 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [5c 3h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000136: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:50:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.60 in chips)
+Seat 3: Villain2 ($11.42 in chips)
+Seat 4: Villain3 ($15.52 in chips)
+Seat 5: Villain4 ($21.85 in chips)
+Seat 6: Villain5 ($7.96 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [3s Ac]
+Hero: calls $0.10
+Villain2: calls $0.30
+
+*** FLOP *** [7c As 9d]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [7c As 9d] [Ah]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000137: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:51:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($18.95 in chips)
+Seat 3: Villain2 ($14.65 in chips)
+Seat 4: Villain3 ($6.28 in chips)
+Seat 5: Villain4 ($18.22 in chips)
+Seat 6: Villain5 ($21.85 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Kh 9s]
+Hero: calls $0.10
+Villain2: calls $0.30
+
+*** FLOP *** [6d Ac Kd]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [6d Ac Kd] [Jd]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000138: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:52:30 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($12.85 in chips)
+Seat 3: Villain2 ($21.87 in chips)
+Seat 4: Villain3 ($12.59 in chips)
+Seat 5: Villain4 ($6.90 in chips)
+Seat 6: Villain5 ($9.91 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [3s 8c]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000139: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:53:45 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($15.18 in chips)
+Seat 3: Villain2 ($18.87 in chips)
+Seat 4: Villain3 ($15.99 in chips)
+Seat 5: Villain4 ($21.33 in chips)
+Seat 6: Villain5 ($17.48 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6s Jd]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [3d Kc 3c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000140: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:55:00 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($12.56 in chips)
+Seat 3: Villain2 ($19.76 in chips)
+Seat 4: Villain3 ($20.58 in chips)
+Seat 5: Villain4 ($16.14 in chips)
+Seat 6: Villain5 ($19.54 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Jd 7d]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000141: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:56:15 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($19.26 in chips)
+Seat 3: Villain2 ($21.19 in chips)
+Seat 4: Villain3 ($20.90 in chips)
+Seat 5: Villain4 ($10.03 in chips)
+Seat 6: Villain5 ($20.15 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6h Qd]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000142: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:57:30 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($20.98 in chips)
+Seat 3: Villain2 ($18.11 in chips)
+Seat 4: Villain3 ($10.76 in chips)
+Seat 5: Villain4 ($19.75 in chips)
+Seat 6: Villain5 ($8.56 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [3s Ad]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000143: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 20:58:45 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($17.00 in chips)
+Seat 3: Villain2 ($19.23 in chips)
+Seat 4: Villain3 ($18.79 in chips)
+Seat 5: Villain4 ($9.18 in chips)
+Seat 6: Villain5 ($12.63 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [7c Ad]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
+
+PokerStars Hand #200000000144: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 21:00:00 ET
+Table 'Aludra' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($6.46 in chips)
+Seat 3: Villain2 ($21.62 in chips)
+Seat 4: Villain3 ($9.77 in chips)
+Seat 5: Villain4 ($13.22 in chips)
+Seat 6: Villain5 ($9.97 in chips)
+
+Villain3: posts small blind $0.05
+Villain4: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8c Jc]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [5h 2d Ac]
+Villain2: checks
+Hero: bets $0.45
+Villain2: folds
+
+Hero collected $1.15 from pot
+
+*** SUMMARY ***
+Total pot $1.25 | Rake $0.10
+
+
+PokerStars Hand #200000000145: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 21:01:15 ET
+Table 'Aludra' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($7.87 in chips)
+Seat 3: Villain2 ($6.71 in chips)
+Seat 4: Villain3 ($8.05 in chips)
+Seat 5: Villain4 ($19.95 in chips)
+Seat 6: Villain5 ($19.36 in chips)
+
+Villain4: posts small blind $0.05
+Villain5: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qd 9d]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [3d 2c 9h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [3d 2c 9h] [4c]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000146: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 21:02:30 ET
+Table 'Aludra' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($21.55 in chips)
+Seat 3: Villain2 ($14.42 in chips)
+Seat 4: Villain3 ($15.13 in chips)
+Seat 5: Villain4 ($12.66 in chips)
+Seat 6: Villain5 ($7.23 in chips)
+
+Villain5: posts small blind $0.05
+Hero: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [8s 6h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [6c Js Ad]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [6c Js Ad] [Td]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000147: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 21:03:45 ET
+Table 'Aludra' 6-max Seat #4 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($12.44 in chips)
+Seat 3: Villain2 ($16.35 in chips)
+Seat 4: Villain3 ($21.27 in chips)
+Seat 5: Villain4 ($8.47 in chips)
+Seat 6: Villain5 ($10.78 in chips)
+
+Hero: posts small blind $0.05
+Villain1: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Qs 3h]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [7d 2d 6h]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [7d 2d 6h] [As]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000148: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 21:05:00 ET
+Table 'Aludra' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($20.68 in chips)
+Seat 3: Villain2 ($14.21 in chips)
+Seat 4: Villain3 ($14.17 in chips)
+Seat 5: Villain4 ($12.61 in chips)
+Seat 6: Villain5 ($13.43 in chips)
+
+Villain1: posts small blind $0.05
+Villain2: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [Ks 6s]
+Hero: raises $0.20 to $0.30
+Villain2: calls $0.30
+
+*** FLOP *** [Qs Jh 4c]
+Villain2: checks
+Hero: bets $0.45
+Villain2: calls $0.45
+
+*** TURN *** [Qs Jh 4c] [7h]
+Villain2: bets $1.20
+Hero: folds
+
+Villain2 collected $3.10 from pot
+
+*** SUMMARY ***
+Total pot $3.25 | Rake $0.15
+
+
+PokerStars Hand #200000000149: Hold'em No Limit ($0.05/$0.10 USD) - 2026/05/20 21:06:15 ET
+Table 'Aludra' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain1 ($7.40 in chips)
+Seat 3: Villain2 ($8.16 in chips)
+Seat 4: Villain3 ($9.05 in chips)
+Seat 5: Villain4 ($19.06 in chips)
+Seat 6: Villain5 ($17.14 in chips)
+
+Villain2: posts small blind $0.05
+Villain3: posts big blind $0.10
+
+*** HOLE CARDS ***
+Dealt to Hero [6c 7h]
+Hero: folds
+
+*** SUMMARY ***
+Total pot $0.15 | Rake $0.00
+
