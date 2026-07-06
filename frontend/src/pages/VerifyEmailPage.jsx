@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BadgeCheck, CircleAlert, LoaderCircle, MailCheck } from 'lucide-react';
 import { Link, useParams } from 'react-router';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import './VerifyEmailPage.css';
 
 const VerifyEmailPage = () => {

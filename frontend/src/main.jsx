@@ -1,22 +1,15 @@
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
 import './index.css';
 import App from './App';
-import { AuthProvider } from './context/AuthContext';
-import store from './store/store';
 import { Toaster } from 'sonner';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const rootElement = document.getElementById('root');
-
-if (!rootElement) {
-  throw new Error('Root element not found');
-}
+const queryClient = new QueryClient();
 
 createRoot(rootElement).render(
-  <Provider store={store}>
-    <AuthProvider>
-      <App />
-      <Toaster />
-    </AuthProvider>
-  </Provider>,
+  <QueryClientProvider client={queryClient}>
+    <App />
+    <Toaster />
+  </QueryClientProvider>,
 );

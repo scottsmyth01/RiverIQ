@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();

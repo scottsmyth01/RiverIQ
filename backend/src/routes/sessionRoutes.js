@@ -2,11 +2,10 @@ import express from 'express';
 const router = express.Router();
 import protect from '../middleware/authMiddleware.js';
 import { addSession, getSessions, parseHandHistoryStats } from '../controllers/sessionController.js';
-import { uploadHandHistory, uploadHandHistoryToR2 } from '../middleware/uploadToR2Middleware.js';
 import { upload } from '../middleware/uploadMiddleware.js';
 
 router.get('/', protect, getSessions);
-router.post('/addSession', protect, upload.single('handHistory'), uploadHandHistoryToR2, addSession);
+router.post('/addSession', protect, upload.single('handHistory'), addSession);
 
 export default router;
 

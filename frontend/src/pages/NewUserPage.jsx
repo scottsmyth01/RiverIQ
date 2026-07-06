@@ -1,15 +1,11 @@
 import React from 'react';
-import { ClipboardCheck, Flag, Sparkles } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import './NewUserPage.css';
 import ProgressBar from '../components/ProgressBar/ProgressBar';
-import { useSelector } from 'react-redux';
-import { selectSessions } from '../store/sessionSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
-export const NewUserPage = () => {
+export const NewUserPage = ({ sessions }) => {
   const { user } = useAuth();
-  const sessions = useSelector(selectSessions);
   const navigate = useNavigate();
 
   let message;
@@ -35,7 +31,7 @@ export const NewUserPage = () => {
           <h3>{message}</h3>
           <p>Add at least 5 sessions to unlock your graphs and insights.</p>
           <p>{sessions.length}/5 sessions added</p>
-          <ProgressBar range='5' />
+          <ProgressBar range={5} value={sessions.length} />
           <button className='new-user-add-session' type='button' onClick={() => navigate('/dashboard/sessions/new')}>
             Add New Session
           </button>

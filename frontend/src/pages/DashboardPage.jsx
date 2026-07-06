@@ -1,17 +1,16 @@
 import './DashboardPage.css';
 import StatCards from '../components/StatCards/StatCards';
-import { useSelector } from 'react-redux';
-import { selectSessions } from '../store/sessionSlice';
+import { useSessions } from '../hooks/useSessions';
 import ProfitChart from '../components/ProfitChart/ProfitChart';
 import SessionsTable from '../components/SessionsTable/SessionsTable';
 import { NewUserPage } from './NewUserPage';
 
 const DashboardPage = () => {
-  const sessions = useSelector(selectSessions);
+  const { data: sessions = [] } = useSessions();
 
   return (
     <>
-      {sessions.length < 5 && <NewUserPage />}
+      {sessions.length < 5 && <NewUserPage sessions={sessions} />}
       {sessions.length > 4 && (
         <section className='dashboard-content'>
           <div className='stat-cards'>

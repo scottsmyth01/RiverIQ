@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Bell, ChevronDown, LogOut, Plus, Settings } from 'lucide-react';
 import { Link } from 'react-router';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import './Navbar.css';
 import logo from './logo.png';
 

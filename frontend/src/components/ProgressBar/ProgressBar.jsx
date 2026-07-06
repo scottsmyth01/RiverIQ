@@ -1,12 +1,8 @@
 import React from 'react';
 import './ProgressBar.css';
-import { useSelector } from 'react-redux';
-import { selectSessions } from '../../store/sessionSlice';
 
-const ProgressBar = ({ range }) => {
-  const sessions = useSelector(selectSessions);
-  const progressWidth = (sessions.length / range) * 100 + '%';
-  console.log(progressWidth);
+const ProgressBar = ({ range, value }) => {
+  const progressWidth = `${Math.min((value / range) * 100, 100)}%`;
 
   return (
     <div className='progress-bar-container'>

@@ -1,23 +1,18 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useIsMutating } from '@tanstack/react-query';
 import { Outlet } from 'react-router';
+import { useSessions, sessionsQueryKey } from '../../hooks/useSessions';
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
 import Navbar from '../Navbar_dashboard/Navbar';
 import Sidebar from '../Sidebar/Sidebar';
-import { fetchSessions, selectSessionsStatus } from '../../store/sessionSlice';
 import './DashboardLayout.css';
 
 const DashboardLayout = () => {
-  const dispatch = useDispatch();
-  const sessionsStatus = useSelector(selectSessionsStatus);
-
-  useEffect(() => {
-    if (sessionsStatus === 'idle') {
-      dispatch(fetchSessions());
-    }
-  }, [dispatch, sessionsStatus]);
+  const { isLoading } = useSessions();
+  const sessionsMutating = useIsMutating({ mutationKey: sessionsQueryKey }) > 0;
 
   return (
     <main className='main-container'>
+      {(isLoading || sessionsMutating) && <LoadingScreen />}
       <Navbar />
       <div className='dashboard-layout'>
         <Sidebar />

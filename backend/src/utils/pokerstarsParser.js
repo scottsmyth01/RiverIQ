@@ -8,8 +8,24 @@ const __dirname = path.dirname(__filename);
 const filePath = path.join(__dirname, '../data/pokerstars_150_hands_sample.txt');
 const fileText = await fs.readFile(filePath, 'utf8');
 
-// GLOBALS
-// 1) GET STAKES
+// FUNCTION 1 - get array of hands
+function splitIntoHands(fileText) {
+  return fileText.split(/(?=PokerStars Hand #)/).filter((hand) => hand.trim() !== '');
+}
+const hands = splitIntoHands(fileText);
+
+const stats = {
+  handsPlayed: hands.length,
+  profit: getProfit(hands),
+  bb100: getbb100(hands),
+  // vpip: getVPIP(hands),
+  // pfr: getPFR(hands),
+  // threeBet: getThreeBet(hands),
+  // foldToThreeBet: getFoldToThreeBet(hands),
+  // cBet: getCBet(hands),
+  // foldToCBet: getFoldToCBet(hands),
+};
+
 export function getSessionStakes(handText) {
   const match = handText.match(/\$([\d.]+)\/\$([\d.]+)\s([A-Z]{3})/);
   if (!match) return null;
@@ -21,21 +37,20 @@ export function getSessionStakes(handText) {
   };
 }
 
-// FUNCTION 1 - get array of hands
-function splitIntoHands(fileText) {
-  return fileText.split(/(?=PokerStars Hand #)/).filter((hand) => hand.trim() !== '');
+// GET TOTAL PROFIT
+
+function getProfit(hands, hero = 'Hero') {
+  let totalProfit = 0;
+  for (const hand of hands) {
+    totalProfit += getHandProfit(hand, hero);
+  }
+  return Number(totalProfit.toFixed(2));
 }
 
-function getStakes(handText) {
-  const match = handText.match(/\$([\d.]+)\/\$([\d.]+)\s([A-Z]{3})/);
-  if (!match) return null;
-
-  return {
-    smallBlind: Number(match[1]),
-    bigBlind: Number(match[2]),
-    currency: match[3],
-    stakeString: `${match[1]}/${match[2]}`,
-  };
+function getHandProfit(hand, hero = 'Hero') {
+  const invested = getHeroInvested(hand, hero);
+  const collected = getHeroCollected(hand, hero);
+  return collected - invested;
 }
 
 function getHeroInvested(hand, hero = 'Hero') {
@@ -69,37 +84,37 @@ function getHeroCollected(hand, hero = 'Hero') {
   while ((match = regex.exec(hand)) !== null) {
     total += Number(match[1]);
   }
-
   return total;
 }
 
-// FUNCTION 2 - get profit for current hand (from for loop)
-// CALLS FUNCTIONS - getHeroInvested/getHeroCollected
-function getHandProfit(hand, hero = 'Hero') {
-  const invested = getHeroInvested(hand, hero);
-  const collected = getHeroCollected(hand, hero);
-  return collected - invested;
-}
-
-// GET TOTAL PROFIT - **WORKING
-function getTotalProfit(fileText, hero = 'Hero') {
-  const hands = splitIntoHands(fileText);
-  let totalProfit = 0;
-  for (const hand of hands) {
-    totalProfit += getHandProfit(hand, hero);
-  }
-  return Number(totalProfit.toFixed(2));
-}
-
 // GET BB/100 - **WORKING
-function getbb100(fileText) {
-  const data = {
-    totalProfit: getTotalProfit(fileText),
-    stakes: getSessionStakes(fileText),
-    handsPlayed: splitIntoHands(fileText).length,
+function getbb100(hands) {
+  const profit = getProfit(hands);
+  const stakes = getSessionStakes(hands[0]);
+  const handsPlayed = hands.length;
+
+  const bb100 = (profit * 100) / (stakes.bigBlind * handsPlayed);
+  return bb100.toFixed(2);
+}
+
+export function parseHandHistory(fileText, options = {}) {
+  const hands = splitIntoHands(fileText);
+  const stats = {
+    handsPlayed: hands.length,
+    profit: getProfit(hands),
+    bb100: getbb100(hands),
+    // vpip: getVPIP(hands),
+    // pfr: getPFR(hands),
+    // threeBet: getThreeBet(hands),
+    // foldToThreeBet: getFoldToThreeBet(hands),
+    // cBet: getCBet(hands),
+    // foldToCBet: getFoldToCBet(hands),
   };
 
-  const bb100 = (data.totalProfit * 100) / (data.stakes.bigBlind * data.handsPlayed);
-}
+  const stakes = getSessionStakes(fileText);
 
-// GET VPIP - **WORKING
+  return {
+    stats,
+    stakes,
+  };
+}

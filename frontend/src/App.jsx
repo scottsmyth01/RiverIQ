@@ -1,10 +1,8 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router';
 import Navbar from './components/Navbar/Navbar';
 import LoadingScreen from './components/LoadingScreen/LoadingScreen';
-import { useAuth } from './context/AuthContext';
-import { selectSessionsLoading } from './store/sessionSlice';
+import { useAuth } from './hooks/useAuth';
 import ProtectedRoute from './utils/ProtectedRoute';
 import SessionsPage from './pages/SessionsPage';
 import DashboardLayout from './components/DashboardLayout/DashboardLayout';
@@ -33,28 +31,32 @@ function AppRoutes() {
   const { pathname } = useLocation();
   const { isAuthenticated, isEmailVerified, loading, loginLoading } = useAuth();
 
-  const sessionsLoading = useSelector(selectSessionsLoading);
   const isDashboardRoute = pathname.startsWith('/dashboard');
-  const isPricingRoute = pathname === '/pricing';
   const isVerifyEmailRoute = pathname.startsWith('/verify-email');
-  const showLoadingScreen = loginLoading || sessionsLoading;
+  const isPricingRoute = pathname === '/pricing';
+
+  // if loading and a dashboard route we render the custom loading screen
+  // if it is a route outside of the /dashboard then it will just load as normal (logged out routes)
 
   if (loading && isDashboardRoute) {
     return <LoadingScreen />;
   }
 
+  // if user is authenticated and emailVerified then navigate the user to their dashboard
+  // if the route is the pricing page then do not run this code
   if (isAuthenticated && isEmailVerified && !isDashboardRoute && !isPricingRoute) {
     return <Navigate to='/dashboard' replace />;
   }
 
+  // if user is authenticated, but email is not verified, then navigate to the /verify-email page
   if (isAuthenticated && !isEmailVerified && !isVerifyEmailRoute) {
     return <Navigate to='/verify-email' replace />;
   }
 
   return (
     <>
-      {showLoadingScreen && <LoadingScreen />}
-      {!isAuthenticated && !showLoadingScreen && <Navbar />}
+      {loginLoading && <LoadingScreen />}
+      {!isAuthenticated && !loginLoading && <Navbar />}
       <Suspense fallback={isDashboardRoute ? <LoadingScreen /> : null}>
         <Routes>
           <Route path='/' element={<Navigate to='/features' replace />} />

@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 const sessionSchema = new mongoose.Schema(
   {
     user: {
@@ -39,3 +41,5 @@ const sessionSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+export default mongoose.model('Session', sessionSchema);

@@ -1,35 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CheckCircle2, Lock, Spade } from 'lucide-react';
 import { Link, useParams } from 'react-router';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, useValidateResetToken } from '../hooks/useAuth';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 import './ResetPasswordPage.css';
 
 const ResetPasswordPage = () => {
   const { id, token } = useParams();
-  const { validateResetToken, resetPassword } = useAuth();
-  const [isValidating, setIsValidating] = useState(true);
-  const [linkError, setLinkError] = useState('');
+  const { resetPassword } = useAuth();
+  const { isLoading: isValidating, error: validationError } = useValidateResetToken(id, token);
+  const linkError = validationError?.message;
   const [fieldErrors, setFieldErrors] = useState({});
   const [isComplete, setIsComplete] = useState(false);
   const [formData, setFormData] = useState({
     password: '',
     passwordConfirm: '',
   });
-
-  useEffect(() => {
-    const validateLink = async () => {
-      try {
-        await validateResetToken(id, token);
-      } catch (error) {
-        setLinkError(error.message);
-      } finally {
-        setIsValidating(false);
-      }
-    };
-
-    validateLink();
-  }, [id, token, validateResetToken]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
