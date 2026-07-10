@@ -2,17 +2,25 @@ import './SessionsTable.css';
 
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import SessionToolbar from './SessionToolbar';
+import { applyFilter } from './sessionTableFilters';
 
-const SessionsTable = ({ sessions }) => {
+const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
+  const [filter, setFilter] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
-  const sessionsPerPage = 5;
+  const newestSessions = [...sessions].sort(
+    (firstSession, secondSession) => new Date(secondSession.date) - new Date(firstSession.date),
+  );
 
   const lastIndex = currentPage * sessionsPerPage;
   const firstIndex = lastIndex - sessionsPerPage;
 
-  const currentSessions = sessions.slice(firstIndex, lastIndex);
-  currentSessions.sort((firstSession, secondSession) => new Date(secondSession.date) - new Date(firstSession.date));
+  let currentSessions = newestSessions.slice(firstIndex, lastIndex);
 
+  // APPLY FILTER, THEN POPULATE TABLE
+  const filteredSessions = applyFilter(filter, currentSessions);
+
+  // PAGINATION
   const totalPages = Math.ceil(sessions.length / sessionsPerPage);
   const firstVisiblePage = currentPage === totalPages ? Math.max(1, totalPages - 1) : currentPage;
   const visiblePages = Array.from({ length: Math.min(2, totalPages) }, (_, index) => firstVisiblePage + index);
@@ -24,9 +32,11 @@ const SessionsTable = ({ sessions }) => {
       <div className='sessions-card-header'>
         <div>
           <span>Session history</span>
-          <h2>Recent Sessions</h2>
+          {variant === 'home-page' && <h2>Recent Sessions</h2>}
         </div>
       </div>
+
+      {variant === 'sessions-page' && <SessionToolbar filter={filter} setFilter={setFilter} />}
 
       <div className='sessions-table-wrapper'>
         <table className='sessions-table'>
@@ -43,7 +53,7 @@ const SessionsTable = ({ sessions }) => {
           </thead>
 
           <tbody>
-            {currentSessions.map((session) => {
+            {filteredSessions?.map((session) => {
               const formattedDate = new Date(session.date).toLocaleDateString('en-US', {
                 month: 'long',
                 day: 'numeric',

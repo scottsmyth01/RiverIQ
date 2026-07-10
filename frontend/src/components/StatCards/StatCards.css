@@ -1,13 +1,27 @@
+.stat-card-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .stat-card-title {
+  margin: 0;
+  color: #aeb8c4;
   font-size: 0.78rem;
-  font-weight: 300;
+  font-weight: 500;
+  line-height: 1;
 }
 
 .stat-card-value {
   display: inline-block;
-  font-size: 1.08rem;
-  font-weight: 300;
+  margin: 0;
+  max-width: 100%;
   color: var(--color-primary);
+  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  font-weight: 300;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
   transform-origin: left center;
   animation: stat-value-swap 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -39,15 +53,14 @@
 }
 
 .icon-background {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  justify-self: end;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .icon {
@@ -61,9 +74,9 @@
 
 .icon svg {
   display: block;
-  width: 26px;
-  height: 26px;
-  stroke-width: 2.5;
+  width: 30px;
+  height: 30px;
+  stroke-width: 2.25;
 }
 
 .stat-card-percentage {
@@ -71,8 +84,8 @@
 }
 
 .stat-period-buttons {
-  width: calc(100% + 58px);
-  margin-top: 11px;
+  width: min(360px, 100%);
+  margin-bottom: 10px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;

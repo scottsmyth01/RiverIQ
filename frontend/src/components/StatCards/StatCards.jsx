@@ -1,48 +1,51 @@
+import { useState } from 'react';
 import Card from '../Card/Card';
 import { getStatCards } from './StatCardsData';
+import { filterSessions } from '../../utils/filterSessions';
 import './StatCards.css';
-import { useState } from 'react';
 
-const StatCards = ({ sessions }) => {
-  const cards = getStatCards(sessions);
-  const [selectedPeriods, setSelectedPeriods] = useState({});
+const StatCards = ({ sessions = [] }) => {
+  const [period, setPeriod] = useState('all-time');
 
-  return cards.map((card) => {
-    const selectedPeriodId = selectedPeriods[card.title] || card.periods[0].id;
-    const selectedPeriod = card.periods.find((period) => period.id === selectedPeriodId) || card.periods[0];
+  const filteredSessions = filterSessions(sessions, period);
 
-    return (
-      <Card key={card.title}>
-        <h3 className='stat-card-title'>{card.title}</h3>
-        <h3 className='stat-card-value' key={`${card.title}-${selectedPeriodId}`}>
-          {card.formatValue(selectedPeriod.value)}
-        </h3>
-        <div className='icon-background' style={{ backgroundColor: card.iconBackground }}>
-          <div className='icon' style={{ color: card.iconColor }}>
-            {card.icon}
-          </div>
-        </div>
-        <div className='stat-period-buttons' aria-label={`${card.title} period`}>
-          {card.periods.map((period) => (
-            <button
-              className={selectedPeriodId === period.id ? 'active' : ''}
-              type='button'
-              aria-pressed={selectedPeriodId === period.id}
-              onClick={() =>
-                setSelectedPeriods((currentPeriods) => ({
-                  ...currentPeriods,
-                  [card.title]: period.id,
-                }))
-              }
-              key={period.id}
-            >
-              {period.label}
-            </button>
-          ))}
-        </div>
-      </Card>
-    );
-  });
+  const cards = getStatCards(filteredSessions);
+
+  return (
+    <section className='stat-cards'>
+      <div className='stat-period-buttons'>
+        <button type='button' className={period === 'all-time' ? 'active' : ''} onClick={() => setPeriod('all-time')}>
+          All Time
+        </button>
+
+        <button type='button' className={period === 'monthly' ? 'active' : ''} onClick={() => setPeriod('monthly')}>
+          Monthly
+        </button>
+
+        <button type='button' className={period === 'weekly' ? 'active' : ''} onClick={() => setPeriod('weekly')}>
+          Weekly
+        </button>
+      </div>
+
+      <div className='stat-cards-grid'>
+        {cards.map((card) => (
+          <Card key={card.title}>
+            <div className='stat-card-copy'>
+              <h3 className='stat-card-title'>{card.title}</h3>
+
+              <h3 className='stat-card-value'>{card.formatValue(card.value)}</h3>
+            </div>
+
+            <div className='icon-background' style={{ backgroundColor: card.iconBackground }}>
+              <div className='icon' style={{ color: card.iconColor }}>
+                {card.icon}
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
 };
 
 export default StatCards;

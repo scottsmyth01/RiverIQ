@@ -15,18 +15,23 @@ export default function ProfitChart({ sessions }) {
   const [selectedPeriod, setSelectedPeriod] = useState('all-time');
   const activePeriod = profitPeriods.find((period) => period.id === selectedPeriod) || profitPeriods[0];
   const today = new Date();
-  const cutoffDate = activePeriod.days ? new Date(today) : null;
 
-  if (cutoffDate) {
-    cutoffDate.setDate(today.getDate() - activePeriod.days);
-  }
+  const getVisibleSessions = (period) => {
+    const cutoffDate = period.days ? new Date(today) : null;
 
-  const visibleSessions = sessions
-    .filter((session) => {
-      const sessionDate = new Date(session.date);
-      return (!cutoffDate || sessionDate >= cutoffDate) && sessionDate <= today;
-    })
-    .sort((firstSession, secondSession) => new Date(firstSession.date) - new Date(secondSession.date));
+    if (cutoffDate) {
+      cutoffDate.setDate(today.getDate() - period.days);
+    }
+
+    return sessions
+      .filter((session) => {
+        const sessionDate = new Date(session.date);
+        return (!cutoffDate || sessionDate >= cutoffDate) && sessionDate <= today;
+      })
+      .sort((firstSession, secondSession) => new Date(firstSession.date) - new Date(secondSession.date));
+  };
+
+  const visibleSessions = getVisibleSessions(activePeriod);
 
   let runningProfit = 0;
 
@@ -63,7 +68,7 @@ export default function ProfitChart({ sessions }) {
           return gradient;
         },
         fill: true,
-        tension: 0,
+        tension: 0.15,
         pointRadius: 0,
         pointHoverRadius: 5,
         pointHitRadius: 16,
@@ -145,17 +150,23 @@ export default function ProfitChart({ sessions }) {
       <div className='profit-header'>
         <h2>{activePeriod.label}</h2>
         <div className='profit-period-buttons' aria-label='Profit chart period'>
-          {profitPeriods.map((period) => (
-            <button
-              className={selectedPeriod === period.id ? 'active' : ''}
-              type='button'
-              aria-pressed={selectedPeriod === period.id}
-              onClick={() => setSelectedPeriod(period.id)}
-              key={period.id}
-            >
-              {period.label}
-            </button>
-          ))}
+          {profitPeriods.map((period) => {
+            const periodHasSessions = getVisibleSessions(period).length > 0;
+
+            return (
+              <button
+                className={selectedPeriod === period.id ? 'active' : ''}
+                type='button'
+                aria-pressed={selectedPeriod === period.id}
+                onClick={() => setSelectedPeriod(period.id)}
+                key={period.id}
+                disabled={!periodHasSessions}
+                title={!periodHasSessions ? 'No sessions found for this period' : undefined}
+              >
+                {period.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 

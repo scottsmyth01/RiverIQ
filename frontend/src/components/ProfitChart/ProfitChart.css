@@ -50,6 +50,17 @@
   border-color: #3a4b5d;
 }
 
+.profit-period-buttons button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.profit-period-buttons button:disabled:hover {
+  color: #8993a0;
+  background: #0a1119;
+  border-color: #243241;
+}
+
 .profit-period-buttons button.active {
   color: #04180b;
   background: #39ff64;
@@ -84,7 +95,7 @@
   }
 
   .chart-wrapper {
-    height: 160px;
+    height: 200px;
   }
 }
 

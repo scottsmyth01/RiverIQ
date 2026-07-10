@@ -2,7 +2,11 @@
   position: relative;
   min-height: 115px;
   min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
   background-color: var(--bg-secondary);
-  padding: 18px 76px 18px 18px;
+  padding: 16px;
   border: 1px solid black;
 }

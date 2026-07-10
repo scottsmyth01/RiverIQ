@@ -54,18 +54,67 @@ function parsePokerStarsFile(fileText) {
 const parsedHands = parsePokerStarsFile(fileText);
 
 function getVPIP(parsedHands) {
-  let vpipCount = 0;
-
+  let vpipHands = 0;
   parsedHands.forEach((hand) => {
     const heroEnteredPot = hand.preflopActions.some((action) => {
-      //“Does at least one item in this array satisfy the check below? If there is one like this then hero vpip
       return action.player === 'Hero' && (action.action === 'calls' || action.action === 'raises');
     });
-    if (heroEnteredPot) vpipCount++;
-    return {
-      hands: parsedHands.length,
-      vpipCount,
-      vpip: Number(((vpipHands / parsedHands.length) * 100).toFixed(2)),
-    };
+    if (heroEnteredPot) {
+      vpipHands++;
+    }
   });
+  return {
+    hands: parsedHands.length,
+    vpipHands,
+    vpip: Number(((vpipHands / parsedHands.length) * 100).toFixed(2)),
+  };
 }
+
+function getPFR(parsedHands) {
+  let pfrHands = 0;
+
+  parsedHands.forEach((hand) => {
+    const heroRaisedPreflop = hand.preflopActions.some((action) => {
+      return action.player === 'Hero' && action.action === 'raises'; //only checking when hero raises, not counting calls
+    });
+    if (heroRaisedPreflop) {
+      pfrHands++;
+    }
+  });
+  return {
+    hands: parsedHands.length,
+    pfrHands,
+    pfr: Number(((pfrHands / parsedHands.length) * 100).toFixed(2)),
+  };
+}
+
+function getThreeBet(parsedHands) {
+  let opportunities = 0;
+  let threeBets = 0;
+
+  parsedHands.forEach((hand) => {
+    const actions = hand.preflopActions;
+    const heroIndex = actions.findIndex((action) => action.player === 'Hero');
+    if (heroIndex === -1) return;
+
+    const actionsBeforeHero = actions.slice(0, heroIndex);
+    const someoneRaisedBeforeHero = actionsBeforeHero.some((action) => action.action === 'raises');
+    if (someoneRaisedBeforeHero) {
+      opportunities++;
+      const heroAction = actions[heroIndex];
+      if (heroAction.action === 'raises') {
+        threeBets++;
+      }
+    }
+  });
+  return {
+    hands: parsedHands.length,
+    opportunities,
+    threeBets,
+    threeBetPercentage: opportunities > 0 ? Number(((threeBets / opportunities) * 100).toFixed(2)) : 0,
+  };
+}
+
+console.log(getVPIP(parsedHands));
+console.log(getPFR(parsedHands));
+console.log(getThreeBet(parsedHands));

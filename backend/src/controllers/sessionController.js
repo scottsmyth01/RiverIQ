@@ -1,5 +1,5 @@
 import Session from '../models/Session.js';
-import { parseHandHistory } from '../utils/pokerstarsParser.js';
+// import { parseHandHistory } from '../utils/pokerstarsParser.js';
 
 export const getSessions = async (req, res) => {
   const sessions = await Session.find({ user: req.user._id });

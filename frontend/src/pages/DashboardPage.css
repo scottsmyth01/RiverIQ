@@ -10,11 +10,47 @@
   overflow-y: auto;
 }
 
+.dashboard-page-header {
+  flex: 0 0 auto;
+  margin-bottom: 14px;
+}
+
+.dashboard-page-header h1 {
+  margin: 0 0 4px;
+  color: #ffffff;
+  font-size: clamp(1.55rem, 2.6vw, 2rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.dashboard-page-header p {
+  margin: 0;
+  color: #aeb8c4;
+  font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+  line-height: 1.45;
+}
+
 .stat-cards {
   flex: 0 0 auto;
+  container: stat-cards / inline-size;
+}
+
+.stat-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  grid-template-columns: 1fr;
   gap: 10px;
+}
+
+@container stat-cards (min-width: 430px) {
+  .stat-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container stat-cards (min-width: 760px) {
+  .stat-cards-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .dashboard-onboarding-header {
