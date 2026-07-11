@@ -64,13 +64,13 @@
   width: 35px;
   height: 2px;
 
-  background: #2ed45f;
+  background: var(--surface-success-button);
   border-radius: 999px;
 
   box-shadow:
-    0 0 4px rgba(46, 212, 95, 1),
-    0 0 10px rgba(46, 212, 95, 0.9),
-    0 0 18px rgba(46, 212, 95, 0.5);
+    0 0 4px var(--brand-glow-strong),
+    0 0 10px var(--brand-glow),
+    0 0 18px var(--brand-glow-soft);
 }
 
 .nav-actions {
@@ -81,7 +81,7 @@
 }
 
 .start-free-button {
-  color: black;
+  color: var(--surface-black);
   background: var(--color-primary);
   padding: 0.65rem 1.25rem;
   border-radius: var(--radius-sm);

@@ -3,10 +3,13 @@ import './SessionsTable.css';
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SessionToolbar from './SessionToolbar';
-import { applyFilter } from './sessionTableFilters';
+import { applySorting, applyDateFilter } from './sessionTableFilters';
 
 const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
-  const [filter, setFilter] = useState('newest');
+  const [dateRange, setDateRange] = useState('all-dates');
+  const [sortBy, setSortBy] = useState('newest');
+  const [numTables, setNumTables] = useState('All');
+
   const [currentPage, setCurrentPage] = useState(1);
   const newestSessions = [...sessions].sort(
     (firstSession, secondSession) => new Date(secondSession.date) - new Date(firstSession.date),
@@ -17,8 +20,11 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
 
   let currentSessions = newestSessions.slice(firstIndex, lastIndex);
 
-  // APPLY FILTER, THEN POPULATE TABLE
-  const filteredSessions = applyFilter(filter, currentSessions);
+  // 1) APPLY SORT
+  const sortedSessions = applySorting(sortBy, currentSessions);
+
+  // 2) APPLY DATE RANGE
+  const filteredSessions = applyDateFilter(dateRange, sortedSessions);
 
   // PAGINATION
   const totalPages = Math.ceil(sessions.length / sessionsPerPage);
@@ -36,7 +42,9 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
         </div>
       </div>
 
-      {variant === 'sessions-page' && <SessionToolbar filter={filter} setFilter={setFilter} />}
+      {variant === 'sessions-page' && (
+        <SessionToolbar dateRange={dateRange} setDateRange={setDateRange} sortBy={sortBy} setSortBy={setSortBy} />
+      )}
 
       <div className='sessions-table-wrapper'>
         <table className='sessions-table'>
@@ -45,7 +53,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
               <th scope='col'>Date</th>
               <th scope='col'>Game</th>
               <th scope='col'>Stakes</th>
-              <th scope='col'>Hands</th>
+              <th scope='col'># Tables</th>
               <th scope='col'>Profit</th>
               <th scope='col'>Win Rate</th>
               <th scope='col'>Duration</th>
@@ -78,7 +86,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                   </td>
                   <td>{session.game}</td>
                   <td>{session.stakes}</td>
-                  <td>{session.hands}</td>
+                  <td>{session.numTables}</td>
                   <td
                     className={`session-result ${profitIsPositive ? 'session-result--positive' : 'session-result--negative'}`}
                   >

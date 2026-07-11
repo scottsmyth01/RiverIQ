@@ -5,7 +5,7 @@
   overflow-y: auto;
   color: var(--text-primary);
   background:
-    radial-gradient(circle at 52% 8%, rgba(0, 200, 83, 0.035), transparent 30%),
+    radial-gradient(circle at 52% 8%, var(--overlay-success-faint), transparent 30%),
     var(--bg-main);
 }
 
@@ -51,8 +51,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #d7dde4;
-  background: #0d1722;
+  color: var(--text-input);
+  background: var(--surface-field);
   border: 1px solid var(--border-light);
   border-radius: 7px;
   font-size: var(--font-size-sm);
@@ -64,7 +64,7 @@
 
 .add-session-back:hover {
   background: var(--bg-secondary);
-  border-color: rgba(0, 200, 83, 0.45);
+  border-color: var(--accent-green-border-strong);
 }
 
 .add-session-back svg {
@@ -105,7 +105,7 @@
 }
 
 .add-session-card {
-  background: linear-gradient(145deg, #111c28, #0d1722);
+  background: linear-gradient(145deg, var(--gradient-page-top), var(--surface-field));
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -123,8 +123,8 @@
   justify-content: center;
   flex-direction: column;
   text-align: center;
-  background: rgba(12, 25, 37, 0.62);
-  border: 1px dashed rgba(0, 200, 83, 0.55);
+  background: var(--overlay-form-panel);
+  border: 1px dashed var(--accent-green-border-boldest);
   border-radius: 8px;
   transition:
     border-color var(--transition),
@@ -132,7 +132,7 @@
 }
 
 .upload-dropzone:hover {
-  background: rgba(0, 200, 83, 0.035);
+  background: var(--overlay-success-faint);
   border-color: var(--color-primary);
 }
 
@@ -179,11 +179,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #04150b;
+  color: var(--text-on-primary-strong);
   background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
-  border: 1px solid #39f77e;
+  border: 1px solid var(--theme-submit-border);
   border-radius: 7px;
-  box-shadow: 0 8px 20px rgba(0, 200, 83, 0.2);
+  box-shadow: 0 8px 20px var(--accent-green-ring-soft);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
   cursor: pointer;
@@ -228,7 +228,7 @@
 }
 
 .session-fields label > span {
-  color: #d9dfe6;
+  color: var(--text-field);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
 }
@@ -240,7 +240,7 @@
   min-height: 44px;
   padding: 0 0.85rem;
   color: var(--text-primary);
-  background: #0e1925;
+  background: var(--surface-input);
   border: 1px solid var(--border-light);
   border-radius: 7px;
   outline: none;
@@ -259,14 +259,14 @@
 
 .session-fields input::placeholder,
 .session-fields textarea::placeholder {
-  color: #687482;
+  color: var(--text-placeholder);
 }
 
 .session-fields input:focus,
 .session-fields select:focus,
 .session-fields textarea:focus {
-  border-color: rgba(0, 200, 83, 0.65);
-  box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.1);
+  border-color: var(--accent-green-border-max);
+  box-shadow: 0 0 0 3px var(--overlay-success);
 }
 
 .session-fields select {
@@ -322,15 +322,15 @@
 }
 
 .session-cancel-button {
-  color: #d6dde4;
-  background: #0d1722;
+  color: var(--text-card);
+  background: var(--surface-field);
   border: 1px solid var(--border-light);
 }
 
 .session-save-button {
-  color: #04150b;
+  color: var(--text-on-primary-strong);
   background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
-  border: 1px solid #39f77e;
+  border: 1px solid var(--theme-submit-border);
   font-weight: var(--font-weight-bold);
 }
 
@@ -360,7 +360,7 @@
   display: grid;
   place-items: center;
   color: var(--color-primary);
-  background: rgba(0, 200, 83, 0.12);
+  background: var(--overlay-success-strong);
   border-radius: 50%;
 }
 
@@ -392,7 +392,7 @@
   grid-template-columns: 34px minmax(0, 1fr) 20px;
   align-items: center;
   gap: 0.65rem;
-  color: #d8dee5;
+  color: var(--text-form);
   font-size: var(--font-size-sm);
 }
 
@@ -413,29 +413,29 @@
 }
 
 .site-badge--pokerstars {
-  color: #fff;
-  background: #df2f36;
+  color: var(--text-white);
+  background: var(--surface-danger);
   font-size: 1rem;
 }
 
 .site-badge--gg {
-  color: #fff;
-  background: #161d27;
-  border: 1px solid #3b4654;
+  color: var(--text-white);
+  background: var(--surface-modal-dark);
+  border: 1px solid var(--theme-control-border);
 }
 
 .site-badge--party {
-  color: #ff6a1a;
+  color: var(--orange);
   font-size: 1.2rem;
 }
 
 .site-badge--eight {
-  color: #1d8cff;
+  color: var(--info);
 }
 
 .site-badge--club {
-  color: #fff;
-  background: linear-gradient(135deg, #e83d45 50%, #1c74d9 50%);
+  color: var(--text-white);
+  background: linear-gradient(135deg, var(--gradient-danger-action-start) 50%, var(--gradient-info-action-end) 50%);
 }
 
 .help-card p {

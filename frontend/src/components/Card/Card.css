@@ -8,5 +8,5 @@
   gap: 14px;
   background-color: var(--bg-secondary);
   padding: 16px;
-  border: 1px solid black;
+  border: 1px solid var(--surface-black);
 }

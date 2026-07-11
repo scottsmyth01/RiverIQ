@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bell, ChevronDown, LogOut, Plus, Settings } from 'lucide-react';
+import { Bell, ChevronDown, LogOut, Moon, MoonIcon, Plus, Settings, SunIcon } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAuth } from '../../hooks/useAuth';
 import './Navbar.css';
@@ -8,6 +8,7 @@ import logo from './logo.png';
 const Navbar = () => {
   const { user, logout } = useAuth();
   const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
   const accountMenuRef = useRef(null);
 
   const displayName = user?.username || 'riq_user';
@@ -19,16 +20,27 @@ const Navbar = () => {
     .slice(0, 2)
     .toUpperCase();
 
+  function toggleTheme() {
+    setTheme((currentTheme) => {
+      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', nextTheme);
+      return nextTheme;
+    });
+  }
+
   useEffect(() => {
     const closeAccountMenu = (event) => {
       if (!accountMenuRef.current?.contains(event.target)) {
         setIsAccountOpen(false);
       }
     };
-
     document.addEventListener('mousedown', closeAccountMenu);
     return () => document.removeEventListener('mousedown', closeAccountMenu);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   return (
     <nav className='dashboard-navbar' aria-label='Dashboard navigation'>
@@ -45,9 +57,23 @@ const Navbar = () => {
           <span>New Session</span>
         </Link>
 
-        <button className='dashboard-navbar__notification' type='button' aria-label='Notifications'>
-          <Bell aria-hidden='true' />
-        </button>
+        {theme === 'light' && (
+          <button className='dashboard-navbar__theme-toggle' type='button' onClick={toggleTheme}>
+            <MoonIcon />
+          </button>
+        )}
+
+        {theme === 'dark' && (
+          <button
+            className='dashboard-navbar__theme-toggle'
+            style={{ color: 'white' }}
+            type='button'
+            aria-label='Notifications'
+            onClick={toggleTheme}
+          >
+            <SunIcon />
+          </button>
+        )}
 
         <div className='dashboard-navbar__account' ref={accountMenuRef}>
           <button

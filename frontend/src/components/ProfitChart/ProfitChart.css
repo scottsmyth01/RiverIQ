@@ -4,8 +4,8 @@
   min-width: 0;
   margin-top: 10px;
   box-sizing: border-box;
-  background: #111923;
-  border: 1px solid #243241;
+  background: var(--surface-chart);
+  border: 1px solid var(--theme-border-card);
   border-radius: 14px;
   padding: 16px 18px;
 }
@@ -19,7 +19,7 @@
 
 .profit-header h2 {
   margin: 0;
-  color: white;
+  color: var(--surface-white);
   font-size: 19px;
   transform: translateY(-6px);
 }
@@ -31,9 +31,9 @@
 
 .profit-period-buttons button {
   padding: 7px 10px;
-  color: #8993a0;
-  background: #0a1119;
-  border: 1px solid #243241;
+  color: var(--text-subtle);
+  background: var(--surface-control-deep);
+  border: 1px solid var(--theme-border-card);
   border-radius: 6px;
   cursor: pointer;
   font: inherit;
@@ -46,8 +46,8 @@
 }
 
 .profit-period-buttons button:hover {
-  color: #ffffff;
-  border-color: #3a4b5d;
+  color: var(--text-white);
+  border-color: var(--theme-hover-border);
 }
 
 .profit-period-buttons button:disabled {
@@ -56,20 +56,20 @@
 }
 
 .profit-period-buttons button:disabled:hover {
-  color: #8993a0;
-  background: #0a1119;
-  border-color: #243241;
+  color: var(--text-subtle);
+  background: var(--surface-control-deep);
+  border-color: var(--theme-border-card);
 }
 
 .profit-period-buttons button.active {
-  color: #04180b;
-  background: #39ff64;
-  border-color: #39ff64;
+  color: var(--text-on-primary);
+  background: var(--success-bright);
+  border-color: var(--success-bright);
   font-weight: 700;
 }
 
 .profit-period-buttons button:focus-visible {
-  outline: 2px solid #39ff64;
+  outline: 2px solid var(--success-bright);
   outline-offset: 2px;
 }
 

@@ -19,7 +19,7 @@
 
 .prompt p:nth-of-type(2) {
   margin: clamp(1.25rem, 3vh, 2rem) 0 0.65rem;
-  color: #dce2e8;
+  color: var(--text-soft);
   font-weight: var(--font-weight-medium);
 }
 
@@ -60,8 +60,8 @@
   color: var(--text-primary);
   text-align: center;
   background:
-    radial-gradient(circle at 50% 28%, rgba(0, 200, 83, 0.08), transparent 38%),
-    linear-gradient(145deg, #0d1722, #08121c);
+    radial-gradient(circle at 50% 28%, var(--overlay-success-weak), transparent 38%),
+    linear-gradient(145deg, var(--surface-field), var(--theme-onboarding-bottom));
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
@@ -81,11 +81,11 @@
   padding: 0.75rem 1.4rem;
   color: var(--text-primary);
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-  border: 1px solid rgba(57, 255, 100, 0.45);
+  border: 1px solid var(--success-bright-border);
   border-radius: var(--radius-sm);
   box-shadow:
-    0 10px 24px rgba(0, 200, 83, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    0 10px 24px var(--accent-green-ring-soft),
+    inset 0 1px 0 var(--overlay-white-highlight);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
   transition:
@@ -97,8 +97,8 @@
 .new-user-add-session:hover {
   filter: brightness(1.08);
   box-shadow:
-    0 12px 28px rgba(0, 200, 83, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 12px 28px var(--accent-green-hover-shadow),
+    inset 0 1px 0 var(--overlay-white-highlight-strong);
   transform: translateY(-2px);
 }
 
@@ -107,7 +107,7 @@
 }
 
 .new-user-add-session:focus-visible {
-  outline: 3px solid rgba(0, 200, 83, 0.3);
+  outline: 3px solid var(--accent-green-focus);
   outline-offset: 3px;
 }
 

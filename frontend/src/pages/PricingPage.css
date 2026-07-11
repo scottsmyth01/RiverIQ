@@ -2,7 +2,7 @@
   min-height: calc(100vh - 72px);
   padding: 1rem;
   background:
-    radial-gradient(circle at 50% 0%, rgba(26, 48, 73, 0.18), transparent 42%),
+    radial-gradient(circle at 50% 0%, var(--pricing-radial-glow), transparent 42%),
     var(--bg-main);
 }
 
@@ -38,7 +38,7 @@
 
 .pricing-back-dashboard:hover {
   color: var(--text-primary);
-  border-color: rgba(0, 200, 83, 0.5);
+  border-color: var(--accent-green-border-bolder);
   transform: translateX(-2px);
 }
 
@@ -100,7 +100,7 @@
   display: block;
   width: 19px;
   height: 19px;
-  background: white;
+  background: var(--surface-white);
   border-radius: 50%;
   box-shadow: var(--shadow-sm);
   transition: transform var(--transition);
@@ -122,7 +122,7 @@
   padding: 1.4rem;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(145deg, rgba(15, 26, 38, 0.96), rgba(9, 18, 28, 0.96));
+  background: linear-gradient(145deg, var(--gradient-pricing-card-top), var(--gradient-pricing-card-bottom));
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
@@ -130,7 +130,7 @@
 
 .pricing-card.pro-card {
   border-color: var(--color-primary);
-  box-shadow: 0 0 26px rgba(0, 200, 83, 0.07);
+  box-shadow: 0 0 26px var(--accent-green-glow-soft);
 }
 
 .pricing-card-heading {
@@ -174,7 +174,7 @@
   top: 0.75rem;
   right: 1.4rem;
   padding: 0.2rem 0.65rem;
-  color: #04180b;
+  color: var(--text-on-primary);
   background: var(--color-primary);
   border-radius: 4px;
   font-size: 0.6rem;
@@ -217,7 +217,7 @@
   flex: 0 0 auto;
   margin-top: 1px;
   padding: 2px;
-  color: #04180b;
+  color: var(--text-on-primary);
   background: var(--color-primary);
   border-radius: 50%;
   stroke-width: 4;
@@ -265,7 +265,7 @@
 
 .get-started-button {
   color: var(--text-primary);
-  background: linear-gradient(180deg, #152131, #101a27);
+  background: linear-gradient(180deg, var(--gradient-price-top), var(--gradient-price-bottom));
   border: 1px solid var(--border-light);
   display: flex;
   justify-content: center;
@@ -277,7 +277,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #04180b;
+  color: var(--text-on-primary);
   background: linear-gradient(90deg, var(--color-primary-hover), var(--color-primary));
 }
 
@@ -303,7 +303,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  background: linear-gradient(180deg, #111c2a, #0e1824);
+  background: linear-gradient(180deg, var(--gradient-price-card-top), var(--gradient-price-card-bottom));
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
 }

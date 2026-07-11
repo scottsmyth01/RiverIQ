@@ -2,7 +2,7 @@
   min-height: calc(100vh - 72px);
   padding: 2.5rem 1rem 1rem;
   background:
-    radial-gradient(circle at 68% 8%, rgba(0, 200, 83, 0.05), transparent 28%),
+    radial-gradient(circle at 68% 8%, var(--accent-green-glow-faint), transparent 28%),
     var(--bg-main);
 }
 
@@ -50,7 +50,7 @@
   margin-top: 1.4rem;
   padding: 0.7rem 1.1rem;
   display: inline-flex;
-  color: #04180b;
+  color: var(--text-on-primary);
   background: var(--color-primary);
   border-radius: 5px;
   font-size: var(--font-size-sm);
@@ -59,7 +59,7 @@
 
 .about-dashboard {
   overflow: hidden;
-  background: linear-gradient(145deg, #0d1722, #071019);
+  background: linear-gradient(145deg, var(--surface-field), var(--gradient-card-bottom));
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
@@ -159,7 +159,7 @@
   display: flex;
   flex-direction: column;
   color: var(--text-secondary);
-  background: rgba(17, 26, 36, 0.8);
+  background: var(--overlay-card-strong);
   border: 1px solid var(--border);
   border-radius: 5px;
   font-size: 0.5rem;
@@ -232,8 +232,8 @@
   min-height: 330px;
   overflow: hidden;
   background:
-    linear-gradient(rgba(5, 11, 17, 0.2), rgba(5, 11, 17, 0.65)),
-    radial-gradient(circle at 55% 42%, #22382c, #0b1218 65%);
+    linear-gradient(var(--about-image-scrim-top), var(--about-image-scrim-bottom)),
+    radial-gradient(circle at 55% 42%, var(--theme-about-radial-center), var(--theme-about-radial-edge) 65%);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
@@ -242,7 +242,7 @@
 .story-glow {
   position: absolute;
   inset: 25% 15%;
-  background: rgba(0, 200, 83, 0.13);
+  background: var(--overlay-success-bolder);
   filter: blur(45px);
 }
 
@@ -259,8 +259,8 @@
   height: 190px;
   padding: 0.55rem;
   overflow: hidden;
-  background: #050b12;
-  border: 6px solid #1f2933;
+  background: var(--surface-deepest);
+  border: 6px solid var(--theme-device-border);
   border-radius: 9px 9px 3px 3px;
 }
 
@@ -288,7 +288,7 @@
   width: 112%;
   height: 13px;
   margin-left: -6%;
-  background: linear-gradient(#4b5560, #202830);
+  background: linear-gradient(var(--gradient-road-top), var(--gradient-road-bottom));
   border-radius: 2px 2px 12px 12px;
 }
 
@@ -297,7 +297,7 @@
   bottom: 18%;
   left: 12%;
   width: 48px;
-  filter: drop-shadow(0 0 12px rgba(0, 200, 83, 0.35));
+  filter: drop-shadow(0 0 12px var(--accent-green-glow-strong));
 }
 
 .poker-chip {
@@ -305,25 +305,25 @@
   width: 38px;
   height: 38px;
   bottom: 12%;
-  border: 6px dashed rgba(255, 255, 255, 0.45);
+  border: 6px dashed var(--overlay-white-border);
   border-radius: 50%;
   box-shadow: var(--shadow-md);
 }
 
 .chip-one {
   left: 5%;
-  background: #b51e2e;
+  background: var(--surface-danger-deep);
 }
 
 .chip-two {
   left: 13%;
   bottom: 7%;
-  background: #151b22;
+  background: var(--surface-danger-dark);
 }
 
 .chip-three {
   left: 21%;
-  background: #8b1724;
+  background: var(--surface-danger-darker);
 }
 
 .about-kicker {
@@ -388,7 +388,7 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 1rem;
-  background: linear-gradient(90deg, #101c29, #0b1520);
+  background: linear-gradient(90deg, var(--gradient-footer-start), var(--gradient-footer-end));
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
 }
@@ -415,7 +415,7 @@
 .about-cta-action a {
   min-width: 210px;
   padding: 0.65rem 1rem;
-  color: #04180b;
+  color: var(--text-on-primary);
   background: var(--color-primary);
   border-radius: 4px;
   text-align: center;
