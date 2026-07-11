@@ -1,3 +1,12 @@
+/*
+filter()  safe, returns new array
+map()     safe, returns new array
+slice()   safe, returns new array
+sort()    mutates, copy first
+push()    mutates
+splice()  mutates
+*/
+
 export function applySorting(filter, sessions) {
   switch (filter) {
     // FILTER DROPDOWN 1
@@ -19,7 +28,7 @@ export function applySorting(filter, sessions) {
     case 'hands':
       return [...sessions].sort((a, b) => b.hands - a.hands);
     default:
-      break;
+      return sessions;
   }
 }
 
@@ -36,7 +45,7 @@ export function applyDateFilter(dateFilter, sessions) {
   if (dateFilter === 'year') {
     cutoffDate.setFullYear(today.getFullYear() - 1);
   }
-  if (dateFilter === 'all-dates') {
+  if (dateFilter === 'all') {
     return sessions;
   }
   return sessions.filter((session) => {
@@ -45,4 +54,39 @@ export function applyDateFilter(dateFilter, sessions) {
   });
 }
 
-export function numTables() {}
+export function numTables(tables, sessions) {
+  if (tables === 'all') {
+    return sessions;
+  }
+
+  const tableFilters = {
+    one: (numTables) => numTables === 1,
+    two: (numTables) => numTables === 2,
+    three: (numTables) => numTables === 3,
+    four: (numTables) => numTables === 4,
+    'five-or-more': (numTables) => numTables >= 5,
+  };
+
+  const matchesTableFilter = tableFilters[tables];
+
+  if (!matchesTableFilter) {
+    return sessions;
+  }
+
+  return sessions.filter((session) => matchesTableFilter(Number(session.numTables)));
+}
+
+export function finish(filter, sessions) {
+  switch (filter) {
+    case 'all':
+      return sessions;
+    case 'winning':
+      return sessions.filter((session) => session.profit > 1);
+    case 'losing':
+      return sessions.filter((session) => session.profit < -1);
+    case 'breakeven':
+      return sessions.filter((session) => session.profit > -1 && session.profit < 1);
+    default:
+      return sessions;
+  }
+}

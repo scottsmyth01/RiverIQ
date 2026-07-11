@@ -21,7 +21,6 @@ export const getStatCards = (sessions = []) => {
       formatValue: (value) => `$${value.toFixed(2)}`,
       icon: <TrendingUp />,
       iconColor: '#00ff37',
-      iconBackground: '#1E2B2E',
     },
     {
       title: 'Win Rate',
@@ -29,7 +28,6 @@ export const getStatCards = (sessions = []) => {
       formatValue: (value) => `${value.toFixed(2)} bb/100`,
       icon: <Star />,
       iconColor: '#3b82f6',
-      iconBackground: 'blue',
     },
     {
       title: 'Hands',
@@ -37,7 +35,6 @@ export const getStatCards = (sessions = []) => {
       formatValue: (value) => value,
       icon: <IconCards />,
       iconColor: '#7b00ff',
-      iconBackground: '#7c02ff61',
     },
     {
       title: 'Sessions',
@@ -45,7 +42,6 @@ export const getStatCards = (sessions = []) => {
       formatValue: (value) => value,
       icon: <ClipboardPen />,
       iconColor: '#ff0000',
-      iconBackground: '#ff020260',
     },
   ];
 };

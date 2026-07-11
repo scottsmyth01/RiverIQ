@@ -234,12 +234,15 @@
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --text-muted: #64748b;
+    --text-on-primary: #04180b;
+    --text-on-primary-strong: #04150b;
     --text-white: #0f172a;
     --text-table: #1f2937;
     --text-table-muted: #64748b;
     --text-muted-light: #64748b;
     --text-subtle: #64748b;
     --text-control: #334155;
+    --danger-bright: #dc2626;
 
     --surface-chart: #ffffff;
     --surface-toolbar: #f8fafc;

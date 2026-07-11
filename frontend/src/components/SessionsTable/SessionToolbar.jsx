@@ -1,6 +1,4 @@
-import { Search, SlidersHorizontal } from 'lucide-react';
-
-const SessionToolbar = ({ dateRange, setDateRange, sort, setSortBy }) => {
+const SessionToolbar = ({ dateRange, setDateRange, sortBy, setSortBy, numTables, setNumTables, finish, setFinish }) => {
   return (
     <div className='sessions-toolbar' aria-label='Session table controls'>
       <div className='sessions-filter-group'>
@@ -15,7 +13,7 @@ const SessionToolbar = ({ dateRange, setDateRange, sort, setSortBy }) => {
         </label>
         <label>
           <span>Sort</span>
-          <select value={sort} onChange={(e) => setSortBy(e.target.value)}>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
             <option value='newest'>Newest first</option>
             <option value='oldest'>Oldest first</option>
             <option value='profit-high'>Profit high to low</option>
@@ -26,7 +24,7 @@ const SessionToolbar = ({ dateRange, setDateRange, sort, setSortBy }) => {
 
         <label>
           <span># Tables</span>
-          <select value={sort} onChange={(e) => setSortBy(e.target.value)}>
+          <select value={numTables} onChange={(e) => setNumTables(e.target.value)}>
             <option value='all'>All</option>
             <option value='one'>1</option>
             <option value='two'>2</option>
@@ -38,7 +36,7 @@ const SessionToolbar = ({ dateRange, setDateRange, sort, setSortBy }) => {
 
         <label>
           <span>Result</span>
-          <select defaultValue='all'>
+          <select value={finish} onChange={(e) => setFinish(e.target.value)}>
             <option value='all'>All results</option>
             <option value='winning'>Winning sessions</option>
             <option value='losing'>Losing sessions</option>

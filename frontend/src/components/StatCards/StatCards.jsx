@@ -36,10 +36,8 @@ const StatCards = ({ sessions = [] }) => {
               <h3 className='stat-card-value'>{card.formatValue(card.value)}</h3>
             </div>
 
-            <div className='icon-background' style={{ backgroundColor: card.iconBackground }}>
-              <div className='icon' style={{ color: card.iconColor }}>
-                {card.icon}
-              </div>
+            <div className='icon-background' style={{ '--stat-icon-color': card.iconColor }}>
+              <div className='icon'>{card.icon}</div>
             </div>
           </Card>
         ))}
