@@ -1,3 +1,4 @@
+export const pokerstars_hands = `
 PokerStars Hand #400000000000: Hold'em No Limit ($0.05/$0.10 USD) - 2026/07/01 20:00:00 ET
 Table 'Aludra' 6-max Seat #1 is the button
 Seat 1: Hero ($10.00 in chips)
@@ -4227,3 +4228,4 @@ Hero: folds
 
 *** SUMMARY ***
 Total pot $0.15 | Rake $0.00
+`;

@@ -10,6 +10,11 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router';
 import './AddSessionPage.css';
+import coinPokerLogo from '../assets/coinpoker-logo.svg';
+import phenomPokerLogo from '../assets/phenom-poker-logo.svg';
+import pokerStarsLogo from '../assets/pokerstars-logo.svg';
+const eightPokerLogo =
+  'https://www.888poker.com/content/dam/holdings888/888poker/common/icons/header-icons/888poker-logo-blue.png';
 
 const howItWorks = [
   {
@@ -30,10 +35,11 @@ const howItWorks = [
 ];
 
 const supportedSites = [
-  { badge: '♠', className: 'pokerstars', name: 'PokerStars' },
+  { className: 'pokerstars', logo: pokerStarsLogo, name: 'PokerStars' },
   { badge: 'GG', className: 'gg', name: 'GG Poker' },
-  { badge: '◆', className: 'party', name: 'PartyPoker' },
-  { badge: '888', className: 'eight', name: '888 Poker' },
+  { className: 'coinpoker', logo: coinPokerLogo, name: 'CoinPoker' },
+  { className: 'phenom', logo: phenomPokerLogo, name: 'Phenom Poker' },
+  { className: 'eight', logo: eightPokerLogo, name: '888 Poker' },
 ];
 
 const AddSessionPage = () => {
@@ -97,6 +103,8 @@ const AddSessionPage = () => {
                   <option>GG Poker</option>
                   <option>PartyPoker</option>
                   <option>888 Poker</option>
+                  <option>CoinPoker</option>
+                  <option>Phenom Poker</option>
                 </select>
               </label>
 
@@ -185,8 +193,7 @@ const AddSessionPage = () => {
             <h2>Supported Sites</h2>
             <ul>
               {supportedSites.map((site) => (
-                <li key={site.name}>
-                  <span className={`site-badge site-badge--${site.className}`}>{site.badge}</span>
+                <li key={site.name} style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>{site.name}</span>
                   <CircleCheck aria-hidden='true' />
                 </li>
