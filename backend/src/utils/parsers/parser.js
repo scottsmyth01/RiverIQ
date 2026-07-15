@@ -1,7 +1,7 @@
 import { parseActions } from './helpers/parseActions.js';
 import { parseStreet } from './helpers/parseStreet.js';
-import { parseGGPoker } from './ggpoker/wrapper.js';
-import { gg_hands as fileText } from './ggpoker/ggpoker_150_hands_sample.js';
+import { parseShowdownActions } from './helpers/parseShowdownActions.js';
+import { parseSummarySeat } from './helpers/parseSummarySeat.js';
 
 export function parseFile(fileText, regex) {
   const handTexts = splitHands(fileText);
@@ -11,21 +11,34 @@ export function parseFile(fileText, regex) {
 export function getPositions(handText) {
   const positionMaps = {
     2: ['BTN', 'BB'],
-    3: ['BTN', 'SB', 'BB'],
-    4: ['BTN', 'SB', 'BB', 'CO'],
-    5: ['BTN', 'SB', 'BB', 'UTG', 'CO'],
-    6: ['BTN', 'SB', 'BB', 'UTG', 'HJ', 'CO'],
-    7: ['BTN', 'SB', 'BB', 'UTG', 'MP', 'HJ', 'CO'],
-    8: ['BTN', 'SB', 'BB', 'UTG', 'UTG+1', 'MP', 'HJ', 'CO'],
-    9: ['BTN', 'SB', 'BB', 'UTG', 'UTG+1', 'MP', 'LJ', 'HJ', 'CO'],
+    3: ['SB', 'BB', 'BTN'],
+    4: ['SB', 'BB', 'UTG', 'BTN'],
+    5: ['SB', 'BB', 'UTG', 'CO', 'BTN'],
+    6: ['SB', 'BB', 'UTG', 'HJ', 'CO', 'BTN'],
+    7: ['SB', 'BB', 'UTG', 'MP', 'HJ', 'CO', 'BTN'],
+    8: ['SB', 'BB', 'UTG', 'UTG+1', 'MP', 'HJ', 'CO', 'BTN'],
+    9: ['SB', 'BB', 'UTG', 'UTG+1', 'MP', 'LJ', 'HJ', 'CO', 'BTN'],
   };
   const sortedPlayers = [...(handText.players || [])].sort((a, b) => a.seat - b.seat);
-  const buttonIndex = sortedPlayers.findIndex((player) => player.seat === handText.buttonSeat);
-  if (buttonIndex === -1) {
+
+  if (!sortedPlayers.length || !handText.buttonSeat) {
     return handText;
   }
-  // Rotate so the button is first
-  const orderedPlayers = [...sortedPlayers.slice(buttonIndex), ...sortedPlayers.slice(0, buttonIndex)];
+
+  let startIndex = sortedPlayers.findIndex((player) => player.seat > handText.buttonSeat);
+
+  if (startIndex === -1) {
+    startIndex = 0;
+  }
+
+  if (sortedPlayers.length === 2) {
+    const buttonIndex = sortedPlayers.findIndex((player) => player.seat === handText.buttonSeat);
+    if (buttonIndex !== -1) {
+      startIndex = buttonIndex;
+    }
+  }
+
+  const orderedPlayers = [...sortedPlayers.slice(startIndex), ...sortedPlayers.slice(0, startIndex)];
   const positions = positionMaps[orderedPlayers.length];
   if (!positions) {
     throw new Error(`Unsupported table size: ${orderedPlayers.length}`);
@@ -112,6 +125,84 @@ export function getPreflop(handText, preflopRegex) {
   };
 }
 
+export function getFlop(handText, flopRegex) {
+  return parseStreet(handText, flopRegex);
+}
+
+export function getTurn(handText, turnRegex) {
+  return parseStreet(handText, turnRegex, 'card');
+}
+
+export function getRiver(handText, riverRegex) {
+  return parseStreet(handText, riverRegex, 'card');
+}
+
+export function getShowdown(handText, regex) {
+  const match = handText.match(regex);
+
+  if (!match) {
+    return null;
+  }
+
+  const lines = match[1]
+    .trim()
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return {
+    actions: parseShowdownActions(lines),
+  };
+}
+
+export function getSummary(handText, regex) {
+  const match = handText.match(regex);
+
+  if (!match) {
+    return null;
+  }
+
+  const lines = match[1]
+    .trim()
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const summary = {
+    totalPot: null,
+    rake: null,
+    board: [],
+    seats: [],
+  };
+
+  for (const line of lines) {
+    let match;
+
+    // Total pot $3.75 | Rake $0.10
+    match = line.match(/^Total pot \$([\d.]+) \| Rake \$([\d.]+)/);
+
+    if (match) {
+      summary.totalPot = parseFloat(match[1]);
+      summary.rake = parseFloat(match[2]);
+      continue;
+    }
+
+    // Board [Qs 8h 4d 2h Tc]
+    match = line.match(/^Board \[([^\]]+)\]/);
+
+    if (match) {
+      summary.board = match[1].split(' ');
+      continue;
+    }
+
+    // Everything beginning with Seat ...
+    if (line.startsWith('Seat ')) {
+      summary.seats.push(parseSummarySeat(line));
+    }
+  }
+
+  return summary;
+}
+
 export function parseHand(handText, regex) {
   let hand = {
     handNumber: getHandNumber(handText, regex.handNumber),
@@ -122,12 +213,10 @@ export function parseHand(handText, regex) {
   };
   hand = getPositions(hand);
   hand.preflop = getPreflop(handText, regex.preflop);
-  // hand.flop = getFlop(handText);
-  // hand.turn = getTurn(handText);
-  // hand.river = getRiver(handText);
-  // hand.showdown = getShowdown(handText);
-  // hand.summary = getSummary(handText);
+  hand.flop = getFlop(handText, regex.flop);
+  hand.turn = getTurn(handText, regex.turn);
+  hand.river = getRiver(handText, regex.river);
+  hand.showdown = getShowdown(handText, regex.showdown);
+  hand.summary = getSummary(handText, regex.summary);
   return hand;
 }
-
-console.log(parseGGPoker(fileText));

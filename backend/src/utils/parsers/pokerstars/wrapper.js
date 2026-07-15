@@ -2,9 +2,10 @@ import { parseHand } from '../parser.js';
 import { REGEX } from './regex.js';
 
 export function splitHands(file) {
-  const hands = file.split(/(?=PokerStars Hand #)/).filter(Boolean);
-  hands.shift();
-  return hands;
+  return file
+    .split(REGEX.handStart)
+    .map((handText) => handText.trim())
+    .filter((handText) => handText.startsWith('PokerStars Hand #'));
 }
 
 export function parsePokerStars(fileText) {

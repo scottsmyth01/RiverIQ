@@ -2,7 +2,10 @@ import { parseHand } from '../parser.js';
 import { REGEX } from './regex.js';
 
 export function splitHands(fileText) {
-  return fileText.split(REGEX.handStart).filter(Boolean);
+  return fileText
+    .split(REGEX.handStart)
+    .map((handText) => handText.trim())
+    .filter((handText) => handText.startsWith('GGPoker Hand #'));
 }
 
 export function parseGGPoker(fileText) {

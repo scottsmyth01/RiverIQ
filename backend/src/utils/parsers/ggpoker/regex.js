@@ -7,4 +7,9 @@ export const REGEX = {
   hero: /^Dealt to (.+?) \[([^\]]+)\]$/,
   buttonSeat: /Seat #(\d+) is the button/,
   preflop: /\*\*\* HOLE CARDS \*\*\*\n([\s\S]*?)(?=\*\*\* FLOP \*\*\*|\*\*\* SUMMARY \*\*\*|\*\*\* SHOW DOWN \*\*\*)/,
+  flop: /\*\*\* FLOP \*\*\* \[([^\]]+)\]\n([\s\S]*?)(?=\*\*\* TURN \*\*\*|\*\*\* SHOW DOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  turn: /\*\*\* TURN \*\*\* \[[^\]]+\] \[([^\]]+)\]\n([\s\S]*?)(?=\*\*\* RIVER \*\*\*|\*\*\* SHOW DOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  river: /\*\*\* RIVER \*\*\* \[[^\]]+\] \[([^\]]+)\]\n([\s\S]*?)(?=\*\*\* SHOW DOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  showdown: /\*\*\* SHOW DOWN \*\*\*([\s\S]*?)(?=\*\*\* SUMMARY \*\*\*|$)/,
+  summary: /\*\*\* SUMMARY \*\*\*([\s\S]*)$/,
 };
