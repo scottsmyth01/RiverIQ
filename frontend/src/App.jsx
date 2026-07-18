@@ -13,6 +13,7 @@ import ReportsPage from './pages/ReportsPage';
 import SavedReportsPage from './pages/SavedReportsPage';
 import GoalsPage from './pages/GoalsPage';
 import HandChartsPage from './pages/HandChartsPage';
+import PaymentPage from './pages/PaymentPage';
 
 const FeaturePage = lazy(() => import('./pages/FeaturePage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
@@ -40,6 +41,7 @@ function AppRoutes() {
   const isDashboardRoute = pathname.startsWith('/dashboard');
   const isVerifyEmailRoute = pathname.startsWith('/verify-email');
   const isPricingRoute = pathname === '/pricing';
+  const isPaymentRoute = pathname === '/subscription/payment';
 
   // if loading and a dashboard route we render the custom loading screen
   // if it is a route outside of the /dashboard then it will just load as normal (logged out routes)
@@ -50,7 +52,7 @@ function AppRoutes() {
 
   // if user is authenticated and emailVerified then navigate the user to their dashboard
   // if the route is the pricing page then do not run this code
-  if (isAuthenticated && isEmailVerified && !isDashboardRoute && !isPricingRoute) {
+  if (isAuthenticated && isEmailVerified && !isDashboardRoute && !isPricingRoute && !isPaymentRoute) {
     return <Navigate to='/dashboard' replace />;
   }
 
@@ -61,12 +63,13 @@ function AppRoutes() {
 
   return (
     <>
-      {!isAuthenticated && <Navbar />}
+      {!isAuthenticated && !isPaymentRoute && <Navbar />}
       <Suspense fallback={isDashboardRoute ? <LoadingScreen /> : null}>
         <Routes>
           <Route path='/' element={<Navigate to='/login' replace />} />
           <Route path='/features' element={<FeaturePage />} />
           <Route path='/pricing' element={<PricingPage />} />
+          <Route path='/subscription/payment' element={<PaymentPage />} />
           <Route path='/about' element={<AboutPage />} />
           <Route path='/login' element={<UserAuthPage />} />
           <Route path='/register' element={<UserAuthPage />} />

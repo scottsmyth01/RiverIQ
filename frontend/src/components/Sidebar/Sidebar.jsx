@@ -50,7 +50,7 @@ const Sidebar = () => {
         })}
       </nav>
 
-      <Link className='sidebar-pro-card' to='/pricing' aria-label='View Pro pricing'>
+      <Link className='sidebar-pro-card' to='/subscription/payment' aria-label='Start Pro trial'>
         <span className='sidebar-pro-card__icon'>
           <CircleStar aria-hidden='true' />
         </span>
