@@ -232,16 +232,38 @@
     --bg-navbar: rgba(255, 255, 255, 0.9);
 
     --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #64748b;
+    --text-secondary: #1e293b;
+    --text-muted: #334155;
     --text-on-primary: #04180b;
     --text-on-primary-strong: #04150b;
     --text-white: #0f172a;
+    --text-softest: #1e293b;
+    --text-soft: #1e293b;
+    --text-soft-muted: #334155;
+    --text-field: #1e293b;
+    --text-form: #1e293b;
+    --text-input: #1e293b;
+    --text-card: #1e293b;
+    --text-nav: #1e293b;
     --text-table: #1f2937;
-    --text-table-muted: #64748b;
-    --text-muted-light: #64748b;
-    --text-subtle: #64748b;
-    --text-control: #334155;
+    --text-table-muted: #334155;
+    --text-muted-light: #334155;
+    --text-auth-soft: #334155;
+    --text-dashboard-muted: #1e293b;
+    --text-warm-muted: #334155;
+    --text-form-muted: #334155;
+    --text-subtle: #334155;
+    --text-link-muted: #334155;
+    --text-input-muted: #334155;
+    --text-nav-muted: #334155;
+    --text-illustration: #334155;
+    --text-preview-muted: #334155;
+    --text-quiet: #334155;
+    --text-quiet-strong: #1e293b;
+    --text-placeholder: #475569;
+    --text-placeholder-strong: #334155;
+    --text-spark: #1e293b;
+    --text-control: #1e293b;
     --danger-bright: #dc2626;
 
     --surface-chart: #ffffff;
@@ -292,6 +314,11 @@
   --font-size-2xl: 2rem;
   --font-size-3xl: 3rem;
   --font-size-4xl: 4rem;
+
+  --page-heading-size: clamp(1.85rem, 3.4vw, 2.45rem);
+  --page-heading-margin: 0 0 0.35rem;
+  --page-heading-line-height: 1.12;
+  --page-heading-letter-spacing: 0;
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;

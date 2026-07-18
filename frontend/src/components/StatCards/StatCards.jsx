@@ -1,30 +1,27 @@
-import { useState } from 'react';
 import Card from '../Card/Card';
 import { getStatCards } from './StatCardsData';
-import { filterSessions } from '../../utils/filterSessions';
 import './StatCards.css';
 
-const StatCards = ({ sessions = [] }) => {
-  const [period, setPeriod] = useState('all-time');
-
-  const filteredSessions = filterSessions(sessions, period);
-
-  const cards = getStatCards(filteredSessions);
+const StatCards = ({ sessions = [], periods = [], selectedPeriod = 'all-time', onPeriodChange }) => {
+  const cards = getStatCards(sessions);
 
   return (
     <section className='stat-cards'>
       <div className='stat-period-buttons'>
-        <button type='button' className={period === 'all-time' ? 'active' : ''} onClick={() => setPeriod('all-time')}>
-          All Time
-        </button>
-
-        <button type='button' className={period === 'monthly' ? 'active' : ''} onClick={() => setPeriod('monthly')}>
-          Monthly
-        </button>
-
-        <button type='button' className={period === 'weekly' ? 'active' : ''} onClick={() => setPeriod('weekly')}>
-          Weekly
-        </button>
+        {periods.map((period) => (
+          <button
+            type='button'
+            className={selectedPeriod === period.id ? 'active' : ''}
+            aria-pressed={selectedPeriod === period.id}
+            disabled={!period.available}
+            title={!period.available ? 'No sessions found for this period' : undefined}
+            onClick={() => onPeriodChange?.(period.id)}
+            key={period.id}
+          >
+            {period.label}
+            {!period.available && <span className='period-unavailable'>N/A</span>}
+          </button>
+        ))}
       </div>
 
       <div className='stat-cards-grid'>

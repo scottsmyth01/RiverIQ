@@ -1,26 +1,53 @@
 import './Sidebar.css';
 import { SidebarData } from './SidebarData';
-import { CircleStar, Sparkles } from 'lucide-react';
+import { CircleStar, LockKeyhole } from 'lucide-react';
 import { Link, NavLink } from 'react-router';
+import { useSessions } from '../../hooks/useSessions';
+
+const lockedItemTitles = new Set(['Analytics', 'Reports', 'Goals', 'Hand Charts']);
 
 const Sidebar = () => {
+  const { data: sessions = [] } = useSessions();
+  const hasUnlockedInsights = sessions.length >= 5;
   const navigationItems = SidebarData.filter((item) => item.title !== 'Settings');
   const settingsItem = SidebarData.find((item) => item.title === 'Settings');
 
   return (
     <aside className='sidebar'>
       <nav className='sidebar__nav' aria-label='Dashboard sections'>
-        {navigationItems.map((item) => (
-          <NavLink
-            className={({ isActive }) => `sidebar__item${isActive ? ' sidebar__item--active' : ''}`}
-            end={item.link === '/dashboard'}
-            key={item.title}
-            to={item.link}
-          >
-            <span className='sidebar__icon'>{item.icon}</span>
-            <span className='sidebar__title'>{item.title}</span>
-          </NavLink>
-        ))}
+        {navigationItems.map((item) => {
+          const isLocked = lockedItemTitles.has(item.title) && !hasUnlockedInsights;
+
+          if (isLocked) {
+            return (
+              <button
+                className='sidebar__item sidebar__item--locked'
+                disabled
+                key={item.title}
+                title={`Upload ${5 - sessions.length} more session${5 - sessions.length === 1 ? '' : 's'} to unlock ${item.title}`}
+                type='button'
+              >
+                <span className='sidebar__icon'>{item.icon}</span>
+                <span className='sidebar__title'>{item.title}</span>
+                <span className='sidebar__lock' aria-hidden='true'>
+                  <LockKeyhole />
+                </span>
+              </button>
+            );
+          }
+
+          return (
+            <NavLink
+              className={({ isActive }) => `sidebar__item${isActive ? ' sidebar__item--active' : ''}`}
+              end={item.link === '/dashboard'}
+              key={item.title}
+              to={item.link}
+            >
+              <span className='sidebar__icon'>{item.icon}</span>
+              <span className='sidebar__title'>{item.title}</span>
+            </NavLink>
+          );
+        })}
       </nav>
 
       <Link className='sidebar-pro-card' to='/pricing' aria-label='View Pro pricing'>

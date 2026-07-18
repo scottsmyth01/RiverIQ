@@ -5,6 +5,7 @@ import {
   registerUser,
   loginUser,
   logoutUser,
+  updatePreferences,
   forgotPassword,
   validateResetToken,
   resetPassword,
@@ -58,9 +59,20 @@ export function useAuth() {
   const logoutMutation = useMutation({
     mutationKey: ['auth', 'logout'],
     mutationFn: logoutUser,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['sessions'] });
+    },
     onSettled: () => {
       queryClient.setQueryData(['authUser'], null);
       queryClient.removeQueries({ queryKey: ['sessions'] });
+    },
+  });
+
+  const updatePreferencesMutation = useMutation({
+    mutationKey: ['auth', 'preferences'],
+    mutationFn: updatePreferences,
+    onSuccess: (data) => {
+      queryClient.setQueryData(['authUser'], data);
     },
   });
 
@@ -99,6 +111,7 @@ export function useAuth() {
     register: registerMutation.mutateAsync,
     login: loginMutation.mutateAsync,
     logout: logoutMutation.mutate,
+    updatePreferences: updatePreferencesMutation.mutateAsync,
     forgotPassword: forgotPasswordMutation.mutateAsync,
     resetPassword: (id, token, formData) => resetPasswordMutation.mutateAsync({ id, token, formData }),
     verifyEmail: verifyEmailMutation.mutateAsync,
@@ -106,6 +119,7 @@ export function useAuth() {
     loginLoading,
     registerLoading,
     logoutLoading: logoutMutation.isPending,
+    updatePreferencesLoading: updatePreferencesMutation.isPending,
   };
 }
 

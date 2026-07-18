@@ -1,21 +1,19 @@
 export function filterSessions(sessions = [], period = 'all-time') {
   const today = new Date();
+  const periodDays = {
+    'past-7': 7,
+    'past-30': 30,
+    'past-90': 90,
+  };
 
   return sessions.filter((session) => {
     const sessionDate = new Date(session.date);
 
-    if (period === 'weekly') {
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(today.getDate() - 7);
+    if (periodDays[period]) {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(today.getDate() - periodDays[period]);
 
-      return sessionDate >= sevenDaysAgo;
-    }
-
-    if (period === 'monthly') {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(today.getDate() - 30);
-
-      return sessionDate >= thirtyDaysAgo;
+      return !Number.isNaN(sessionDate.getTime()) && sessionDate >= cutoffDate && sessionDate <= today;
     }
 
     return true;

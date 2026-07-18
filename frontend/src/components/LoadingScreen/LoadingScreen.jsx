@@ -1,4 +1,5 @@
 import './LoadingScreen.css';
+import logo from '../Navbar_dashboard/logo.png';
 
 const LoadingScreen = () => {
   return (
@@ -9,11 +10,7 @@ const LoadingScreen = () => {
       aria-label='Loading'
     >
       <div className='loading-modal'>
-        <img
-          className='loading-logo'
-          src='/logo.png'
-          alt='RiverIQ loading'
-        />
+        <img className='loading-logo' src={logo} alt='RiverIQ loading' />
       </div>
     </div>
   );

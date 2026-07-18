@@ -25,6 +25,7 @@
 
 .prompt-container {
   height: 100%;
+  width: 100%;
   min-width: 0;
   padding: clamp(1rem, 2.5vw, 1.75rem);
   display: flex;
@@ -34,11 +35,11 @@
 }
 
 .prompt-container > h2 {
-  margin: 0;
+  margin: var(--page-heading-margin);
   color: var(--text-primary);
-  font-size: clamp(1.65rem, 3vw, 2.15rem);
-  line-height: 1.15;
-  letter-spacing: -0.035em;
+  font-size: var(--page-heading-size);
+  line-height: var(--page-heading-line-height);
+  letter-spacing: var(--page-heading-letter-spacing);
   text-align: left;
 }
 

@@ -20,8 +20,10 @@
 }
 
 .about-hero-copy h1 {
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
-  line-height: 1.1;
+  margin: var(--page-heading-margin);
+  font-size: var(--page-heading-size);
+  line-height: var(--page-heading-line-height);
+  letter-spacing: var(--page-heading-letter-spacing);
 }
 
 .about-hero-copy h1 span,

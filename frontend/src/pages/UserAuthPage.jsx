@@ -16,6 +16,7 @@ import './UserAuthPage.css';
 import { useAuth } from '../hooks/useAuth';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 
 const UserAuthPage = () => {
   const modeByPath = {
@@ -28,8 +29,9 @@ const UserAuthPage = () => {
   const [resetLinkSent, setResetLinkSent] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false);
+  const [showSuccessLoader, setShowSuccessLoader] = useState(false);
 
-  const { register: registerUser, login, forgotPassword } = useAuth();
+  const { register: registerUser, login, forgotPassword, loginLoading } = useAuth();
   const {
     register,
     handleSubmit,
@@ -57,6 +59,7 @@ const UserAuthPage = () => {
 
       try {
         await registerUser({ username, email, password, passwordConfirm });
+        navigate('/verify-email', { replace: true });
       } catch (error) {
         setIsRegisterSubmitting(false);
         setError(error.field || 'form', {
@@ -68,7 +71,9 @@ const UserAuthPage = () => {
 
     if (authMode === 'login') {
       try {
-        await login({ email, password });
+        const data = await login({ email, password });
+        setShowSuccessLoader(true);
+        navigate(data.user?.isEmailVerified ? '/dashboard' : '/verify-email', { replace: true });
       } catch (error) {
         setError(error.field || 'form', {
           type: 'server',
@@ -92,6 +97,7 @@ const UserAuthPage = () => {
 
   return (
     <main className='user-auth-page'>
+      {showSuccessLoader && <LoadingScreen />}
       <div className='user-auth-layout'>
         <section className='auth-showcase'>
           <Link className='auth-brand' to='/'>
@@ -353,7 +359,7 @@ const UserAuthPage = () => {
 
               {fieldErrors.form && (
                 <p className='auth-field-error auth-form-error' role='alert'>
-                  {fieldErrors.form}
+                  {fieldErrors.form.message}
                 </p>
               )}
 
@@ -369,8 +375,11 @@ const UserAuthPage = () => {
                 </div>
               )}
 
-              <button className='auth-submit' type='submit'>
-                {authMode === 'login' ? 'Log In' : authMode === 'register' ? 'Create Account' : 'Send Reset Link'}
+              <button className='auth-submit' type='submit' disabled={authMode === 'login' && loginLoading}>
+                {authMode === 'login' && loginLoading && <LoaderCircle aria-hidden='true' />}
+                <span>
+                  {authMode === 'login' ? 'Log In' : authMode === 'register' ? 'Create Account' : 'Send Reset Link'}
+                </span>
               </button>
 
               {authMode !== 'forgot' && (

@@ -1,0 +1,16 @@
+export const statKeys = [
+  'bb100',
+  'vpip',
+  'pfr',
+  'threeBet',
+  'foldToThreeBet',
+  'steal',
+  'foldToSteal',
+  'cBet',
+  'foldToCBet',
+  'turnCBet',
+  'foldToTurnCBet',
+  'wtsd',
+  'wsd',
+  'aggressionFactor',
+];

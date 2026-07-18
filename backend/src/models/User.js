@@ -39,25 +39,31 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    totalProfit: {
-      type: Number,
-      default: 0,
-    },
-    totalHandsPlayed: {
-      type: Number,
-      default: 0,
-    },
-    totalSessionsPlayed: {
-      type: Number,
-      default: 0,
-    },
-    winRate: {
-      type: Number,
-      default: 0,
-    },
     role: {
       type: String,
       default: 'user',
+    },
+    preferences: {
+      theme: {
+        type: String,
+        enum: ['dark', 'light'],
+        default: 'light',
+      },
+      currency: {
+        type: String,
+        enum: ['USD', 'CAD', 'EUR', 'GBP'],
+        default: 'USD',
+      },
+      defaultTimeFilter: {
+        type: String,
+        enum: ['7d', '30d', '90d', 'all'],
+        default: '30d',
+      },
+      defaultTableSize: {
+        type: String,
+        enum: ['6max', '7max', '8max', '9max'],
+        default: '9max',
+      },
     },
   },
   { timestamps: true },

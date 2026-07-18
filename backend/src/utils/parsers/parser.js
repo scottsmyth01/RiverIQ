@@ -15,9 +15,9 @@ export function getPositions(handText) {
     4: ['SB', 'BB', 'UTG', 'BTN'],
     5: ['SB', 'BB', 'UTG', 'CO', 'BTN'],
     6: ['SB', 'BB', 'UTG', 'HJ', 'CO', 'BTN'],
-    7: ['SB', 'BB', 'UTG', 'MP', 'HJ', 'CO', 'BTN'],
-    8: ['SB', 'BB', 'UTG', 'UTG+1', 'MP', 'HJ', 'CO', 'BTN'],
-    9: ['SB', 'BB', 'UTG', 'UTG+1', 'MP', 'LJ', 'HJ', 'CO', 'BTN'],
+    7: ['SB', 'BB', 'UTG', 'LJ', 'HJ', 'CO', 'BTN'],
+    8: ['SB', 'BB', 'UTG', 'UTG+1', 'LJ', 'HJ', 'CO', 'BTN'],
+    9: ['SB', 'BB', 'UTG', 'UTG+1', 'UTG+2', 'LJ', 'HJ', 'CO', 'BTN'],
   };
   const sortedPlayers = [...(handText.players || [])].sort((a, b) => a.seat - b.seat);
 
@@ -48,7 +48,17 @@ export function getPositions(handText) {
   });
   handText.players = orderedPlayers;
   const hero = handText.players.find((player) => player.name === handText.hero.name);
-  handText.position = hero?.position ?? null;
+  handText.heroPosition = hero?.position ?? null;
+  handText.position = handText.heroPosition;
+
+  if (handText.hero) {
+    handText.hero = {
+      ...handText.hero,
+      seat: hero?.seat ?? null,
+      position: handText.heroPosition,
+    };
+  }
+
   return handText;
 }
 
@@ -203,6 +213,14 @@ export function getSummary(handText, regex) {
   return summary;
 }
 
+export function getDate(handText, regex) {
+  const match = handText.match(regex);
+  if (!match) {
+    return null;
+  }
+  return new Date(match[1]);
+}
+
 export function parseHand(handText, regex) {
   let hand = {
     handNumber: getHandNumber(handText, regex.handNumber),
@@ -210,6 +228,7 @@ export function parseHand(handText, regex) {
     players: getPlayers(handText, regex.players),
     hero: getHero(handText, regex.hero),
     buttonSeat: getButtonSeat(handText, regex.buttonSeat),
+    date: getDate(handText, regex.date),
   };
   hand = getPositions(hand);
   hand.preflop = getPreflop(handText, regex.preflop);

@@ -1,5 +1,6 @@
 .dashboard-content {
   height: 100%;
+  width: 100%;
   min-width: 0;
   min-height: 0;
   padding: clamp(10px, 1.5vh, 18px);
@@ -16,11 +17,12 @@
 }
 
 .dashboard-page-header h1 {
-  margin: 0 0 4px;
+  margin: var(--page-heading-margin);
   color: var(--text-white);
-  font-size: clamp(1.55rem, 2.6vw, 2rem);
+  font-size: var(--page-heading-size);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: var(--page-heading-line-height);
+  letter-spacing: var(--page-heading-letter-spacing);
 }
 
 .dashboard-page-header p {
@@ -59,9 +61,11 @@
 }
 
 .dashboard-onboarding-header h1 {
-  margin: 0 0 5px;
+  margin: var(--page-heading-margin);
   color: var(--text-white);
-  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-size: var(--page-heading-size);
+  line-height: var(--page-heading-line-height);
+  letter-spacing: var(--page-heading-letter-spacing);
 }
 
 .dashboard-onboarding-header p {

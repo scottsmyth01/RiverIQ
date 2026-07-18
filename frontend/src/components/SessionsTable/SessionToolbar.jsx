@@ -5,10 +5,10 @@ const SessionToolbar = ({ dateRange, setDateRange, sortBy, setSortBy, numTables,
         <label>
           <span>Date</span>
           <select value={dateRange} onChange={(e) => setDateRange(e.target.value)}>
-            <option value='all'>All dates</option>
-            <option value='week'>This week</option>
-            <option value='month'>This month</option>
-            <option value='year'>This year</option>
+            <option value='all-time'>All Time</option>
+            <option value='past-7'>Past 7 Days</option>
+            <option value='past-30'>Past 30 Days</option>
+            <option value='past-90'>Past 90 Days</option>
           </select>
         </label>
         <label>

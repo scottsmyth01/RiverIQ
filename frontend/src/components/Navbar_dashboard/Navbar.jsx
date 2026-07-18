@@ -6,9 +6,9 @@ import './Navbar.css';
 import logo from './logo.png';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updatePreferences } = useAuth();
   const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
   const accountMenuRef = useRef(null);
 
   const displayName = user?.username || 'riq_user';
@@ -20,13 +20,31 @@ const Navbar = () => {
     .slice(0, 2)
     .toUpperCase();
 
-  function toggleTheme() {
-    setTheme((currentTheme) => {
-      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('theme', nextTheme);
-      return nextTheme;
-    });
+  async function toggleTheme() {
+    const previousTheme = theme;
+    const nextTheme = previousTheme === 'dark' ? 'light' : 'dark';
+
+    localStorage.setItem('theme', nextTheme);
+    setTheme(nextTheme);
+
+    try {
+      await updatePreferences({ theme: nextTheme });
+    } catch {
+      localStorage.setItem('theme', previousTheme);
+      setTheme(previousTheme);
+    }
   }
+
+  useEffect(() => {
+    const savedTheme = user?.preferences?.theme;
+
+    if (!savedTheme) {
+      return;
+    }
+
+    localStorage.setItem('theme', savedTheme);
+    setTheme(savedTheme);
+  }, [user?.preferences?.theme]);
 
   useEffect(() => {
     const closeAccountMenu = (event) => {
@@ -94,7 +112,7 @@ const Navbar = () => {
                 <Settings aria-hidden='true' />
                 Settings
               </Link>
-              <button type='button' role='menuitem' onClick={logout}>
+              <button type='button' role='menuitem' onClick={() => logout()}>
                 <LogOut aria-hidden='true' />
                 Log out
               </button>

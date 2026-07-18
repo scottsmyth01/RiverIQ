@@ -25,11 +25,13 @@
 }
 
 .profit-period-buttons {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
 }
 
 .profit-period-buttons button {
+  position: relative;
   padding: 7px 10px;
   color: var(--text-subtle);
   background: var(--surface-control-deep);
@@ -55,7 +57,7 @@
 }
 
 .profit-period-buttons button:disabled {
-  opacity: 0.4;
+  opacity: 0.58;
   cursor: not-allowed;
 }
 
@@ -63,6 +65,20 @@
   color: var(--text-subtle);
   background: var(--surface-control-deep);
   border-color: var(--theme-border-card);
+}
+
+.profit-period-buttons .period-unavailable {
+  position: absolute;
+  top: -7px;
+  right: -4px;
+  padding: 1px 5px;
+  color: var(--text-on-primary-strong);
+  background: var(--danger);
+  border-radius: 999px;
+  font-size: 0.52rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: 0;
 }
 
 .profit-period-buttons button.active {
@@ -120,7 +136,7 @@
   .profit-period-buttons {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .profit-period-buttons button {

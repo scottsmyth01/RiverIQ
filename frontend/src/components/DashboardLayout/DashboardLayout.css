@@ -3,28 +3,39 @@
   max-width: 1280px;
   height: 100vh;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .dashboard-layout {
   height: calc(100% - 64px);
-  display: flex;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  overflow: hidden;
 }
 
 .dashboard-section-page {
   min-width: 0;
+  width: 100%;
   padding: clamp(1rem, 2.5vw, 1.75rem);
-  flex: 1;
   overflow-y: auto;
 }
 
 .dashboard-section-page h1 {
-  font-size: clamp(1.65rem, 3vw, 2.15rem);
-  line-height: 1.15;
-  letter-spacing: -0.035em;
+  margin: var(--page-heading-margin);
+  font-size: var(--page-heading-size);
+  line-height: var(--page-heading-line-height);
+  letter-spacing: var(--page-heading-letter-spacing);
 }
 
 @media (max-width: 600px) {
   .dashboard-layout {
     height: calc(100% - 56px);
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-layout {
+    grid-template-columns: 64px minmax(0, 1fr);
   }
 }

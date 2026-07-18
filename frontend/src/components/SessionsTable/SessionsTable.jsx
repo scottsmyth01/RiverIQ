@@ -4,17 +4,22 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SessionToolbar from './SessionToolbar';
 import { applySorting, applyDateFilter, numTables as tables, finish as applyFinish } from './sessionTableFilters';
+import { useAuth } from '../../hooks/useAuth';
+import { getPeriodFromDefaultTimeFilter } from '../../utils/dateRangePreferences';
 
 const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
-  const [dateRange, setDateRange] = useState('all');
+  const { user } = useAuth();
+  const defaultDateRange = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
+  const [dateRange, setDateRange] = useState(defaultDateRange);
   const [sortBy, setSortBy] = useState('newest');
   const [numTables, setNumTables] = useState('all');
   const [finish, setFinish] = useState('all');
 
   const filteredSessions = useMemo(() => {
     let result = [...sessions];
+    const activeDateRange = variant === 'sessions-page' ? dateRange : 'all-time';
     // 1) APPLY DATE RANGE
-    result = applyDateFilter(dateRange, result);
+    result = applyDateFilter(activeDateRange, result);
     // 2) APPLY # TABLES
     result = tables(numTables, result);
     // 3) APPLY SORT
@@ -23,7 +28,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
     result = applyFinish(finish, result);
 
     return result;
-  }, [sessions, dateRange, numTables, sortBy, finish]);
+  }, [sessions, dateRange, numTables, sortBy, finish, variant]);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -34,12 +39,26 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
     setCurrentPage(1);
   }, [dateRange, numTables, sortBy, finish]);
 
+  useEffect(() => {
+    setDateRange(defaultDateRange);
+  }, [defaultDateRange]);
+
   const currentSessions = filteredSessions.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(filteredSessions.length / sessionsPerPage);
   const firstVisiblePage = currentPage === totalPages ? Math.max(1, totalPages - 1) : currentPage;
   const visiblePages = Array.from({ length: Math.min(2, totalPages) }, (_, index) => firstVisiblePage + index);
   const firstVisibleSession = filteredSessions.length === 0 ? 0 : firstIndex + 1;
   const lastVisibleSession = Math.min(lastIndex, filteredSessions.length);
+
+  function getSessionWinRate(session) {
+    if (typeof session.bb100 === 'number') return session.bb100;
+    if (typeof session.winRate === 'number') return session.winRate;
+
+    const profit = Number(session.profit) || 0;
+    const hands = Number(session.hands) || 0;
+
+    return hands > 0 ? (profit / 0.1 / hands) * 100 : 0;
+  }
 
   return (
     <section className='sessions-card'>
@@ -90,10 +109,14 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                 year: '2-digit',
               });
 
-              let hours = Math.floor(session.duration / 60);
-              let minutes = session.duration % 60;
-              const profitIsPositive = session.profit >= 0;
-              const winRateIsPositive = session.bb100 >= 0;
+              const duration = Number(session.duration);
+              const hasDuration = Number.isFinite(duration);
+              const profit = Number(session.profit) || 0;
+              const winRate = getSessionWinRate(session);
+              const hours = hasDuration ? Math.floor(duration / 60) : 0;
+              const minutes = hasDuration ? duration % 60 : 0;
+              const profitIsPositive = profit >= 0;
+              const winRateIsPositive = winRate >= 0;
 
               return (
                 <tr key={session._id}>
@@ -107,16 +130,14 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                   <td
                     className={`session-result ${profitIsPositive ? 'session-result--positive' : 'session-result--negative'}`}
                   >
-                    {profitIsPositive ? '+' : '-'}${Math.abs(session.profit).toFixed(2)}
+                    {profitIsPositive ? '+' : '-'}${Math.abs(profit).toFixed(2)}
                   </td>
                   <td
                     className={`session-result ${winRateIsPositive ? 'session-result--positive' : 'session-result--negative'}`}
                   >
-                    {session.bb100.toFixed(2)} BB/100
+                    {winRate.toFixed(2)} BB/100
                   </td>
-                  <td>
-                    {hours}h {minutes}m
-                  </td>
+                  <td>{hasDuration ? `${hours}h ${minutes}m` : 'N/A'}</td>
                 </tr>
               );
             })}

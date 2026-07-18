@@ -66,8 +66,6 @@ const sendVerifyEmail = async (username, email, verifyLink) => {
     html: verificationEmail,
     text: `Welcome to RiverIQ, ${username}! Verify your email to activate your account: ${verifyLink}`,
   });
-
-  console.log(response.delivered);
 };
 
 export const registerUser = async (req, res, next) => {
@@ -90,6 +88,24 @@ export const registerUser = async (req, res, next) => {
       });
     }
 
+    // EMAIL FORMAT VALIDATION
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        field: 'email',
+        message: 'Please provide a valid email address',
+      });
+    }
+
+    const emailExists = await User.findOne({ email });
+    if (emailExists)
+      return res.status(400).json({
+        status: 'failed',
+        field: 'email',
+        message: 'Email already in use',
+      });
+
     // PASSWORD VALIDATION (8 chars + letters + numbers)
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
@@ -99,15 +115,6 @@ export const registerUser = async (req, res, next) => {
         message: 'Password must be at least 8 characters long and contain at least one letter and one number',
       });
     }
-
-    // EMAIL VALIDATION
-    const emailExists = await User.findOne({ email });
-    if (emailExists)
-      return res.status(400).json({
-        status: 'failed',
-        field: 'email',
-        message: 'Email already in use',
-      });
 
     // USERNAME VALIDATION
     const userNameExists = await User.findOne({ username });
@@ -149,12 +156,9 @@ export const registerUser = async (req, res, next) => {
         email: user.email,
         subscription: user.subscription,
         bankroll: user.bankroll,
-        totalProfit: user.totalProfit,
-        totalHandsPlayed: user.totalHandsPlayed,
-        totalSessionsPlayed: user.totalSessionsPlayed,
-        winRate: user.winRate,
         role: user.role,
         isEmailVerified: user.isEmailVerified,
+        preferences: user.preferences,
       },
     });
   } catch (error) {
@@ -212,12 +216,9 @@ export const loginUser = async (req, res, next) => {
         email: user.email,
         subscription: user.subscription,
         bankroll: user.bankroll,
-        totalProfit: user.totalProfit,
-        totalHandsPlayed: user.totalHandsPlayed,
-        totalSessionsPlayed: user.totalSessionsPlayed,
-        winRate: user.winRate,
         role: user.role,
         isEmailVerified: user.isEmailVerified,
+        preferences: user.preferences,
       },
     });
   } catch (error) {
@@ -251,12 +252,50 @@ export const getMe = async (req, res, next) => {
         email: req.user.email,
         subscription: req.user.subscription,
         bankroll: req.user.bankroll,
-        totalProfit: req.user.totalProfit,
-        totalHandsPlayed: req.user.totalHandsPlayed,
-        totalSessionsPlayed: req.user.totalSessionsPlayed,
-        winRate: req.user.winRate,
         role: req.user.role,
         isEmailVerified: req.user.isEmailVerified,
+        preferences: req.user.preferences,
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const updatePreferences = async (req, res, next) => {
+  try {
+    const allowedPreferences = ['theme', 'currency', 'defaultTimeFilter', 'defaultTableSize'];
+    const updates = {};
+
+    for (const key of allowedPreferences) {
+      if (req.body[key] !== undefined) {
+        updates[`preferences.${key}`] = req.body[key];
+      }
+    }
+
+    if (!Object.keys(updates).length) {
+      return res.status(400).json({ message: 'Please provide at least one preference to update' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: updates },
+      {
+        returnDocument: 'after',
+        runValidators: true,
+      },
+    );
+
+    return res.status(200).json({
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        subscription: user.subscription,
+        bankroll: user.bankroll,
+        role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        preferences: user.preferences,
       },
     });
   } catch (error) {

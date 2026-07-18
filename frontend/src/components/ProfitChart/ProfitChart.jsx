@@ -1,42 +1,38 @@
 import { Chart as ChartJS, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './ProfitChart.css';
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler);
 
-const profitPeriods = [
-  { id: 'all-time', label: 'Total Profit', days: null },
-  { id: 'last-month', label: 'Monthly Profit', days: 30 },
-  { id: 'last-week', label: 'Weekly Profit', days: 7 },
-];
+export default function ProfitChart({ sessions, periods = [], selectedPeriod = 'all-time', onPeriodChange }) {
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'light');
+  const activePeriod = periods.find((period) => period.id === selectedPeriod) || periods[0];
+  const isLightTheme = theme === 'light';
+  const chartTextColor = isLightTheme ? '#111827' : '#cbd5e1';
+  const chartGridColor = isLightTheme ? 'rgba(17, 24, 39, 0.14)' : 'rgba(148, 163, 184, 0.15)';
 
-export default function ProfitChart({ sessions }) {
-  const [selectedPeriod, setSelectedPeriod] = useState('all-time');
-  const activePeriod = profitPeriods.find((period) => period.id === selectedPeriod) || profitPeriods[0];
-  const today = new Date();
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setTheme(document.documentElement.dataset.theme || 'light');
+    });
 
-  const getVisibleSessions = (period) => {
-    const cutoffDate = period.days ? new Date(today) : null;
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
 
-    if (cutoffDate) {
-      cutoffDate.setDate(today.getDate() - period.days);
-    }
+    return () => observer.disconnect();
+  }, []);
 
-    return sessions
-      .filter((session) => {
-        const sessionDate = new Date(session.date);
-        return (!cutoffDate || sessionDate >= cutoffDate) && sessionDate <= today;
-      })
-      .sort((firstSession, secondSession) => new Date(firstSession.date) - new Date(secondSession.date));
-  };
-
-  const visibleSessions = getVisibleSessions(activePeriod);
+  const visibleSessions = [...sessions].sort(
+    (firstSession, secondSession) => new Date(firstSession.date) - new Date(secondSession.date),
+  );
 
   let runningProfit = 0;
 
   const chartData = visibleSessions.map((session) => {
-    runningProfit += session.profit;
+    runningProfit += Number(session.profit) || 0;
 
     return {
       date: new Date(session.date).toLocaleDateString('en-US', {
@@ -68,7 +64,7 @@ export default function ProfitChart({ sessions }) {
           return gradient;
         },
         fill: true,
-        tension: 0.15,
+        tension: 0,
         pointRadius: 0,
         pointHoverRadius: 5,
         pointHitRadius: 16,
@@ -118,7 +114,7 @@ export default function ProfitChart({ sessions }) {
           display: false,
         },
         ticks: {
-          color: '#cbd5e1',
+          color: chartTextColor,
           maxTicksLimit: 7,
         },
         border: {
@@ -130,12 +126,12 @@ export default function ProfitChart({ sessions }) {
         beginAtZero: true,
         grace: '10%',
         ticks: {
-          color: '#cbd5e1',
+          color: chartTextColor,
           maxTicksLimit: 5,
           callback: (value) => `$${value.toLocaleString()}`,
         },
         grid: {
-          color: 'rgba(148, 163, 184, 0.15)',
+          color: chartGridColor,
           borderDash: [6, 6],
         },
         border: {
@@ -148,25 +144,22 @@ export default function ProfitChart({ sessions }) {
   return (
     <div className='profit-card'>
       <div className='profit-header'>
-        <h2>{activePeriod.label}</h2>
+        <h2>{activePeriod?.chartLabel || 'Total Profit'}</h2>
         <div className='profit-period-buttons' aria-label='Profit chart period'>
-          {profitPeriods.map((period) => {
-            const periodHasSessions = getVisibleSessions(period).length > 0;
-
-            return (
-              <button
-                className={selectedPeriod === period.id ? 'active' : ''}
-                type='button'
-                aria-pressed={selectedPeriod === period.id}
-                onClick={() => setSelectedPeriod(period.id)}
-                key={period.id}
-                disabled={!periodHasSessions}
-                title={!periodHasSessions ? 'No sessions found for this period' : undefined}
-              >
-                {period.label}
-              </button>
-            );
-          })}
+          {periods.map((period) => (
+            <button
+              className={selectedPeriod === period.id ? 'active' : ''}
+              type='button'
+              aria-pressed={selectedPeriod === period.id}
+              disabled={!period.available}
+              title={!period.available ? 'No sessions found for this period' : undefined}
+              onClick={() => onPeriodChange?.(period.id)}
+              key={period.id}
+            >
+              {period.label}
+              {!period.available && <span className='period-unavailable'>N/A</span>}
+            </button>
+          ))}
         </div>
       </div>
 

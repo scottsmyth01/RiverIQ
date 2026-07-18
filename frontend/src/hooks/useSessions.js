@@ -2,11 +2,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addSession, deleteSession, getSessions, updateSession } from '../api/sessionApi';
 
 export const sessionsQueryKey = ['sessions'];
+const allSessionsQueryKey = [...sessionsQueryKey, { period: 'all-time' }];
 
-export function useSessions() {
+export function useSessions(params = {}) {
+  const { period = 'all-time' } = params;
+
   return useQuery({
-    queryKey: sessionsQueryKey,
-    queryFn: getSessions,
+    queryKey: [...sessionsQueryKey, { period }],
+    queryFn: () => getSessions({ period }),
   });
 }
 
@@ -17,7 +20,8 @@ export function useAddSession() {
     mutationKey: ['sessions', 'add'],
     mutationFn: addSession,
     onSuccess: (newSession) => {
-      queryClient.setQueryData(sessionsQueryKey, (sessions = []) => [...sessions, newSession]);
+      queryClient.setQueryData(allSessionsQueryKey, (sessions = []) => [...sessions, newSession]);
+      queryClient.invalidateQueries({ queryKey: sessionsQueryKey });
     },
   });
 }
@@ -29,9 +33,10 @@ export function useUpdateSession() {
     mutationKey: ['sessions', 'update'],
     mutationFn: updateSession,
     onSuccess: (updatedSession) => {
-      queryClient.setQueryData(sessionsQueryKey, (sessions = []) =>
+      queryClient.setQueryData(allSessionsQueryKey, (sessions = []) =>
         sessions.map((session) => (session._id === updatedSession._id ? updatedSession : session)),
       );
+      queryClient.invalidateQueries({ queryKey: sessionsQueryKey });
     },
   });
 }
@@ -43,9 +48,10 @@ export function useDeleteSession() {
     mutationKey: ['sessions', 'delete'],
     mutationFn: deleteSession,
     onSuccess: (deletedSessionId) => {
-      queryClient.setQueryData(sessionsQueryKey, (sessions = []) =>
+      queryClient.setQueryData(allSessionsQueryKey, (sessions = []) =>
         sessions.filter((session) => session._id !== deletedSessionId),
       );
+      queryClient.invalidateQueries({ queryKey: sessionsQueryKey });
     },
   });
 }

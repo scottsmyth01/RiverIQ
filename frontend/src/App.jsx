@@ -8,6 +8,11 @@ import SessionsPage from './pages/SessionsPage';
 import DashboardLayout from './components/DashboardLayout/DashboardLayout';
 import DashboardSectionPage from './pages/DashboardSectionPage';
 import AddSessionPage from './pages/AddSessionPage';
+import SettingsPage from './pages/SettingsPage';
+import ReportsPage from './pages/ReportsPage';
+import SavedReportsPage from './pages/SavedReportsPage';
+import GoalsPage from './pages/GoalsPage';
+import HandChartsPage from './pages/HandChartsPage';
 
 const FeaturePage = lazy(() => import('./pages/FeaturePage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
@@ -16,6 +21,7 @@ const UserAuthPage = lazy(() => import('./pages/UserAuthPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -29,7 +35,7 @@ function ScrollToTop() {
 
 function AppRoutes() {
   const { pathname } = useLocation();
-  const { isAuthenticated, isEmailVerified, loading, loginLoading } = useAuth();
+  const { isAuthenticated, isEmailVerified, loading } = useAuth();
 
   const isDashboardRoute = pathname.startsWith('/dashboard');
   const isVerifyEmailRoute = pathname.startsWith('/verify-email');
@@ -55,11 +61,10 @@ function AppRoutes() {
 
   return (
     <>
-      {loginLoading && <LoadingScreen />}
-      {!isAuthenticated && !loginLoading && <Navbar />}
+      {!isAuthenticated && <Navbar />}
       <Suspense fallback={isDashboardRoute ? <LoadingScreen /> : null}>
         <Routes>
-          <Route path='/' element={<Navigate to='/features' replace />} />
+          <Route path='/' element={<Navigate to='/login' replace />} />
           <Route path='/features' element={<FeaturePage />} />
           <Route path='/pricing' element={<PricingPage />} />
           <Route path='/about' element={<AboutPage />} />
@@ -79,11 +84,13 @@ function AppRoutes() {
           >
             <Route index element={<DashboardPage />} />
             <Route path='sessions' element={<SessionsPage />} />
-            <Route path='analytics' element={<SessionsPage />} />
-            <Route path='reports' element={<SessionsPage />} />
-            <Route path='goals' element={<SessionsPage />} />
-            <Route path='hand-history' element={<SessionsPage />} />
+            <Route path='analytics' element={<AnalyticsPage />} />
+            <Route path='reports' element={<ReportsPage />} />
+            <Route path='reports/saved' element={<SavedReportsPage />} />
+            <Route path='goals' element={<GoalsPage />} />
+            <Route path='hand-history' element={<HandChartsPage />} />
             <Route path='sessions/new' element={<AddSessionPage />} />
+            <Route path='settings' element={<SettingsPage />} />
           </Route>
           <Route path='*' element={<FeaturePage />} />
         </Routes>

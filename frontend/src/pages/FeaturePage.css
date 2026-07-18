@@ -18,7 +18,11 @@
 }
 
 .header h2 {
+  margin: var(--page-heading-margin);
+  font-size: var(--page-heading-size);
   font-weight: 700;
+  line-height: var(--page-heading-line-height);
+  letter-spacing: var(--page-heading-letter-spacing);
 }
 
 .header p {
@@ -769,11 +773,6 @@
     margin: 2.5rem 0;
   }
 
-  .header h2 {
-    font-size: clamp(2rem, 8vw, 2.75rem);
-    line-height: 1.15;
-  }
-
   .header p {
     max-width: 34rem;
     margin: 1rem auto 0;
@@ -858,10 +857,6 @@
 
   .header {
     margin: 2rem 0;
-  }
-
-  .header h2 {
-    font-size: clamp(1.85rem, 9vw, 2.35rem);
   }
 
   .header p {

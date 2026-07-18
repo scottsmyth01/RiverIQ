@@ -3,7 +3,7 @@
   inset: 0;
   z-index: 1000;
   min-height: 100dvh;
-  background: var(--overlay-page);
+  background: rgba(0, 0, 0, 0.62);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   display: flex;
@@ -18,6 +18,8 @@
 
 .loading-logo {
   width: min(150px, 34vw);
+  height: auto;
+  display: block;
   animation: spin-logo 0.6s ease-in-out infinite;
 }
 

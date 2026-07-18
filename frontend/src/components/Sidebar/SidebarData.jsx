@@ -27,7 +27,7 @@ export const SidebarData = [
     link: '/dashboard/goals',
   },
   {
-    title: 'Hand History',
+    title: 'Hand Charts',
     icon: <History />,
     link: '/dashboard/hand-history',
   },

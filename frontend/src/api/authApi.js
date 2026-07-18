@@ -54,6 +54,13 @@ export function logoutUser() {
   });
 }
 
+export function updatePreferences(preferences) {
+  return request('/api/auth/preferences', {
+    method: 'PATCH',
+    body: JSON.stringify(preferences),
+  });
+}
+
 export function forgotPassword({ email }) {
   return request('/api/auth/forgot-password', {
     method: 'POST',

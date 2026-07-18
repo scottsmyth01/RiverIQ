@@ -6,6 +6,7 @@ hero,
 players,
 buttonSeat,
 position,
+heroPosition,
 blinds,
 preflop: {
 actions: []

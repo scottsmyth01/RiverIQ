@@ -8,6 +8,13 @@ splice()  mutates
 */
 
 export function applySorting(filter, sessions) {
+  const getProfit = (session) => Number(session.profit) || Number(session.stats?.profit) || 0;
+  const getDuration = (session) => {
+    const duration = Number(session.duration);
+    return Number.isFinite(duration) ? duration : 0;
+  };
+  const getHands = (session) => Number(session.hands) || Number(session.stats?.handsPlayed) || 0;
+
   switch (filter) {
     // FILTER DROPDOWN 1
     case 'newest':
@@ -17,40 +24,44 @@ export function applySorting(filter, sessions) {
       return [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date));
 
     case 'profit-high':
-      return [...sessions].sort((a, b) => b.profit - a.profit);
+      return [...sessions].sort((a, b) => getProfit(b) - getProfit(a));
 
     case 'profit-low':
-      return [...sessions].sort((a, b) => a.profit - b.profit);
+      return [...sessions].sort((a, b) => getProfit(a) - getProfit(b));
 
     case 'duration':
-      return [...sessions].sort((a, b) => b.duration - a.duration);
+      return [...sessions].sort((a, b) => getDuration(b) - getDuration(a));
 
     case 'hands':
-      return [...sessions].sort((a, b) => b.hands - a.hands);
+      return [...sessions].sort((a, b) => getHands(b) - getHands(a));
     default:
       return sessions;
   }
 }
 
 export function applyDateFilter(dateFilter, sessions) {
-  const today = new Date();
-  const cutoffDate = new Date(today);
-
-  if (dateFilter === 'week') {
-    cutoffDate.setDate(today.getDate() - 7);
-  }
-  if (dateFilter === 'month') {
-    cutoffDate.setMonth(today.getMonth() - 1);
-  }
-  if (dateFilter === 'year') {
-    cutoffDate.setFullYear(today.getFullYear() - 1);
-  }
-  if (dateFilter === 'all') {
+  if (dateFilter === 'all-time') {
     return sessions;
   }
+
+  const daysByFilter = {
+    'past-7': 7,
+    'past-30': 30,
+    'past-90': 90,
+  };
+  const days = daysByFilter[dateFilter];
+
+  if (!days) {
+    return sessions;
+  }
+
+  const today = new Date();
+  const cutoffDate = new Date(today);
+  cutoffDate.setDate(today.getDate() - days);
+
   return sessions.filter((session) => {
     const sessionDate = new Date(session.date);
-    return sessionDate >= cutoffDate && sessionDate <= today;
+    return !Number.isNaN(sessionDate.getTime()) && sessionDate >= cutoffDate && sessionDate <= today;
   });
 }
 
@@ -81,11 +92,14 @@ export function finish(filter, sessions) {
     case 'all':
       return sessions;
     case 'winning':
-      return sessions.filter((session) => session.profit > 1);
+      return sessions.filter((session) => (Number(session.profit) || Number(session.stats?.profit) || 0) > 1);
     case 'losing':
-      return sessions.filter((session) => session.profit < -1);
+      return sessions.filter((session) => (Number(session.profit) || Number(session.stats?.profit) || 0) < -1);
     case 'breakeven':
-      return sessions.filter((session) => session.profit > -1 && session.profit < 1);
+      return sessions.filter((session) => {
+        const profit = Number(session.profit) || Number(session.stats?.profit) || 0;
+        return profit > -1 && profit < 1;
+      });
     default:
       return sessions;
   }

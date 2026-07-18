@@ -3,11 +3,11 @@ import { IconCards } from '@tabler/icons-react';
 
 export const getStatCards = (sessions = []) => {
   const totalProfit = sessions.reduce((sum, session) => {
-    return sum + session.profit;
+    return sum + (Number(session.profit) || 0);
   }, 0);
 
   const totalHands = sessions.reduce((sum, session) => {
-    return sum + session.hands;
+    return sum + (Number(session.hands) || Number(session.stats?.handsPlayed) || 0);
   }, 0);
 
   const totalSessions = sessions.length;
