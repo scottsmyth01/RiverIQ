@@ -6,8 +6,8 @@ import { upload } from '../middleware/uploadMiddleware.js';
 import { uploadHandHistoryToR2 } from '../middleware/uploadToR2Middleware.js';
 
 router.get('/', protect, getSessions);
-router.post('/addSession', protect, upload.single('handHistory'), uploadHandHistoryToR2, addSession);
-
+// router.post('/add-session', protect, upload.single('handHistory'), uploadHandHistoryToR2, addSession);
+router.post('/add-session', protect, upload.single('handHistory'), addSession);
 export default router;
 
 /*

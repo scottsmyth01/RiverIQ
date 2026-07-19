@@ -14,6 +14,8 @@ import SavedReportsPage from './pages/SavedReportsPage';
 import GoalsPage from './pages/GoalsPage';
 import HandChartsPage from './pages/HandChartsPage';
 import PaymentPage from './pages/PaymentPage';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 
 const FeaturePage = lazy(() => import('./pages/FeaturePage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
@@ -42,6 +44,7 @@ function AppRoutes() {
   const isVerifyEmailRoute = pathname.startsWith('/verify-email');
   const isPricingRoute = pathname === '/pricing';
   const isPaymentRoute = pathname === '/subscription/payment';
+  const isResetPasswordRoute = pathname.startsWith('/reset-password');
 
   // if loading and a dashboard route we render the custom loading screen
   // if it is a route outside of the /dashboard then it will just load as normal (logged out routes)
@@ -52,12 +55,19 @@ function AppRoutes() {
 
   // if user is authenticated and emailVerified then navigate the user to their dashboard
   // if the route is the pricing page then do not run this code
-  if (isAuthenticated && isEmailVerified && !isDashboardRoute && !isPricingRoute && !isPaymentRoute) {
+  if (
+    isAuthenticated &&
+    isEmailVerified &&
+    !isDashboardRoute &&
+    !isPricingRoute &&
+    !isPaymentRoute &&
+    !isResetPasswordRoute
+  ) {
     return <Navigate to='/dashboard' replace />;
   }
 
   // if user is authenticated, but email is not verified, then navigate to the /verify-email page
-  if (isAuthenticated && !isEmailVerified && !isVerifyEmailRoute) {
+  if (isAuthenticated && !isEmailVerified && !isVerifyEmailRoute && !isResetPasswordRoute) {
     return <Navigate to='/verify-email' replace />;
   }
 
@@ -103,10 +113,13 @@ function AppRoutes() {
 }
 
 function App() {
+  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <AppRoutes />
+      <Elements stripe={stripePromise}>
+        <ScrollToTop />
+        <AppRoutes />
+      </Elements>
     </BrowserRouter>
   );
 }

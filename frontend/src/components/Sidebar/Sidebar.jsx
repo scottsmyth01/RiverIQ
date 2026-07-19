@@ -1,14 +1,16 @@
 import './Sidebar.css';
 import { SidebarData } from './SidebarData';
-import { CircleStar, LockKeyhole } from 'lucide-react';
+import { CircleStar, Crown, LockKeyhole } from 'lucide-react';
 import { Link, NavLink } from 'react-router';
 import { useSessions } from '../../hooks/useSessions';
+import { useAuth } from '../../hooks/useAuth';
 
 const lockedItemTitles = new Set(['Analytics', 'Reports', 'Goals', 'Hand Charts']);
 
 const Sidebar = () => {
   const { data: sessions = [] } = useSessions();
-  const hasUnlockedInsights = sessions.length >= 5;
+  const { user } = useAuth();
+  const hasUnlockedInsights = user?.subscription === 'pro' || sessions.length >= 5;
   const navigationItems = SidebarData.filter((item) => item.title !== 'Settings');
   const settingsItem = SidebarData.find((item) => item.title === 'Settings');
 
@@ -50,16 +52,28 @@ const Sidebar = () => {
         })}
       </nav>
 
-      <Link className='sidebar-pro-card' to='/subscription/payment' aria-label='Start Pro trial'>
-        <span className='sidebar-pro-card__icon'>
-          <CircleStar aria-hidden='true' />
-        </span>
-        <span className='sidebar-pro-card__copy'>
-          <strong>Want more features?</strong>
-          <span>Unlock the full RiverIQ experience.</span>
-        </span>
-        <span className='sidebar-pro-card__action'>Go Pro Now</span>
-      </Link>
+      {user?.subscription === 'pro' ? (
+        <Link className='sidebar-pro-card sidebar-pro-status-card' to='/dashboard/settings' aria-label='View Pro billing'>
+          <span className='sidebar-pro-card__icon sidebar-pro-status-card__icon'>
+            <Crown aria-hidden='true' />
+          </span>
+          <span className='sidebar-pro-card__copy'>
+            <strong>RiverIQ Pro</strong>
+            <span>All features active.</span>
+          </span>
+        </Link>
+      ) : (
+        <Link className='sidebar-pro-card' to='/subscription/payment' aria-label='Start Pro trial'>
+          <span className='sidebar-pro-card__icon'>
+            <CircleStar aria-hidden='true' />
+          </span>
+          <span className='sidebar-pro-card__copy'>
+            <strong>Want more features?</strong>
+            <span>Unlock the full RiverIQ experience.</span>
+          </span>
+          <span className='sidebar-pro-card__action'>Go Pro Now</span>
+        </Link>
+      )}
 
       {settingsItem && (
         <NavLink

@@ -4,6 +4,7 @@ import {
   ChevronDown,
   ChevronRight,
   CloudUpload,
+  CreditCard,
   DollarSign,
   Monitor,
   Moon,
@@ -11,6 +12,7 @@ import {
   Table2,
   User,
 } from 'lucide-react';
+import { Link } from 'react-router';
 import { useAuth } from '../hooks/useAuth';
 import './SettingsPage.css';
 
@@ -51,6 +53,7 @@ const SettingsPage = () => {
   const selectedDateRange = dateRangeOptions.find((option) => option.value === dateRange) || dateRangeOptions[2];
   const selectedTableSize = tableSizeOptions.find((option) => option.value === tableSize) || tableSizeOptions[3];
   const selectedCurrency = currencyOptions.find((option) => option.value === currency) || currencyOptions[0];
+  const isPro = user?.subscription === 'pro';
 
   async function savePreference(key, value, onOptimisticChange, onRevert) {
     const controlId = `${key}:${value}`;
@@ -378,6 +381,39 @@ const SettingsPage = () => {
               >
                 <span />
               </button>
+            </div>
+          </div>
+        </section>
+
+        <section className='settings-card'>
+          <div className='settings-card__header'>
+            <CreditCard aria-hidden='true' />
+            <div>
+              <h2>Billing</h2>
+              <p>View and manage your RiverIQ subscription.</p>
+            </div>
+          </div>
+
+          <div className='settings-row settings-row--subscription'>
+            <div className='settings-row__copy'>
+              <h3>Current Subscription</h3>
+              <p>{isPro ? 'You have access to all RiverIQ Pro features.' : 'Upgrade to unlock every RiverIQ feature.'}</p>
+            </div>
+
+            <div className='subscription-panel'>
+              <span className={`subscription-badge${isPro ? ' subscription-badge--pro' : ''}`}>
+                {isPro ? 'Pro' : 'Free'}
+              </span>
+
+              {isPro ? (
+                <button className='subscription-action subscription-action--secondary' type='button'>
+                  Cancel Subscription
+                </button>
+              ) : (
+                <Link className='subscription-action subscription-action--primary' to='/subscription/payment'>
+                  Go Pro Now
+                </Link>
+              )}
             </div>
           </div>
         </section>

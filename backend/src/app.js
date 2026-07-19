@@ -3,6 +3,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/authRoutes.js';
 import sessionRoutes from './routes/sessionRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import goalRoutes from './routes/goalRoutes.js';
 import { globalErrorHandler, notFound } from './middleware/errorMiddleware.js';
 
 const app = express();
@@ -32,6 +34,8 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/goals', goalRoutes);
 
 app.use(notFound);
 app.use(globalErrorHandler);

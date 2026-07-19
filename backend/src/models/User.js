@@ -35,6 +35,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'free',
     },
+    stripeCustomerId: {
+      type: String,
+    },
     bankroll: {
       type: Number,
       default: 0,

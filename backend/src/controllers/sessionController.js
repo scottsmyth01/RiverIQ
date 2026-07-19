@@ -75,42 +75,36 @@ function getSessionDuration(hands) {
 }
 
 export const addSession = async (req, res, next) => {
-  console.log('inside add session handler');
   try {
     const { pokerSite, notes, tags } = req.body;
-
     if (!req.file) {
       return res.status(400).json({
         message: 'Please upload a hand history file',
       });
     }
-
     const fileText = req.file.buffer.toString('utf8');
-    const detectedSite = detectPokerSite(fileText);
 
+    const detectedSite = detectPokerSite(fileText);
     if (!detectedSite) {
       return res.status(400).json({
         message: 'We could not detect a supported poker site from this file.',
       });
     }
-
-    if (detectedSite !== pokerSite) {
+    if (detectedSite.toLocaleLowerCase() !== pokerSite.toLocaleLowerCase()) {
       return res.status(400).json({
         message: `This file looks like ${detectedSite}, but you selected ${pokerSite}.`,
       });
     }
-
     if (!fileText.trim()) {
       return res.status(400).json({
         message: 'The uploaded file is empty',
       });
     }
-
     let hands;
-    if (pokerSite === 'pokerstars') {
+    if (detectedSite.toLocaleLowerCase() === 'pokerstars') {
       hands = parsePokerStars(fileText);
     }
-    if (pokerSite === 'ggpoker') {
+    if (detectedSite.toLocaleLowerCase() === 'ggpoker') {
       hands = parseGGPoker(fileText);
     }
     if (!hands?.length) {
@@ -121,30 +115,29 @@ export const addSession = async (req, res, next) => {
     const parsedStats = calculateStats(hands);
     const firstHand = hands[0];
     const table = firstHand?.table || {};
-    const session = await Session.create({
-      user: req.user._id,
-      sessionName: req.file.originalname,
-      date: firstHand?.date || new Date(),
-      pokerSite,
-      gameType: table.game,
-      stakes:
-        table.smallBlind && table.bigBlind
-          ? `${table.currency || ''}${table.smallBlind}/${table.currency || ''}${table.bigBlind}`
-          : undefined,
-      currency: table.currency,
-      tableSize: table.maxPlayers,
-      duration: getSessionDuration(hands),
-      notes,
-      handHistory: req.handHistory || {
-        originalFileName: req.file.originalname,
-        fileSize: req.file.size,
-        contentType: req.file.mimetype,
-        uploadedAt: new Date(),
-      },
-      stats: parsedStats,
-    });
-
-    return res.status(201).json({ session });
+    // const session = await Session.create({
+    //   user: req.user._id,
+    //   sessionName: req.file.originalname,
+    //   date: firstHand?.date || new Date(),
+    //   pokerSite,
+    //   gameType: table.game,
+    //   stakes:
+    //     table.smallBlind && table.bigBlind
+    //       ? `${table.currency || ''}${table.smallBlind}/${table.currency || ''}${table.bigBlind}`
+    //       : undefined,
+    //   currency: table.currency,
+    //   tableSize: table.maxPlayers,
+    //   duration: getSessionDuration(hands),
+    //   notes,
+    //   handHistory: req.handHistory || {
+    //     originalFileName: req.file.originalname,
+    //     fileSize: req.file.size,
+    //     contentType: req.file.mimetype,
+    //     uploadedAt: new Date(),
+    //   },
+    //   stats: parsedStats,
+    // });
+    return res.status(201).json({ status: 'success', parsedStats });
   } catch (error) {
     return next(error);
   }

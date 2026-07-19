@@ -176,6 +176,21 @@
   font-weight: var(--font-weight-bold);
 }
 
+.sidebar-pro-status-card {
+  background: linear-gradient(145deg, var(--surface-chart), var(--surface-panel-deep));
+  border-color: var(--theme-nav-border);
+}
+
+.sidebar-pro-status-card:hover {
+  border-color: var(--accent-green-border-strong);
+}
+
+.sidebar-pro-status-card__icon {
+  color: var(--color-primary);
+  background: var(--overlay-success-weak);
+  border: 1px solid var(--accent-green-border-soft);
+}
+
 .sidebar__item--settings {
   flex: 0 0 auto;
   border-top-color: var(--border);

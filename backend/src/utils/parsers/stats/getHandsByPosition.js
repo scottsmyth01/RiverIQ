@@ -14,7 +14,8 @@ const RANK_VALUE = {
   2: 2,
 };
 
-const PLAY_ACTIONS = new Set(['bet', 'call', 'raise']);
+const RAISE_ACTIONS = new Set(['bet', 'raise']);
+const DECISION_ACTIONS = new Set(['bet', 'call', 'raise', 'fold']);
 
 function normalizeCard(card) {
   if (typeof card !== 'string' || card.length < 2) return null;
@@ -48,38 +49,63 @@ function getHeroPreflopResult(hand) {
   const actions = hand.preflop?.actions || [];
 
   if (!heroName) {
-    return { played: false, limped: false, openRaised: false, raised: false, folded: false };
+    return { played: false, called: false, limped: false, openRaised: false, raised: false, folded: false };
   }
 
   let hasRaiseBeforeHero = false;
-  let limped = false;
-  let openRaised = false;
+  let result = {
+    played: false,
+    called: false,
+    limped: false,
+    openRaised: false,
+    raised: false,
+    folded: false,
+  };
 
-  actions.forEach((action) => {
-    if (action.player === heroName) {
-      if (action.action === 'call' && !hasRaiseBeforeHero) {
-        limped = true;
-      }
-
-      if ((action.action === 'raise' || action.action === 'bet') && !hasRaiseBeforeHero) {
-        openRaised = true;
-      }
+  for (const action of actions) {
+    if (!DECISION_ACTIONS.has(action.action)) {
+      continue;
     }
 
-    if (action.action === 'raise' || action.action === 'bet') {
+    if (action.player === heroName) {
+      if (action.action === 'call') {
+        result = {
+          played: true,
+          called: true,
+          limped: !hasRaiseBeforeHero,
+          openRaised: false,
+          raised: false,
+          folded: false,
+        };
+      } else if (RAISE_ACTIONS.has(action.action)) {
+        result = {
+          played: true,
+          called: false,
+          limped: false,
+          openRaised: !hasRaiseBeforeHero,
+          raised: true,
+          folded: false,
+        };
+      } else if (action.action === 'fold') {
+        result = {
+          played: false,
+          called: false,
+          limped: false,
+          openRaised: false,
+          raised: false,
+          folded: true,
+        };
+      }
+
+      break;
+    }
+
+    if (RAISE_ACTIONS.has(action.action)) {
       hasRaiseBeforeHero = true;
     }
-  });
+  }
 
-  const heroActions = actions.filter((action) => action.player === heroName);
-
-  return {
-    played: heroActions.some((action) => PLAY_ACTIONS.has(action.action)),
-    limped,
-    openRaised,
-    raised: heroActions.some((action) => action.action === 'raise' || action.action === 'bet'),
-    folded: heroActions.some((action) => action.action === 'fold'),
-  };
+  return result;
 }
 
 export function getHandsByPosition(hands) {
@@ -111,8 +137,8 @@ export function getHandsByPosition(hands) {
     handStats.dealt++;
 
     if (result.played) handStats.played++;
+    if (result.called) handStats.called++;
     if (result.limped) handStats.limped++;
-    if (result.limped) handStats.called++;
     if (result.openRaised) handStats.openRaised++;
     if (result.raised) handStats.raised++;
     if (result.folded) handStats.folded++;

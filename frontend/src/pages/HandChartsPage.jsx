@@ -133,20 +133,25 @@ function getCellAction(cell, defaultFrequency = 1) {
     return { action: cell, frequency: 1 };
   }
 
+  const called = Number(cell?.called || 0);
+  const limped = Number(cell?.limped || 0);
+  const openRaised = Number(cell?.openRaised || 0);
+  const raised = Number(cell?.raised || 0);
+
   return {
     action: cell?.action || 'fold',
     count: Number.isFinite(cell?.count) ? cell.count : 0,
     denominator: Number.isFinite(cell?.denominator) ? cell.denominator : 0,
     folded: Number.isFinite(cell?.folded) ? cell.folded : 0,
     frequency: Number.isFinite(cell?.frequency) ? cell.frequency : defaultFrequency,
-    limped: Number.isFinite(cell?.limped) ? cell.limped : Number(cell?.called || 0),
-    raised: Number.isFinite(cell?.openRaised) ? cell.openRaised : Number(cell?.raised || 0),
+    limped: Math.max(called, limped),
+    raised: Math.max(openRaised, raised),
   };
 }
 
 function getActionVerb(action) {
   if (action === 'raise') return 'open raised';
-  if (action === 'limp') return 'limped';
+  if (action === 'limp') return 'called';
   return 'folded';
 }
 
@@ -166,7 +171,7 @@ function getActionBreakdown(stats = {}) {
   const denominator = Number(stats.denominator || 0);
   const actions = [
     { colorClass: 'raise', count: Number(stats.raised || 0), id: 'raised', label: 'Open Raised' },
-    { colorClass: 'limp', count: Number(stats.limped || 0), id: 'limped', label: 'Limped' },
+    { colorClass: 'limp', count: Number(stats.limped || 0), id: 'limped', label: 'Called' },
     { colorClass: 'fold', count: Number(stats.folded || 0), id: 'folded', label: 'Folded' },
   ];
 
@@ -316,8 +321,8 @@ function getActualActionsFromSessions(sessions, position) {
         };
       }
 
-      const raised = Number(stats?.openRaised ?? stats?.raised ?? 0);
-      const limped = Number(stats?.limped ?? stats?.called ?? 0);
+      const raised = Math.max(Number(stats?.openRaised || 0), Number(stats?.raised || 0));
+      const limped = Math.max(Number(stats?.limped || 0), Number(stats?.called || 0));
       const folded = Number(stats?.folded || 0);
       const played = Number(stats?.played || 0);
       const dealt = Number(stats?.dealt || 0);
@@ -375,8 +380,20 @@ function getSessionTableSize(session) {
 const HandChartsPage = () => {
   const [selectedPosition, setSelectedPosition] = useState('BTN');
   const [selectedTableSize, setSelectedTableSize] = useState('6max');
+  const [hasSelectedTableSize, setHasSelectedTableSize] = useState(false);
   const [selectedHand, setSelectedHand] = useState('');
   const { data: sessions = [] } = useSessions();
+  const tableSizeCounts = useMemo(
+    () =>
+      sessions.reduce((counts, session) => {
+        const tableSize = getSessionTableSize(session);
+        if (tableSizes.includes(tableSize)) {
+          counts[tableSize] = (counts[tableSize] || 0) + 1;
+        }
+        return counts;
+      }, {}),
+    [sessions],
+  );
   const visiblePositions = useMemo(
     () =>
       positionsByTableSize[selectedTableSize].map((positionId) => ({
@@ -412,6 +429,17 @@ const HandChartsPage = () => {
   }, [selectedPosition, visiblePositions]);
 
   useEffect(() => {
+    if (hasSelectedTableSize || !sessions.length || tableSizeCounts[selectedTableSize]) return;
+
+    const [tableSizeWithMostSessions] =
+      Object.entries(tableSizeCounts).sort((first, second) => second[1] - first[1])[0] || [];
+
+    if (tableSizeWithMostSessions) {
+      setSelectedTableSize(tableSizeWithMostSessions);
+    }
+  }, [hasSelectedTableSize, selectedTableSize, sessions.length, tableSizeCounts]);
+
+  useEffect(() => {
     setSelectedHand('');
   }, [selectedPosition, selectedTableSize]);
 
@@ -430,7 +458,10 @@ const HandChartsPage = () => {
             <select
               aria-label='Hand chart table size'
               value={selectedTableSize}
-              onChange={(event) => setSelectedTableSize(event.target.value)}
+              onChange={(event) => {
+                setHasSelectedTableSize(true);
+                setSelectedTableSize(event.target.value);
+              }}
             >
               {tableSizes.map((tableSize) => (
                 <option value={tableSize} key={tableSize}>

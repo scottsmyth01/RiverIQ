@@ -1,0 +1,63 @@
+import mongoose from 'mongoose';
+
+const goalSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+    title: {
+      type: String,
+      required: [true, 'Goal title is required'],
+      trim: true,
+      maxlength: [80, 'Goal title must be 80 characters or fewer'],
+    },
+    description: {
+      type: String,
+      trim: true,
+      maxlength: [240, 'Goal description must be 240 characters or fewer'],
+      default: '',
+    },
+    category: {
+      type: String,
+      enum: ['Preflop', 'Postflop', 'Results', 'Volume', 'Bankroll', 'Study'],
+      default: 'Preflop',
+    },
+    target: {
+      type: String,
+      required: [true, 'Goal target is required'],
+      trim: true,
+      maxlength: [40, 'Goal target must be 40 characters or fewer'],
+    },
+    current: {
+      type: String,
+      trim: true,
+      maxlength: [40, 'Goal current value must be 40 characters or fewer'],
+      default: '',
+    },
+    progress: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 0,
+    },
+    status: {
+      type: String,
+      enum: ['On Track', 'In Progress', 'At Risk', 'Completed', 'Not Started'],
+      default: 'In Progress',
+    },
+    dueDate: {
+      type: Date,
+      default: null,
+    },
+    completedAt: {
+      type: Date,
+      default: null,
+    },
+  },
+  { timestamps: true },
+);
+
+export default mongoose.model('Goal', goalSchema);
