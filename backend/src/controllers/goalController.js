@@ -63,7 +63,7 @@ export const updateGoal = async (req, res, next) => {
         dueDate: req.body.dueDate,
       },
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       },
     );

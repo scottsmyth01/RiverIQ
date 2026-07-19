@@ -59,6 +59,10 @@ const sessionSchema = new mongoose.Schema(
     tableSize: Number,
     duration: { type: Number, default: null },
     notes: String,
+    tags: {
+      type: [String],
+      default: [],
+    },
 
     handHistory: {
       originalFileName: String,

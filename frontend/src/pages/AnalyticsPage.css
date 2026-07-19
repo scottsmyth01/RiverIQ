@@ -200,8 +200,8 @@
 }
 
 .analytics-metric-row > span:first-child {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
   white-space: nowrap;
 }
 

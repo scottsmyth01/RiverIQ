@@ -266,14 +266,14 @@ const metricDescriptions = {
   VPIP: 'Voluntarily Put Money In Pot. How often you enter the pot by calling or raising before the flop.',
   PFR: 'Preflop Raise. How often you raise before the flop. Big blind open-raise spots are marked N/A.',
   '3Bet': 'How often you re-raise preflop after another player has already opened.',
-  'Fold to 3Bet': 'How often you fold after raising or calling preflop and then facing a 3Bet.',
+  F3Bet: 'How often you fold after raising or calling preflop and then facing a 3Bet.',
   Steal: 'How often you open-raise from CO, BTN, or SB when the action folds to you.',
-  'Fold to Steal': 'How often you fold from the blinds after facing a steal attempt from late position.',
-  'Continuation Bet': 'How often you bet the flop after being the preflop aggressor.',
-  'Fold to CBet': 'How often you fold when facing a flop continuation bet.',
-  'Turn CBet': 'How often you bet the turn after continuation betting the flop.',
-  'Fold to Turn CBet': 'How often you fold on the turn after facing a second barrel.',
-  'Aggression Factor': 'Postflop aggression ratio. Bets and raises compared with calls.',
+  FSteal: 'How often you fold from the blinds after facing a steal attempt from late position.',
+  CBet: 'How often you bet the flop after being the preflop aggressor.',
+  FCBet: 'How often you fold when facing a flop continuation bet.',
+  TBet: 'How often you bet the turn after continuation betting the flop.',
+  FTBet: 'How often you fold on the turn after facing a second barrel.',
+  AF: 'Postflop aggression ratio. Bets and raises compared with calls.',
   WTSD: 'Went To Showdown. How often you reach showdown after seeing the flop.',
   'W$SD': 'Won Money at Showdown. How often you win when the hand reaches showdown.',
 };
@@ -307,9 +307,9 @@ function buildPreflopStats(profile) {
     buildMetric('VPIP', profile.vpip, '%', goals.vpip, 52),
     buildMetric('PFR', profile.position === 'BB' ? 'N/A' : profile.pfr, '%', profile.position === 'BB' ? null : goals.pfr, 44),
     buildMetric('3Bet', profile.threeBet, '%', goals.threeBet, 13),
-    buildMetric('Fold to 3Bet', profile.foldToThreeBet, '%', goals.foldToThreeBet, 70),
+    buildMetric('F3Bet', profile.foldToThreeBet, '%', goals.foldToThreeBet, 70),
     buildMetric('Steal', steal, '%', stealGoal, 58),
-    buildMetric('Fold to Steal', foldToSteal, '%', foldToStealGoal, 90),
+    buildMetric('FSteal', foldToSteal, '%', foldToStealGoal, 90),
   ];
 }
 
@@ -317,11 +317,11 @@ function buildPostflopStats(profile) {
   const goals = getPositionGoals(profile.position);
 
   return [
-    buildMetric('Continuation Bet', profile.cBet, '%', goals.cBet, 86),
-    buildMetric('Fold to CBet', profile.foldCBet, '%', goals.foldCBet, 68),
-    buildMetric('Turn CBet', profile.turnCBet, '%', goals.turnCBet, 70),
-    buildMetric('Fold to Turn CBet', profile.foldToTurnCBet, '%', goals.foldTurnCBet, 65),
-    buildMetric('Aggression Factor', profile.aggressionFactor, '', goals.riverAggression, 2.8),
+    buildMetric('CBet', profile.cBet, '%', goals.cBet, 86),
+    buildMetric('FCBet', profile.foldCBet, '%', goals.foldCBet, 68),
+    buildMetric('TBet', profile.turnCBet, '%', goals.turnCBet, 70),
+    buildMetric('FTBet', profile.foldToTurnCBet, '%', goals.foldTurnCBet, 65),
+    buildMetric('AF', profile.aggressionFactor, '', goals.riverAggression, 2.8),
     buildMetric('WTSD', profile.wtsd, '%', goals.wtsd, 36),
     buildMetric('W$SD', profile.wsd, '%', goals.wsd, 66),
   ];

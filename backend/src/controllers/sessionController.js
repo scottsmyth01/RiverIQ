@@ -40,6 +40,65 @@ export const getSessions = async (req, res) => {
   res.status(200).json({ sessions });
 };
 
+function normalizeTags(tags) {
+  if (Array.isArray(tags)) {
+    return tags.map((tag) => String(tag).trim()).filter(Boolean);
+  }
+
+  if (typeof tags === 'string') {
+    return tags
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+export const updateSession = async (req, res, next) => {
+  try {
+    const session = await Session.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user: req.user._id,
+      },
+      {
+        notes: req.body.notes || '',
+        tags: normalizeTags(req.body.tags),
+      },
+      {
+        returnDocument: 'after',
+        runValidators: true,
+      },
+    );
+
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+
+    return res.status(200).json({ session });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const deleteSession = async (req, res, next) => {
+  try {
+    const session = await Session.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+
+    return res.status(200).json({ message: 'Session deleted', id: req.params.id });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 /*
 Protect middleware
 --> Checks JWT cookie

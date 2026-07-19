@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes.js';
 import sessionRoutes from './routes/sessionRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import goalRoutes from './routes/goalRoutes.js';
+import savedReportRoutes from './routes/savedReportRoutes.js';
 import { globalErrorHandler, notFound } from './middleware/errorMiddleware.js';
 
 const app = express();
@@ -36,6 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/goals', goalRoutes);
+app.use('/api/saved-reports', savedReportRoutes);
 
 app.use(notFound);
 app.use(globalErrorHandler);

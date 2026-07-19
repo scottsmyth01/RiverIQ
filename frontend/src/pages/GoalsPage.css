@@ -498,21 +498,27 @@
   height: 32px;
   display: inline-grid;
   place-items: center;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
   color: var(--text-table-muted);
+  background: var(--surface-control-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 6px;
   cursor: pointer;
+  transition:
+    color var(--transition),
+    background var(--transition),
+    border-color var(--transition);
 }
 
-.goal-more-button:hover {
-  background: var(--surface-control-deep);
+.goal-more-button:hover,
+.goal-more-button[aria-expanded='true'] {
   color: var(--text-white);
+  background: var(--surface-row-hover);
+  border-color: var(--accent-green-border-strong);
 }
 
 .goal-more-button svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .goal-actions-cell {
@@ -523,41 +529,44 @@
 .goal-row-menu {
   position: absolute;
   z-index: 12;
-  top: 36px;
+  top: calc(100% + 4px);
   right: 0;
-  width: 142px;
-  overflow: hidden;
-  border: 1px solid var(--theme-border-card);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--surface-panel-deep) 96%, var(--surface-white));
-  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.34);
+  width: 132px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--surface-auth-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 7px;
+  box-shadow: var(--shadow-lg);
 }
 
 .goal-row-menu button {
   width: 100%;
-  min-height: 36px;
-  padding: 0 11px;
+  min-height: 34px;
+  padding: 0 9px;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   border: 0;
-  border-bottom: 1px solid var(--border-muted-alpha);
   background: transparent;
-  color: var(--text-control);
+  color: var(--text-muted-light);
+  border-radius: 5px;
   font: inherit;
   font-size: 0.76rem;
-  font-weight: 800;
+  font-weight: 750;
   text-align: left;
   cursor: pointer;
 }
 
 .goal-row-menu button:last-child {
-  border-bottom: 0;
-  color: var(--danger-soft-text);
+  color: var(--danger-bright);
 }
 
 .goal-row-menu button:hover {
-  background: var(--surface-row-hover);
+  color: var(--text-white);
+  background: var(--overlay-white);
 }
 
 .goal-row-menu svg {

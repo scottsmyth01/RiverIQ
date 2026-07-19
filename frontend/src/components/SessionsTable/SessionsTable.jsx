@@ -1,19 +1,25 @@
 import './SessionsTable.css';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import SessionToolbar from './SessionToolbar';
 import { applySorting, applyDateFilter, numTables as tables, finish as applyFinish } from './sessionTableFilters';
 import { useAuth } from '../../hooks/useAuth';
+import { useDeleteSession } from '../../hooks/useSessions';
 import { getPeriodFromDefaultTimeFilter } from '../../utils/dateRangePreferences';
 
 const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
+  const navigate = useNavigate();
   const { user } = useAuth();
+  const { mutateAsync: deleteSession, isPending: isDeletingSession } = useDeleteSession();
   const defaultDateRange = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
   const [dateRange, setDateRange] = useState(defaultDateRange);
   const [sortBy, setSortBy] = useState('newest');
   const [numTables, setNumTables] = useState('all');
   const [finish, setFinish] = useState('all');
+  const [openActionMenuId, setOpenActionMenuId] = useState(null);
 
   const filteredSessions = useMemo(() => {
     let result = [...sessions];
@@ -43,6 +49,17 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
     setDateRange(defaultDateRange);
   }, [defaultDateRange]);
 
+  useEffect(() => {
+    function closeActionMenu(event) {
+      if (!event.target.closest('.sessions-actions-cell')) {
+        setOpenActionMenuId(null);
+      }
+    }
+
+    document.addEventListener('pointerdown', closeActionMenu);
+    return () => document.removeEventListener('pointerdown', closeActionMenu);
+  }, []);
+
   const currentSessions = filteredSessions.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(filteredSessions.length / sessionsPerPage);
   const firstVisiblePage = currentPage === totalPages ? Math.max(1, totalPages - 1) : currentPage;
@@ -58,6 +75,22 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
     const hands = Number(session.hands) || 0;
 
     return hands > 0 ? (profit / 0.1 / hands) * 100 : 0;
+  }
+
+  async function handleDeleteSession(event, sessionId) {
+    event.stopPropagation();
+
+    if (!window.confirm('Delete this session? This cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await deleteSession(sessionId);
+      setOpenActionMenuId(null);
+      toast.success('Session deleted');
+    } catch (error) {
+      toast.error(error.message || 'Could not delete session');
+    }
   }
 
   return (
@@ -93,6 +126,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
               <th scope='col'>Profit</th>
               <th scope='col'>Win Rate</th>
               <th scope='col'>Duration</th>
+              <th scope='col' aria-label='Session actions'></th>
             </tr>
           </thead>
 
@@ -117,9 +151,21 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
               const minutes = hasDuration ? duration % 60 : 0;
               const profitIsPositive = profit >= 0;
               const winRateIsPositive = winRate >= 0;
+              const sessionId = session._id || session.id;
 
               return (
-                <tr key={session._id}>
+                <tr
+                  className='sessions-table__row'
+                  key={sessionId}
+                  tabIndex={0}
+                  onClick={() => navigate(`/dashboard/sessions/${sessionId}`)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      navigate(`/dashboard/sessions/${sessionId}`);
+                    }
+                  }}
+                >
                   <td>
                     <span className='session-date-desktop'>{formattedDate}</span>
                     <span className='session-date-mobile'>{mobileFormattedDate}</span>
@@ -138,6 +184,29 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                     {winRate.toFixed(2)} BB/100
                   </td>
                   <td>{hasDuration ? `${hours}h ${minutes}m` : 'N/A'}</td>
+                  <td className='sessions-actions-cell' onClick={(event) => event.stopPropagation()}>
+                    <button
+                      className='sessions-actions-button'
+                      type='button'
+                      aria-label={`Actions for ${session.sessionName || formattedDate}`}
+                      aria-expanded={openActionMenuId === sessionId}
+                      onClick={() => setOpenActionMenuId(openActionMenuId === sessionId ? null : sessionId)}
+                    >
+                      <MoreVertical aria-hidden='true' />
+                    </button>
+                    {openActionMenuId === sessionId && (
+                      <div className='sessions-actions-menu'>
+                        <button type='button' onClick={() => navigate(`/dashboard/sessions/${sessionId}`)}>
+                          <Pencil aria-hidden='true' />
+                          <span>Edit</span>
+                        </button>
+                        <button type='button' disabled={isDeletingSession} onClick={(event) => handleDeleteSession(event, sessionId)}>
+                          <Trash2 aria-hidden='true' />
+                          <span>{isDeletingSession ? 'Deleting...' : 'Delete'}</span>
+                        </button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
               );
             })}

@@ -9,7 +9,6 @@ import {
   CircleAlert,
   CircleCheck,
   CircleDot,
-  Copy,
   MoreVertical,
   Pencil,
   Plus,
@@ -113,7 +112,7 @@ function SummaryCard({ card }) {
   );
 }
 
-function GoalRow({ goal, isMenuOpen, onDuplicate, onEdit, onMenuToggle, onRemove }) {
+function GoalRow({ goal, isMenuOpen, onEdit, onMenuToggle, onRemove }) {
   const Icon = iconByCategory[goal.category] ?? Target;
   const iconTone = iconToneByCategory[goal.category] ?? 'blue';
   const statusTone = statusToneByStatus[goal.status] ?? 'gray';
@@ -165,6 +164,7 @@ function GoalRow({ goal, isMenuOpen, onDuplicate, onEdit, onMenuToggle, onRemove
             className='goal-more-button'
             type='button'
             aria-label={`More actions for ${goal.title}`}
+            aria-expanded={isMenuOpen}
             onClick={() => onMenuToggle(goal._id)}
           >
             <MoreVertical aria-hidden='true' />
@@ -174,10 +174,6 @@ function GoalRow({ goal, isMenuOpen, onDuplicate, onEdit, onMenuToggle, onRemove
               <button type='button' onClick={() => onEdit(goal)}>
                 <Pencil aria-hidden='true' />
                 <span>Edit</span>
-              </button>
-              <button type='button' onClick={() => onDuplicate(goal)}>
-                <Copy aria-hidden='true' />
-                <span>Duplicate</span>
               </button>
               <button type='button' onClick={() => onRemove(goal._id)}>
                 <Trash2 aria-hidden='true' />
@@ -308,24 +304,6 @@ const GoalsPage = () => {
       }
 
       setModalMode(null);
-    } catch (mutationError) {
-      console.error(mutationError);
-    }
-  }
-
-  async function handleDuplicate(goal) {
-    try {
-      await createGoalMutation.mutateAsync({
-        title: `${goal.title} Copy`,
-        description: goal.description,
-        category: goal.category,
-        target: goal.target,
-        current: goal.current,
-        progress: goal.progress,
-        status: 'In Progress',
-        dueDate: goal.dueDate || null,
-      });
-      setRowMenuId(null);
     } catch (mutationError) {
       console.error(mutationError);
     }
@@ -468,7 +446,6 @@ const GoalsPage = () => {
                   goal={goal}
                   isMenuOpen={rowMenuId === goal._id}
                   key={goal._id}
-                  onDuplicate={handleDuplicate}
                   onEdit={openEditGoalModal}
                   onMenuToggle={(goalId) => setRowMenuId(rowMenuId === goalId ? null : goalId)}
                   onRemove={handleRemove}

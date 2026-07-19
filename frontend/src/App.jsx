@@ -8,6 +8,7 @@ import SessionsPage from './pages/SessionsPage';
 import DashboardLayout from './components/DashboardLayout/DashboardLayout';
 import DashboardSectionPage from './pages/DashboardSectionPage';
 import AddSessionPage from './pages/AddSessionPage';
+import SessionDetailPage from './pages/SessionDetailPage';
 import SettingsPage from './pages/SettingsPage';
 import ReportsPage from './pages/ReportsPage';
 import SavedReportsPage from './pages/SavedReportsPage';
@@ -97,6 +98,7 @@ function AppRoutes() {
           >
             <Route index element={<DashboardPage />} />
             <Route path='sessions' element={<SessionsPage />} />
+            <Route path='sessions/:id' element={<SessionDetailPage />} />
             <Route path='analytics' element={<AnalyticsPage />} />
             <Route path='reports' element={<ReportsPage />} />
             <Route path='reports/saved' element={<SavedReportsPage />} />
