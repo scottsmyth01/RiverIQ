@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { readFileSync } from 'node:fs';
 import generateToken, { getCookieOptions } from '../utils/generateToken.js';
 import Cloudflare from 'cloudflare';
+import { deleteFromR2, uploadAvatarToR2 } from '../middleware/uploadToR2Middleware.js';
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -21,6 +22,20 @@ const escapeHtml = (value) =>
         "'": '&#39;',
       })[character],
   );
+
+const serializeUser = (user) => ({
+  _id: user._id,
+  name: user.name,
+  username: user.username,
+  email: user.email,
+  subscription: user.subscription,
+  bankroll: user.bankroll,
+  role: user.role,
+  isEmailVerified: user.isEmailVerified,
+  preferences: user.preferences,
+  avatarUrl: user.avatarUrl,
+  avatarKey: user.avatarKey,
+});
 
 const sendPasswordResetEmail = async (email, resetLink) => {
   const apiToken = process.env.CLOUDFLARE_KEY;
@@ -150,16 +165,7 @@ export const registerUser = async (req, res, next) => {
     generateToken(res, user._id);
 
     return res.status(201).json({
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        subscription: user.subscription,
-        bankroll: user.bankroll,
-        role: user.role,
-        isEmailVerified: user.isEmailVerified,
-        preferences: user.preferences,
-      },
+      user: serializeUser(user),
     });
   } catch (error) {
     return next(error);
@@ -210,16 +216,7 @@ export const loginUser = async (req, res, next) => {
     generateToken(res, user._id);
 
     return res.status(200).json({
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        subscription: user.subscription,
-        bankroll: user.bankroll,
-        role: user.role,
-        isEmailVerified: user.isEmailVerified,
-        preferences: user.preferences,
-      },
+      user: serializeUser(user),
     });
   } catch (error) {
     return next(error);
@@ -245,17 +242,7 @@ export const logoutUser = async (req, res, next) => {
 export const getMe = async (req, res, next) => {
   try {
     return res.status(200).json({
-      user: {
-        _id: req.user._id,
-        name: req.user.name,
-        username: req.user.username,
-        email: req.user.email,
-        subscription: req.user.subscription,
-        bankroll: req.user.bankroll,
-        role: req.user.role,
-        isEmailVerified: req.user.isEmailVerified,
-        preferences: req.user.preferences,
-      },
+      user: serializeUser(req.user),
     });
   } catch (error) {
     return next(error);
@@ -287,16 +274,7 @@ export const updatePreferences = async (req, res, next) => {
     );
 
     return res.status(200).json({
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        subscription: user.subscription,
-        bankroll: user.bankroll,
-        role: user.role,
-        isEmailVerified: user.isEmailVerified,
-        preferences: user.preferences,
-      },
+      user: serializeUser(user),
     });
   } catch (error) {
     return next(error);
@@ -378,6 +356,59 @@ export const resetPassword = async (req, res, next) => {
     error.statusCode = 400;
     error.message =
       error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link';
+    return next(error);
+  }
+};
+
+export const uploadAvatar = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'Avatar image is required' });
+    }
+
+    const publicBaseUrl = process.env.R2_PUBLIC_URL_AVATAR || process.env.R2_PUBLIC_URL;
+
+    if (!publicBaseUrl) {
+      return res.status(500).json({ message: 'Avatar public URL is not configured' });
+    }
+
+    const previousAvatarKey = req.user.avatarKey;
+    const avatarKey = await uploadAvatarToR2(req.file, req.user._id);
+
+    req.user.avatarKey = avatarKey;
+    req.user.avatarUrl = `${publicBaseUrl.replace(/\/$/, '')}/${avatarKey}`;
+
+    await req.user.save();
+
+    if (previousAvatarKey && previousAvatarKey !== avatarKey) {
+      deleteFromR2(previousAvatarKey).catch((error) => {
+        console.error('Failed to delete previous avatar from R2:', error);
+      });
+    }
+
+    return res.status(200).json({ user: serializeUser(req.user) });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const deleteAvatar = async (req, res, next) => {
+  try {
+    const previousAvatarKey = req.user.avatarKey;
+
+    req.user.avatarKey = '';
+    req.user.avatarUrl = '';
+
+    await req.user.save();
+
+    if (previousAvatarKey) {
+      deleteFromR2(previousAvatarKey).catch((error) => {
+        console.error('Failed to delete avatar from R2:', error);
+      });
+    }
+
+    return res.status(200).json({ user: serializeUser(req.user) });
+  } catch (error) {
     return next(error);
   }
 };

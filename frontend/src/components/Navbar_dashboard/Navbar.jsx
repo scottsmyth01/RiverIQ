@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bell, ChevronDown, LogOut, Moon, MoonIcon, Plus, Settings, SunIcon } from 'lucide-react';
+import { CircleHelp, ChevronDown, LogOut, MoonIcon, Plus, Settings, SunIcon } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAuth } from '../../hooks/useAuth';
 import './Navbar.css';
@@ -101,13 +101,19 @@ const Navbar = () => {
             aria-haspopup='menu'
             onClick={() => setIsAccountOpen((isOpen) => !isOpen)}
           >
-            <span className='dashboard-navbar__avatar'>{initials}</span>
+            <span className='dashboard-navbar__avatar'>
+              {user?.avatarUrl ? <img src={user.avatarUrl} alt='' /> : initials}
+            </span>
             <span className='dashboard-navbar__name'>{displayName}</span>
             <ChevronDown className={isAccountOpen ? 'open' : ''} aria-hidden='true' />
           </button>
 
           {isAccountOpen && (
             <div className='dashboard-navbar__menu' role='menu'>
+              <Link to='/dashboard/help' role='menuitem' onClick={() => setIsAccountOpen(false)}>
+                <CircleHelp aria-hidden='true' />
+                Help
+              </Link>
               <Link to='/dashboard/settings' role='menuitem' onClick={() => setIsAccountOpen(false)}>
                 <Settings aria-hidden='true' />
                 Settings

@@ -319,6 +319,8 @@
   --page-heading-margin: 0 0 0.35rem;
   --page-heading-line-height: 1.12;
   --page-heading-letter-spacing: 0;
+  --page-subtitle-size: 0.92rem;
+  --page-subtitle-line-height: 1.45;
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;

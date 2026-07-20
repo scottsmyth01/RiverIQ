@@ -1,3 +1,5 @@
+import { getFirstAmount, MONEY_PATTERN } from './amounts.js';
+
 export function parseSummarySeat(line) {
   let match;
 
@@ -6,7 +8,7 @@ export function parseSummarySeat(line) {
   // Hero (button) showed [Ah As] and won ($2.35) with ...
   // ==========================================
 
-  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))? showed \[([^\]]+)\] and won \(\$([\d.]+)\) with (.+)$/);
+  match = line.match(new RegExp(`^Seat (\\d+): (.+?)(?: \\((.*?)\\))* showed \\[([^\\]]+)\\] and won \\(${MONEY_PATTERN.source}\\) with (.+)$`, 'i'));
 
   if (match) {
     return {
@@ -15,7 +17,7 @@ export function parseSummarySeat(line) {
       position: match[3] || null,
       cards: match[4].split(' '),
       result: 'won',
-      amount: parseFloat(match[5]),
+      amount: getFirstAmount(match[5]),
       madeHand: match[6],
     };
   }
@@ -25,7 +27,7 @@ export function parseSummarySeat(line) {
   // Hero (button) showed [Ah As] and collected ($2.35)
   // ==========================================
 
-  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))? showed \[([^\]]+)\] and collected \(\$([\d.]+)\)$/);
+  match = line.match(new RegExp(`^Seat (\\d+): (.+?)(?: \\((.*?)\\))* showed \\[([^\\]]+)\\] and collected \\(${MONEY_PATTERN.source}\\)$`, 'i'));
 
   if (match) {
     return {
@@ -34,7 +36,7 @@ export function parseSummarySeat(line) {
       position: match[3] || null,
       cards: match[4].split(' '),
       result: 'collected',
-      amount: parseFloat(match[5]),
+      amount: getFirstAmount(match[5]),
     };
   }
 
@@ -42,7 +44,7 @@ export function parseSummarySeat(line) {
   // Hero showed [Ah As] and lost with ...
   // ==========================================
 
-  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))? showed \[([^\]]+)\] and lost with (.+)$/);
+  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))* showed \[([^\]]+)\] and lost with (.+)$/i);
 
   if (match) {
     return {
@@ -59,7 +61,7 @@ export function parseSummarySeat(line) {
   // Hero mucked [Ah As]
   // ==========================================
 
-  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))? mucked \[([^\]]+)\]$/);
+  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))* mucked \[([^\]]+)\]$/i);
 
   if (match) {
     return {
@@ -76,7 +78,7 @@ export function parseSummarySeat(line) {
   // folded before Flop (didn't bet)
   // ==========================================
 
-  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))? folded before Flop/);
+  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))* (?:\[[^\]]+\] )?folded before Flop/i);
 
   if (match) {
     return {
@@ -91,7 +93,7 @@ export function parseSummarySeat(line) {
   // folded on the Flop / Turn / River
   // ==========================================
 
-  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))? folded on the (Flop|Turn|River)/);
+  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))* (?:\[[^\]]+\] )?folded on the (Flop|Turn|River)/i);
 
   if (match) {
     return {
@@ -108,7 +110,7 @@ export function parseSummarySeat(line) {
   // Seat 3: Hero collected ($1.45)
   // ==========================================
 
-  match = line.match(/^Seat (\d+): (.+?)(?: \((.*?)\))? collected \(\$([\d.]+)\)$/);
+  match = line.match(new RegExp(`^Seat (\\d+): (.+?)(?: \\((.*?)\\))* (?:\\[[^\\]]+\\] )?collected \\(${MONEY_PATTERN.source}\\)$`, 'i'));
 
   if (match) {
     return {
@@ -116,7 +118,7 @@ export function parseSummarySeat(line) {
       player: match[2],
       position: match[3] || null,
       result: 'collected',
-      amount: parseFloat(match[4]),
+      amount: getFirstAmount(match[4]),
     };
   }
 

@@ -2,6 +2,7 @@ import { parseActions } from './helpers/parseActions.js';
 import { parseStreet } from './helpers/parseStreet.js';
 import { parseShowdownActions } from './helpers/parseShowdownActions.js';
 import { parseSummarySeat } from './helpers/parseSummarySeat.js';
+import { getFirstAmount, MONEY_PATTERN } from './helpers/amounts.js';
 
 export function parseFile(fileText, regex) {
   const handTexts = splitHands(fileText);
@@ -71,13 +72,17 @@ export function getHandNumber(handText, regex) {
 }
 
 export function getTableInfo(handText, regex) {
-  const headerMatch = handText.match(regex.tableHeader);
+  const headerMatch = regex.tableHeader ? handText.match(regex.tableHeader) : null;
+  const headerLineMatch = regex.headerLine ? handText.match(regex.headerLine) : null;
+  const blindsMatch = regex.blinds ? (headerLineMatch?.[1] || handText).match(regex.blinds) : null;
   const tableMatch = handText.match(regex.table);
+  const gameText = headerLineMatch?.[1] || headerMatch?.[1] || null;
+
   return {
-    game: headerMatch ? headerMatch[1] : null,
-    smallBlind: headerMatch ? Number(headerMatch[2]) : null,
-    bigBlind: headerMatch ? Number(headerMatch[3]) : null,
-    currency: headerMatch && headerMatch[4] ? headerMatch[4] : null,
+    game: gameText?.includes("Hold'em No Limit") ? "Hold'em No Limit" : gameText,
+    smallBlind: blindsMatch ? Number(blindsMatch[1].replace(/,/g, '')) : headerMatch ? Number(headerMatch[2]) : null,
+    bigBlind: blindsMatch ? Number(blindsMatch[2].replace(/,/g, '')) : headerMatch ? Number(headerMatch[3]) : null,
+    currency: blindsMatch?.[3] || headerMatch?.[4] || null,
     maxPlayers: tableMatch ? Number(tableMatch[1]) : null,
   };
 }
@@ -90,7 +95,7 @@ export function getPlayers(handText, regex) {
     players.push({
       seat: Number(match[1]),
       name: match[2],
-      stack: Number(match[3]),
+      stack: Number(match[3].replace(/,/g, '')),
     });
   }
   return players;
@@ -125,13 +130,19 @@ export function getPreflop(handText, preflopRegex) {
     return null;
   }
 
+  const forcedBetLines = handText
+    .slice(0, match.index)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => /:\s*posts\b/i.test(line));
+
   const actionLines = match[1]
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
 
   return {
-    actions: parseActions(actionLines),
+    actions: parseActions([...forcedBetLines, ...actionLines]),
   };
 }
 
@@ -180,6 +191,7 @@ export function getSummary(handText, regex) {
   const summary = {
     totalPot: null,
     rake: null,
+    pots: [],
     board: [],
     seats: [],
   };
@@ -188,11 +200,18 @@ export function getSummary(handText, regex) {
     let match;
 
     // Total pot $3.75 | Rake $0.10
-    match = line.match(/^Total pot \$([\d.]+) \| Rake \$([\d.]+)/);
+    // Total pot $10.00 Main pot $4.00. Side pot $6.00. | Rake $0.50
+    match = line.match(new RegExp(`^Total pot ${MONEY_PATTERN.source}(.*?)\\| Rake ${MONEY_PATTERN.source}`, 'i'));
 
     if (match) {
-      summary.totalPot = parseFloat(match[1]);
-      summary.rake = parseFloat(match[2]);
+      summary.totalPot = getFirstAmount(match[1]);
+      summary.rake = getFirstAmount(match[3]);
+      summary.pots = [...match[2].matchAll(new RegExp(`(main pot|side pot(?:-?\\d+)?)\\s+${MONEY_PATTERN.source}`, 'gi'))].map(
+        (potMatch) => ({
+          type: potMatch[1].toLowerCase(),
+          amount: getFirstAmount(potMatch[2]),
+        }),
+      );
       continue;
     }
 

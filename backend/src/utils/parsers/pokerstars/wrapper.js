@@ -5,7 +5,7 @@ export function splitHands(file) {
   return file
     .split(REGEX.handStart)
     .map((handText) => handText.trim())
-    .filter((handText) => handText.startsWith('PokerStars Hand #'));
+    .filter((handText) => /^PokerStars (?:Zoom )?(?:Hand|Game) #/.test(handText));
 }
 
 export function parsePokerStars(fileText) {

@@ -1,6 +1,6 @@
 import './HandChartsPage.css';
 
-import { ChevronDown, Info, Table2, X } from 'lucide-react';
+import { ChevronDown, Info, Lock, Table2, X } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useSessions } from '../hooks/useSessions';
 
@@ -98,6 +98,7 @@ const positionsByTableSize = {
 
 const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
 const tableSizes = ['6max', '7max', '8max', '9max'];
+const ACTUAL_HAND_CHART_UNLOCK_HANDS = 10000;
 
 function getHand(rowIndex, colIndex) {
   const row = ranks[rowIndex];
@@ -144,14 +145,14 @@ function getCellAction(cell, defaultFrequency = 1) {
     denominator: Number.isFinite(cell?.denominator) ? cell.denominator : 0,
     folded: Number.isFinite(cell?.folded) ? cell.folded : 0,
     frequency: Number.isFinite(cell?.frequency) ? cell.frequency : defaultFrequency,
-    limped: Math.max(called, limped),
+    limped: called + limped,
     raised: Math.max(openRaised, raised),
   };
 }
 
 function getActionVerb(action) {
   if (action === 'raise') return 'open raised';
-  if (action === 'limp') return 'called';
+  if (action === 'limp') return 'limped/called';
   return 'folded';
 }
 
@@ -171,7 +172,7 @@ function getActionBreakdown(stats = {}) {
   const denominator = Number(stats.denominator || 0);
   const actions = [
     { colorClass: 'raise', count: Number(stats.raised || 0), id: 'raised', label: 'Open Raised' },
-    { colorClass: 'limp', count: Number(stats.limped || 0), id: 'limped', label: 'Called' },
+    { colorClass: 'limp', count: Number(stats.limped || 0), id: 'limped', label: 'Limped/Called' },
     { colorClass: 'fold', count: Number(stats.folded || 0), id: 'folded', label: 'Folded' },
   ];
 
@@ -194,7 +195,7 @@ const HandDetailPanel = memo(function HandDetailPanel({ disabled = false, hand, 
           <p>
             {disabled
               ? 'No user hand data is available for this table size and position.'
-              : 'Click a square in your chart to see how often you open raised, limped, or folded that hand.'}
+              : 'Click a square in your chart to see how often you open raised, limped/called, or folded that hand.'}
           </p>
         </div>
       </aside>
@@ -322,7 +323,7 @@ function getActualActionsFromSessions(sessions, position) {
       }
 
       const raised = Math.max(Number(stats?.openRaised || 0), Number(stats?.raised || 0));
-      const limped = Math.max(Number(stats?.limped || 0), Number(stats?.called || 0));
+      const limped = Number(stats?.limped || 0) + Number(stats?.called || 0);
       const folded = Number(stats?.folded || 0);
       const played = Number(stats?.played || 0);
       const dealt = Number(stats?.dealt || 0);
@@ -377,6 +378,10 @@ function getSessionTableSize(session) {
   return null;
 }
 
+function getUploadedHands(session) {
+  return Number(session.hands ?? session.handsPlayed ?? session.stats?.handsPlayed ?? 0) || 0;
+}
+
 const HandChartsPage = () => {
   const [selectedPosition, setSelectedPosition] = useState('BTN');
   const [selectedTableSize, setSelectedTableSize] = useState('6max');
@@ -415,7 +420,13 @@ const HandChartsPage = () => {
   const sessionActions = useMemo(() => getActualActionsFromSessions(filteredSessions, selectedPosition), [filteredSessions, selectedPosition]);
   const actualActions = sessionActions.actions;
   const actualCount = sessionActions.totalPlayed;
-  const selectedHandStats = selectedHand ? actualActions[selectedHand] : null;
+  const uploadedHandCount = useMemo(
+    () => sessions.reduce((total, session) => total + getUploadedHands(session), 0),
+    [sessions],
+  );
+  const hasUnlockedActualHands = uploadedHandCount >= ACTUAL_HAND_CHART_UNLOCK_HANDS;
+  const remainingHandsToUnlock = Math.max(0, ACTUAL_HAND_CHART_UNLOCK_HANDS - uploadedHandCount);
+  const selectedHandStats = hasUnlockedActualHands && selectedHand ? actualActions[selectedHand] : null;
   const totalHands = 169;
   const actualRangeCount = Object.keys(actualActions).length;
   const actualRaiseCount = Object.values(actualActions).reduce((total, stats) => total + Number(stats.raised || 0), 0);
@@ -450,7 +461,7 @@ const HandChartsPage = () => {
           <h1>
             Hand Charts <Info aria-hidden='true' />
           </h1>
-          <p>Select a position and compare open raises, limps, and folds.</p>
+          <p>Select a position and compare open raises, limps/calls, and folds.</p>
         </div>
         <div className='hand-chart-header-actions'>
           <label className='hand-chart-table-size'>
@@ -518,7 +529,7 @@ const HandChartsPage = () => {
           <h2>{position.title}</h2>
           <div className='starting-hand-legend'>
             <span><i className='raise' />Raise</span>
-            <span><i className='limp' />Limp</span>
+            <span><i className='limp' />Limp/Call</span>
             <span><i className='fold' />Fold</span>
           </div>
         </header>
@@ -526,21 +537,35 @@ const HandChartsPage = () => {
         <div className='hand-chart-workspace hand-chart-workspace--with-panel'>
           <div className='hand-chart-matrix-pair'>
             <HandMatrix actions={recommendedActions} title='Recommended Hand Chart' subtitle='Raise or fold' />
-            <HandMatrix
-              actions={actualActions}
-              defaultFoldFrequency={0.16}
-              emptyMessage={!sessionActions.hasData ? 'No hand chart data stored yet. Reupload sessions to populate actual hands played.' : ''}
-              selectedHand={selectedHand}
-              showFrequency
-              title='Actual Hands Played'
-              subtitle={sessionActions.hasData ? 'Click a hand for frequencies' : 'No real hand chart data yet'}
-              onHandSelect={setSelectedHand}
-            />
+            <div className={`actual-hand-chart-lock${hasUnlockedActualHands ? '' : ' actual-hand-chart-lock--locked'}`}>
+              <div className='actual-hand-chart-lock__content'>
+                <HandMatrix
+                  actions={actualActions}
+                  defaultFoldFrequency={0.16}
+                  emptyMessage={!sessionActions.hasData ? 'No hand chart data stored yet. Reupload sessions to populate actual hands played.' : ''}
+                  selectedHand={hasUnlockedActualHands ? selectedHand : ''}
+                  showFrequency
+                  title='Actual Hands Played'
+                  subtitle={sessionActions.hasData ? 'Click a hand for frequencies' : 'No real hand chart data yet'}
+                  onHandSelect={hasUnlockedActualHands ? setSelectedHand : undefined}
+                />
+              </div>
+              {!hasUnlockedActualHands && (
+                <div className='actual-hand-chart-lock__overlay'>
+                  <Lock aria-hidden='true' />
+                  <strong>Unlock Actual Hands Played</strong>
+                  <span>
+                    Upload {remainingHandsToUnlock.toLocaleString()} more hands to reveal this section.
+                  </span>
+                  <small>{uploadedHandCount.toLocaleString()} / {ACTUAL_HAND_CHART_UNLOCK_HANDS.toLocaleString()} hands uploaded</small>
+                </div>
+              )}
+            </div>
           </div>
 
           <HandDetailPanel
-            disabled={!sessionActions.hasData}
-            hand={selectedHand}
+            disabled={!hasUnlockedActualHands || !sessionActions.hasData}
+            hand={hasUnlockedActualHands ? selectedHand : ''}
             position={position.id}
             stats={selectedHandStats}
             tableSize={selectedTableSize}
@@ -562,7 +587,7 @@ const HandChartsPage = () => {
             <strong>{actualDecisionCount ? `${Math.round((actualRaiseCount / actualDecisionCount) * 100)}%` : 'N/A'}</strong>
           </div>
           <div>
-            <span>Limp frequency</span>
+            <span>Limp/call frequency</span>
             <strong>{actualDecisionCount ? `${Math.round((actualLimpCount / actualDecisionCount) * 100)}%` : 'N/A'}</strong>
           </div>
           <div>
@@ -576,7 +601,7 @@ const HandChartsPage = () => {
         <span>
           {selectedTableSize} · {position.id} · {actualCount.toLocaleString()} played hands
         </span>
-        <span>Actual hands show open raise, limp, and fold frequency by color share.</span>
+        <span>Actual hands show open raise, limp/call, and fold frequency by color share.</span>
       </footer>
     </main>
   );

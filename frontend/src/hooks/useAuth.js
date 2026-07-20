@@ -10,6 +10,9 @@ import {
   validateResetToken,
   resetPassword,
   verifyEmail,
+  cancelSubscription,
+  uploadAvatar,
+  deleteAvatar,
 } from '../api/authApi.js';
 
 const MIN_LOGIN_LOADING_MS = 1000;
@@ -76,6 +79,30 @@ export function useAuth() {
     },
   });
 
+  const cancelSubscriptionMutation = useMutation({
+    mutationKey: ['auth', 'subscription', 'cancel'],
+    mutationFn: cancelSubscription,
+    onSuccess: (data) => {
+      queryClient.setQueryData(['authUser'], data);
+    },
+  });
+
+  const uploadAvatarMutation = useMutation({
+    mutationKey: ['auth', 'avatar'],
+    mutationFn: uploadAvatar,
+    onSuccess: (data) => {
+      queryClient.setQueryData(['authUser'], data);
+    },
+  });
+
+  const deleteAvatarMutation = useMutation({
+    mutationKey: ['auth', 'avatar', 'delete'],
+    mutationFn: deleteAvatar,
+    onSuccess: (data) => {
+      queryClient.setQueryData(['authUser'], data);
+    },
+  });
+
   const forgotPasswordMutation = useMutation({
     mutationKey: ['auth', 'forgot-password'],
     mutationFn: forgotPassword,
@@ -112,6 +139,9 @@ export function useAuth() {
     login: loginMutation.mutateAsync,
     logout: logoutMutation.mutate,
     updatePreferences: updatePreferencesMutation.mutateAsync,
+    uploadAvatar: uploadAvatarMutation.mutateAsync,
+    deleteAvatar: deleteAvatarMutation.mutateAsync,
+    cancelSubscription: cancelSubscriptionMutation.mutateAsync,
     forgotPassword: forgotPasswordMutation.mutateAsync,
     resetPassword: (id, token, formData) => resetPasswordMutation.mutateAsync({ id, token, formData }),
     verifyEmail: verifyEmailMutation.mutateAsync,
@@ -120,6 +150,9 @@ export function useAuth() {
     registerLoading,
     logoutLoading: logoutMutation.isPending,
     updatePreferencesLoading: updatePreferencesMutation.isPending,
+    uploadAvatarLoading: uploadAvatarMutation.isPending,
+    deleteAvatarLoading: deleteAvatarMutation.isPending,
+    cancelSubscriptionLoading: cancelSubscriptionMutation.isPending,
   };
 }
 

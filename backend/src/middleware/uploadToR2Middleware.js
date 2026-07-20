@@ -1,5 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 // Initialize R2 and form connection between backend and cloud service
 
@@ -24,7 +23,7 @@ export async function uploadToR2(file, userId) {
 
   await r2.send(
     new PutObjectCommand({
-      Bucket: process.env.R2_BUCKET_NAME,
+      Bucket: process.env.R2_BUCKET_NAME_HH,
       Key: key,
       Body: file.buffer,
       ContentType: file.mimetype,
@@ -53,4 +52,38 @@ export async function uploadHandHistoryToR2(req, res, next) {
   } catch (error) {
     return next(error);
   }
+}
+
+function sanitizeFileName(fileName) {
+  return fileName
+    .toLowerCase()
+    .replace(/[^a-z0-9.]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+export async function uploadAvatarToR2(file, userId) {
+  const safeFileName = sanitizeFileName(file.originalname);
+  const key = `avatars/${userId}/${Date.now()}-${safeFileName}`;
+
+  await r2.send(
+    new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME_AVATAR,
+      Key: key,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    }),
+  );
+
+  return key;
+}
+
+export async function deleteFromR2(key, bucket = process.env.R2_BUCKET_NAME_AVATAR) {
+  if (!key) return;
+
+  await r2.send(
+    new DeleteObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    }),
+  );
 }

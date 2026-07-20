@@ -1,5 +1,52 @@
 import stripe from '../config/stripe.js';
 
+function getUserPayload(user) {
+  return {
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    subscription: user.subscription,
+    bankroll: user.bankroll,
+    role: user.role,
+    isEmailVerified: user.isEmailVerified,
+    preferences: user.preferences,
+    avatarUrl: user.avatarUrl,
+    avatarKey: user.avatarKey,
+  };
+}
+
+async function findCurrentSubscription(user) {
+  if (user.stripeSubscriptionId) {
+    try {
+      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+
+      if (!['canceled', 'incomplete_expired'].includes(subscription.status)) {
+        return subscription;
+      }
+    } catch (error) {
+      if (error.statusCode !== 404) {
+        throw error;
+      }
+    }
+  }
+
+  if (!user.stripeCustomerId) {
+    return null;
+  }
+
+  const subscriptions = await stripe.subscriptions.list({
+    customer: user.stripeCustomerId,
+    status: 'all',
+    limit: 10,
+  });
+
+  return (
+    subscriptions.data.find((subscription) =>
+      ['active', 'trialing', 'past_due', 'unpaid', 'incomplete'].includes(subscription.status),
+    ) || null
+  );
+}
+
 export const createSubscription = async (req, res) => {
   try {
     if (!process.env.STRIPE_PRICE_ID) {
@@ -71,13 +118,55 @@ export const confirmSubscription = async (req, res) => {
     }
 
     req.user.subscription = 'pro';
+    req.user.stripeSubscriptionId = subscription.id;
     await req.user.save();
 
-    res.json({
+    return res.json({
       subscription: req.user.subscription,
+      user: getUserPayload(req.user),
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const cancelSubscription = async (req, res) => {
+  try {
+    const subscription = await findCurrentSubscription(req.user);
+
+    if (!subscription) {
+      req.user.subscription = 'free';
+      req.user.stripeSubscriptionId = undefined;
+      await req.user.save();
+
+      return res.status(200).json({
+        message: 'No active subscription found',
+        subscription: req.user.subscription,
+        user: getUserPayload(req.user),
+      });
+    }
+
+    if (subscription.customer !== req.user.stripeCustomerId) {
+      return res.status(403).json({ message: 'Subscription does not belong to this user' });
+    }
+
+    const canceledSubscription = await stripe.subscriptions.cancel(subscription.id);
+
+    req.user.subscription = 'free';
+    req.user.stripeSubscriptionId = undefined;
+    await req.user.save();
+
+    return res.status(200).json({
+      message: 'Subscription canceled',
+      stripeSubscriptionId: canceledSubscription.id,
+      stripeSubscriptionStatus: canceledSubscription.status,
+      subscription: req.user.subscription,
+      user: getUserPayload(req.user),
+    });
+  } catch (error) {
+    return res.status(500).json({
       message: error.message,
     });
   }

@@ -29,14 +29,7 @@ export const createGoal = async (req, res, next) => {
   try {
     const goal = await Goal.create({
       user: req.user._id,
-      title: req.body.title,
-      description: req.body.description,
-      category: req.body.category,
-      target: req.body.target,
-      current: req.body.current,
-      progress: req.body.progress,
-      status: req.body.status,
-      dueDate: req.body.dueDate,
+      ...getGoalPayload(req.body),
     });
 
     return res.status(201).json({ goal });
@@ -53,14 +46,7 @@ export const updateGoal = async (req, res, next) => {
         user: req.user._id,
       },
       {
-        title: req.body.title,
-        description: req.body.description,
-        category: req.body.category,
-        target: req.body.target,
-        current: req.body.current,
-        progress: req.body.progress,
-        status: req.body.status,
-        dueDate: req.body.dueDate,
+        ...getGoalPayload(req.body),
       },
       {
         returnDocument: 'after',

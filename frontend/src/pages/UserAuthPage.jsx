@@ -409,15 +409,6 @@ const UserAuthPage = () => {
           )}
         </section>
       </div>
-
-      <footer className='auth-footer'>
-        <span>© 2026 RiverIQ. All rights reserved.</span>
-        <nav>
-          <a href='#terms'>Terms of Service</a>
-          <a href='#privacy'>Privacy Policy</a>
-          <a href='#contact'>Contact Us</a>
-        </nav>
-      </footer>
     </main>
   );
 };

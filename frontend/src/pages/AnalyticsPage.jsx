@@ -54,6 +54,8 @@ function finalizePositionStats(accumulator) {
     winRate: weightedAverage('bb100'),
     threeBet: weightedAverage('threeBet'),
     foldToThreeBet: weightedAverage('foldToThreeBet'),
+    fourBet: weightedAverage('fourBet'),
+    foldToFourBet: weightedAverage('foldToFourBet'),
     steal: weightedAverage('steal'),
     foldToSteal: weightedAverage('foldToSteal'),
     cBet: weightedAverage('cBet'),
@@ -229,6 +231,8 @@ function getOverallProfile(stats) {
     winRate: roundedAverage('winRate'),
     threeBet: roundedAverage('threeBet'),
     foldToThreeBet: roundedAverage('foldToThreeBet'),
+    fourBet: roundedAverage('fourBet'),
+    foldToFourBet: roundedAverage('foldToFourBet'),
     steal: roundedAverage('steal'),
     foldToSteal: roundedAverage('foldToSteal'),
     cBet: roundedAverage('cBet'),
@@ -267,6 +271,8 @@ const metricDescriptions = {
   PFR: 'Preflop Raise. How often you raise before the flop. Big blind open-raise spots are marked N/A.',
   '3Bet': 'How often you re-raise preflop after another player has already opened.',
   F3Bet: 'How often you fold after raising or calling preflop and then facing a 3Bet.',
+  '4Bet': 'How often you re-raise again after opening and facing a 3Bet.',
+  F4Bet: 'How often you fold after 3Betting and then facing a 4Bet.',
   Steal: 'How often you open-raise from CO, BTN, or SB when the action folds to you.',
   FSteal: 'How often you fold from the blinds after facing a steal attempt from late position.',
   CBet: 'How often you bet the flop after being the preflop aggressor.',
@@ -308,6 +314,8 @@ function buildPreflopStats(profile) {
     buildMetric('PFR', profile.position === 'BB' ? 'N/A' : profile.pfr, '%', profile.position === 'BB' ? null : goals.pfr, 44),
     buildMetric('3Bet', profile.threeBet, '%', goals.threeBet, 13),
     buildMetric('F3Bet', profile.foldToThreeBet, '%', goals.foldToThreeBet, 70),
+    buildMetric('4Bet', profile.fourBet, '%', goals.fourBet, 10),
+    buildMetric('F4Bet', profile.foldToFourBet, '%', goals.foldToFourBet, 70),
     buildMetric('Steal', steal, '%', stealGoal, 58),
     buildMetric('FSteal', foldToSteal, '%', foldToStealGoal, 90),
   ];
@@ -329,7 +337,7 @@ function buildPostflopStats(profile) {
 
 function buildLeakCardsFromMetrics(metrics, position) {
   return metrics
-    .filter((metric) => metric.hasMeter && metric.status === 'warning')
+    .filter((metric) => metric.hasMeter && metric.value !== 0 && metric.status === 'warning')
     .map((metric) => ({
       label: metric.label,
       value: `${metric.value}${metric.suffix}`,
@@ -500,6 +508,7 @@ const AnalyticsPage = () => {
       <header className='analytics-header'>
         <div>
           <h1>Analytics</h1>
+          <p>Break down your stats by position, table size, and date range.</p>
         </div>
         <div className='analytics-header-actions'>
           <label className='analytics-date-filter'>

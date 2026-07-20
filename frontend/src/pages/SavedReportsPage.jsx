@@ -2,16 +2,15 @@ import './ReportsPage.css';
 import './SavedReportsPage.css';
 
 import { ChevronLeft, ChevronRight, FileText, Plus, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
+import { useDeleteSavedReport, useSavedReports } from '../hooks/useSavedReports';
 import { useSessions } from '../hooks/useSessions';
 import {
-  deleteSavedReport,
   formatCell,
   formatCurrency,
   formatNumber,
   getReportRows,
-  getSavedReports,
   reportColumns,
   rowMatchesReportFilters,
 } from '../utils/reports/reportData';
@@ -53,8 +52,9 @@ function getResultRows(rows, report) {
 
 const SavedReportsPage = () => {
   const { data: sessions = [] } = useSessions();
-  const [savedReports, setSavedReports] = useState(() => getSavedReports());
-  const [activeReportId, setActiveReportId] = useState(() => savedReports[0]?.id || null);
+  const { data: savedReports = [], isLoading, error } = useSavedReports();
+  const { mutateAsync: deleteSavedReport, isPending: isDeletingReport } = useDeleteSavedReport();
+  const [activeReportId, setActiveReportId] = useState(null);
   const [page, setPage] = useState(1);
   const rows = useMemo(() => getReportRows(sessions), [sessions]);
   const activeReport = savedReports.find((report) => report.id === activeReportId) || savedReports[0];
@@ -69,11 +69,20 @@ const SavedReportsPage = () => {
   const visibleRows = resultRows.slice(firstRowIndex, firstRowIndex + rowsPerPage);
   const summary = getReportSummary(resultRows);
 
-  function removeReport(reportId) {
-    const nextReports = deleteSavedReport(reportId);
-    setSavedReports(nextReports);
-    setActiveReportId(nextReports[0]?.id || null);
-    setPage(1);
+  useEffect(() => {
+    if (!activeReportId && savedReports[0]?.id) {
+      setActiveReportId(savedReports[0].id);
+    }
+  }, [activeReportId, savedReports]);
+
+  async function removeReport(reportId) {
+    try {
+      await deleteSavedReport(reportId);
+      setActiveReportId(null);
+      setPage(1);
+    } catch (deleteError) {
+      console.error(deleteError);
+    }
   }
 
   return (
@@ -94,7 +103,17 @@ const SavedReportsPage = () => {
       <div className='saved-reports-layout'>
         <aside className='saved-reports-list'>
           <h2>Reports</h2>
-          {savedReports.length === 0 ? (
+          {isLoading ? (
+            <div className='saved-reports-empty'>
+              <FileText aria-hidden='true' />
+              <strong>Loading reports...</strong>
+            </div>
+          ) : error ? (
+            <div className='saved-reports-empty'>
+              <FileText aria-hidden='true' />
+              <strong>{error.message}</strong>
+            </div>
+          ) : savedReports.length === 0 ? (
             <div className='saved-reports-empty'>
               <FileText aria-hidden='true' />
               <strong>No saved reports yet</strong>
@@ -126,10 +145,11 @@ const SavedReportsPage = () => {
                 <button
                   className='reports-action reports-action--secondary'
                   type='button'
+                  disabled={isDeletingReport}
                   onClick={() => removeReport(activeReport.id)}
                 >
                   <Trash2 aria-hidden='true' />
-                  Delete
+                  {isDeletingReport ? 'Deleting...' : 'Delete'}
                 </button>
               )}
             </div>
@@ -202,7 +222,11 @@ const SavedReportsPage = () => {
                             </td>
                           );
                         }
-                        if (['vpip', 'pfr', 'threeBet', 'wtsd', 'wsd'].includes(column.key)) {
+                        if (
+                          ['vpip', 'pfr', 'threeBet', 'foldToThreeBet', 'fourBet', 'foldToFourBet', 'wtsd', 'wsd'].includes(
+                            column.key,
+                          )
+                        ) {
                           return (
                             <td key={column.key}>
                               {formatNumber(

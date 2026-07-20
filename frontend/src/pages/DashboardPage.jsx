@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router';
 import './DashboardPage.css';
 import StatCards from '../components/StatCards/StatCards';
 import { useSessions } from '../hooks/useSessions';
@@ -78,8 +79,12 @@ const DashboardPage = () => {
       {allSessions.length > 4 && (
         <section className='dashboard-content'>
           <header className='dashboard-page-header'>
-            <h1>Dashboard</h1>
-            <p>Welcome back, {username}! Here is your poker performance review.</p>
+            <div className='dashboard-page-header__top'>
+              <div>
+                <h1>Dashboard</h1>
+                <p>Welcome back, {username}! Here is your poker performance review.</p>
+              </div>
+            </div>
           </header>
           <StatCards
             sessions={sessions}

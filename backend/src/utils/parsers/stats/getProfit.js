@@ -49,6 +49,8 @@ export function getHeroInvestment(hand) {
         invested += additional;
 
         committed = raiseTo;
+      } else if (action.action === 'return') {
+        invested -= action.amount;
       }
     }
   }

@@ -23,14 +23,15 @@
 }
 
 .hand-chart-page__header h1 {
-  margin: 0;
+  margin: var(--page-heading-margin);
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #d7e0e8;
-  line-height: 1;
-  letter-spacing: 0;
+  color: var(--text-white);
   font-size: var(--page-heading-size);
+  font-weight: 700;
+  line-height: var(--page-heading-line-height);
+  letter-spacing: var(--page-heading-letter-spacing);
 }
 
 .hand-chart-page__header h1 svg {
@@ -40,11 +41,10 @@
 }
 
 .hand-chart-page__header p {
-  margin-top: 4px;
-  color: var(--text-table-muted);
-  font-size: 0.68rem;
-  font-weight: 750;
-  line-height: 1.4;
+  margin: 0;
+  color: var(--text-muted-light);
+  font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+  line-height: 1.45;
 }
 
 .hand-chart-header-actions {
@@ -305,6 +305,79 @@
 .starting-hand-card:last-child {
   margin-left: -1px;
   border-radius: 0 8px 8px 0;
+}
+
+.actual-hand-chart-lock {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  margin-left: -1px;
+  overflow: hidden;
+  border-radius: 0 8px 8px 0;
+}
+
+.actual-hand-chart-lock__content {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex: 1 1 auto;
+  transition: filter 160ms ease, opacity 160ms ease;
+}
+
+.actual-hand-chart-lock__content .starting-hand-card {
+  flex: 1 1 auto;
+  margin-left: 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.actual-hand-chart-lock--locked .actual-hand-chart-lock__content {
+  filter: blur(7px);
+  opacity: 0.48;
+  pointer-events: none;
+  user-select: none;
+}
+
+.actual-hand-chart-lock__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  padding: 18px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 7px;
+  background:
+    radial-gradient(circle at center, color-mix(in srgb, var(--surface-panel-deep) 78%, transparent), transparent 62%),
+    color-mix(in srgb, var(--surface-input-deep) 54%, transparent);
+  color: var(--text-control);
+  text-align: center;
+  backdrop-filter: blur(1.5px);
+}
+
+.actual-hand-chart-lock__overlay svg {
+  width: 28px;
+  height: 28px;
+  color: var(--color-primary);
+}
+
+.actual-hand-chart-lock__overlay strong {
+  color: var(--text-white);
+  font-size: 0.88rem;
+  font-weight: 950;
+}
+
+.actual-hand-chart-lock__overlay span,
+.actual-hand-chart-lock__overlay small {
+  max-width: 260px;
+  color: var(--text-table-muted);
+  font-size: 0.62rem;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.actual-hand-chart-lock__overlay small {
+  color: var(--text-control);
 }
 
 .starting-hand-card__title {
@@ -800,6 +873,15 @@
     border-radius: 8px;
   }
 
+  .actual-hand-chart-lock {
+    margin-left: 0;
+    border-radius: 8px;
+  }
+
+  .actual-hand-chart-lock__content .starting-hand-card {
+    border-radius: 8px;
+  }
+
   .hand-detail-panel {
     min-height: 220px;
   }
@@ -818,10 +900,6 @@
   .hand-chart-page__header {
     flex-direction: column;
     gap: 10px;
-  }
-
-  .hand-chart-page__header h1 {
-    font-size: 1.35rem;
   }
 
   .hand-chart-header-actions {
@@ -1020,6 +1098,24 @@
 :root[data-theme='light'] .starting-hand-empty {
   background: rgba(248, 250, 252, 0.82);
   color: #334155;
+}
+
+:root[data-theme='light'] .actual-hand-chart-lock__overlay {
+  background:
+    radial-gradient(circle at center, rgba(248, 250, 252, 0.78), transparent 62%),
+    rgba(226, 232, 240, 0.54);
+}
+
+:root[data-theme='light'] .actual-hand-chart-lock__overlay strong {
+  color: #0f172a;
+}
+
+:root[data-theme='light'] .actual-hand-chart-lock__overlay span {
+  color: #475569;
+}
+
+:root[data-theme='light'] .actual-hand-chart-lock__overlay small {
+  color: #1e293b;
 }
 
 :root[data-theme='light'] .hand-detail-panel__summary,

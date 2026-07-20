@@ -1,18 +1,21 @@
+import { getFirstAmount, MONEY_PATTERN } from './amounts.js';
+
 export function parseShowdownActions(lines) {
   const actions = [];
 
   for (const line of lines) {
     let match;
 
+    // Hero: shows [Ah Qh]
     // Hero: shows [Ah Qh] (One Pair, Queens)
-    match = line.match(/^(.+?): shows \[([^\]]+)\] \((.+)\)$/);
+    match = line.match(/^(.+?): shows \[([^\]]+)\](?: \((.+)\))?$/);
 
     if (match) {
       actions.push({
         player: match[1],
         action: 'shows',
         cards: match[2].split(' '),
-        hand: match[3],
+        hand: match[3] || null,
       });
       continue;
     }
@@ -28,14 +31,15 @@ export function parseShowdownActions(lines) {
       continue;
     }
 
-    // Hero collected $3.65 from pot
-    match = line.match(/^(.+?) collected \$([\d.]+) from pot$/);
+    // Hero collected $3.65 from pot/main pot/side pot
+    match = line.match(new RegExp(`^(.+?) collected ${MONEY_PATTERN.source} from (?:the )?(.*?pot)$`, 'i'));
 
     if (match) {
       actions.push({
         player: match[1],
         action: 'collects',
-        amount: parseFloat(match[2]),
+        amount: getFirstAmount(match[2]),
+        potType: match[3].toLowerCase() || 'pot',
       });
       continue;
     }

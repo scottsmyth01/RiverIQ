@@ -136,6 +136,12 @@ function getSessionDuration(hands) {
 export const addSession = async (req, res, next) => {
   try {
     const { pokerSite, notes, tags } = req.body;
+    if (!pokerSite) {
+      return res.status(400).json({
+        message: 'Please select a poker site',
+      });
+    }
+
     if (!req.file) {
       return res.status(400).json({
         message: 'Please upload a hand history file',
@@ -174,29 +180,31 @@ export const addSession = async (req, res, next) => {
     const parsedStats = calculateStats(hands);
     const firstHand = hands[0];
     const table = firstHand?.table || {};
-    // const session = await Session.create({
-    //   user: req.user._id,
-    //   sessionName: req.file.originalname,
-    //   date: firstHand?.date || new Date(),
-    //   pokerSite,
-    //   gameType: table.game,
-    //   stakes:
-    //     table.smallBlind && table.bigBlind
-    //       ? `${table.currency || ''}${table.smallBlind}/${table.currency || ''}${table.bigBlind}`
-    //       : undefined,
-    //   currency: table.currency,
-    //   tableSize: table.maxPlayers,
-    //   duration: getSessionDuration(hands),
-    //   notes,
-    //   handHistory: req.handHistory || {
-    //     originalFileName: req.file.originalname,
-    //     fileSize: req.file.size,
-    //     contentType: req.file.mimetype,
-    //     uploadedAt: new Date(),
-    //   },
-    //   stats: parsedStats,
-    // });
-    return res.status(201).json({ status: 'success', parsedStats });
+    const session = await Session.create({
+      user: req.user._id,
+      sessionName: req.file.originalname,
+      date: firstHand?.date || new Date(),
+      pokerSite,
+      gameType: table.game,
+      stakes:
+        table.smallBlind && table.bigBlind
+          ? `${table.currency || ''}${table.smallBlind}/${table.currency || ''}${table.bigBlind}`
+          : undefined,
+      currency: table.currency,
+      tableSize: table.maxPlayers,
+      duration: getSessionDuration(hands),
+      notes,
+      tags: normalizeTags(tags),
+      handHistory: req.handHistory || {
+        originalFileName: req.file.originalname,
+        fileSize: req.file.size,
+        contentType: req.file.mimetype,
+        uploadedAt: new Date(),
+      },
+      stats: parsedStats,
+    });
+
+    return res.status(201).json({ status: 'success', session });
   } catch (error) {
     return next(error);
   }

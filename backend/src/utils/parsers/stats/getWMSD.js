@@ -3,7 +3,9 @@ export function getWMSD(hands) {
   let wins = 0;
 
   for (const hand of hands) {
-    const hero = hand.hero.name;
+    const hero = hand.hero?.name;
+    if (!hero) continue;
+
     const reachedShowdown = hand.showdown?.actions?.some((action) => action.player === hero);
 
     if (!reachedShowdown) {
@@ -12,9 +14,9 @@ export function getWMSD(hands) {
 
     showdowns++;
 
-    const heroSeat = hand.summary.seats.find((seat) => seat.player === hero);
+    const heroSeat = hand.summary?.seats?.find((seat) => seat.player === hero);
 
-    if (heroSeat?.result === 'won') {
+    if (heroSeat?.result === 'won' || heroSeat?.result === 'collected') {
       wins++;
     }
   }

@@ -168,8 +168,8 @@ const SessionDetailPage = () => {
 
       <header className='session-detail-header'>
         <div>
-          <span>{session.pokerSite || session.game || 'Session'}</span>
           <h1>{session.sessionName || 'Poker Session'}</h1>
+          <p>{session.pokerSite || session.game || 'Session'} session notes, tags, and metadata.</p>
         </div>
       </header>
 

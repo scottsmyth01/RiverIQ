@@ -1,31 +1,34 @@
 import React from 'react';
-import { BarChart3, BookOpen, Check, LockKeyhole, Plus, Spade } from 'lucide-react';
+import { BarChart3, Check, FileText, LockKeyhole, Plus, Spade } from 'lucide-react';
 import { Link } from 'react-router';
 import './FeaturePage.css';
 import features from '../assets/feature-grid.jsx';
 
 const resultHighlights = [
-  'Bankroll tracking',
-  'Win rate',
-  'Profit over time',
-  'Total hands & sessions',
+  'Profit tracking',
+  'Hands played',
+  'Session history',
   'BB/100 graph',
-  'Custom date ranges',
+  'Recent sessions table',
+  'Saved date filters',
 ];
 
 const analyticsStats = [
   'VPIP',
   'PFR',
   '3Bet%',
+  '4Bet%',
+  'F3Bet%',
+  'F4Bet%',
   'WTSD%',
   'W$SD%',
   'CBet%',
-  'Fold to 3Bet',
-  'Aggression Factor',
+  'FCBet%',
+  'TBet%',
+  'FTBet%',
+  'AF',
   'Steal%',
-  'Check Raise',
-  'BB Won',
-  'And more...',
+  'FSteal%',
 ];
 
 const positionBreakdown = [
@@ -38,39 +41,39 @@ const positionBreakdown = [
 ];
 
 const detectedLeaks = [
-  { name: 'Calling too often from SB', impact: '-2.48 bb/100', severity: 'high' },
-  { name: 'Losing too much at Showdown', impact: '-1.95 bb/100', severity: 'high' },
-  { name: '3Bet too small', impact: '-1.21 bb/100', severity: 'medium' },
-  { name: 'Overfolding to 3Bets', impact: '-0.89 bb/100', severity: 'medium' },
+  { name: 'F3Bet below target', impact: '41.2%', severity: 'high' },
+  { name: 'Aggression above goal', impact: '2.6 AF', severity: 'medium' },
+  { name: 'CBet outside range', impact: '63.5%', severity: 'medium' },
+  { name: 'F4Bet needs sample', impact: 'Review', severity: 'medium' },
 ];
 
 const aiInsights = [
-  'Personalized leak detection',
-  'Impact analysis (bb/100 lost)',
-  'Actionable recommendations',
-  'AI coaching & strategy tips',
+  'Preflop and postflop stat goals',
+  'Leak cards only when data exists',
+  'Position and table-size filters',
+  'Clear target ranges for each metric',
 ];
 
-const goalBenefits = ['Custom goals', 'Progress tracking', 'Streaks & achievements', 'Motivation to keep grinding'];
+const goalBenefits = ['Create goals', 'Edit or delete goals', 'Filter by status', 'Track progress toward targets'];
 
 const goals = [
   { icon: Spade, label: 'Play 20,000 hands this month', value: '12,450 / 20,000', progress: '62%' },
   { icon: BarChart3, label: 'Achieve 5 bb/100 Win Rate', value: '3.2 / 5', progress: '64%' },
-  { icon: BookOpen, label: 'Study 10 hours this month', value: '6.5 / 10', progress: '65%' },
+  { icon: FileText, label: 'Review 12 tagged sessions', value: '7 / 12', progress: '58%' },
 ];
 
 const freeFeatures = [
-  'All core tracking features',
-  'Manual session entry',
-  'Basic stats & graphs',
-  'Up to 100 sessions',
+  'Create an account',
+  'Upload and review sessions',
+  'Dashboard stats',
+  'Settings and preferences',
 ];
 
 const proFeatures = [
   'Everything in Free',
-  'Unlimited sessions & hands',
-  'Upload hand histories',
-  'Advanced stats & AI insights',
+  'Analytics, reports, goals, and hand charts',
+  'Saved reports',
+  'Full hand-history workflow',
 ];
 
 const FeaturePage = () => {
@@ -79,10 +82,9 @@ const FeaturePage = () => {
       <div className='feature-container'>
         <header className='header'>
           <h2>
-            All the tools you need to <span className='accent'>track</span>, <span className='accent'>analyze</span>, &{' '}
-            <span className='accent'>improve</span>
+            Track sessions, analyze leaks, and build better <span className='accent'>poker habits</span>
           </h2>
-          <p>Powerful features designed for poker players who want to win more. </p>
+          <p>RiverIQ turns uploaded hand histories into dashboards, reports, goals, and hand charts you can use every session.</p>
         </header>
 
         <section className='feature-grid'>
@@ -181,9 +183,9 @@ const FeaturePage = () => {
           </div>
 
           <div className='results-copy'>
-            <span className='section-kicker'>Track everything</span>
+            <span className='section-kicker'>Dashboard</span>
             <h2>See your results clearly</h2>
-            <p>Beautiful graphs and easy-to-read stats help you understand your performance over time.</p>
+            <p>Track profit, hands, sessions, and BB/100 with quick filters for the time ranges you actually review.</p>
 
             <ul className='results-list'>
               {resultHighlights.map((highlight) => (
@@ -198,9 +200,9 @@ const FeaturePage = () => {
 
         <section className='analytics-section'>
           <div className='analytics-copy'>
-            <span className='section-kicker'>Powerful analytics</span>
-            <h2>Advanced stats that matter</h2>
-            <p>Go beyond the basics with professional-level statistics used by winning players.</p>
+            <span className='section-kicker'>Analytics</span>
+            <h2>Review the stats you already track</h2>
+            <p>Compare preflop and postflop metrics by position, table size, and date range.</p>
 
             <div className='stat-pills'>
               {analyticsStats.map((stat) => (
@@ -238,13 +240,13 @@ const FeaturePage = () => {
 
         <section className='insights-section'>
           <div className='leak-card'>
-            <h3>AI Leak Detection</h3>
+            <h3>Leak Tracker</h3>
 
             <div className='leak-card-body'>
-              <div className='leak-donut' aria-label='7 total leaks detected'>
+              <div className='leak-donut' aria-label='4 stats outside goal range'>
                 <div>
-                  <strong>7</strong>
-                  <span>Total Leaks</span>
+                  <strong>4</strong>
+                  <span>To Review</span>
                 </div>
               </div>
 
@@ -271,11 +273,11 @@ const FeaturePage = () => {
           </div>
 
           <div className='insights-copy'>
-            <span className='section-kicker'>AI-powered insights</span>
+            <span className='section-kicker'>Leak tracker</span>
             <h2>
-              Find leaks. Fix leaks. <strong>Win more.</strong>
+              Spot stats that drift from your goals.
             </h2>
-            <p>Our AI analyzes your hands and spots the biggest leaks in your game with clear, actionable advice.</p>
+            <p>RiverIQ highlights out-of-range stats when there are enough hands to make the signal useful.</p>
 
             <ul className='insights-list'>
               {aiInsights.map((insight) => (
@@ -290,9 +292,9 @@ const FeaturePage = () => {
 
         <section className='goals-section'>
           <div className='goals-copy'>
-            <span className='section-kicker'>Set goals & level up</span>
-            <h2>Stay focused and improve</h2>
-            <p>Set goals, track progress, and build better habits one session at a time.</p>
+            <span className='section-kicker'>Goals</span>
+            <h2>Keep your poker targets visible</h2>
+            <p>Create goals, track progress, and organize what you are working on between sessions.</p>
 
             <ul className='goal-benefits'>
               {goalBenefits.map((benefit) => (
@@ -337,7 +339,7 @@ const FeaturePage = () => {
         <section className='pricing-cta'>
           <div className='pricing-heading'>
             <h2>Ready to take your game to the next level?</h2>
-            <p>Start for free and upgrade anytime.</p>
+            <p>Start tracking sessions, then unlock deeper analysis when you are ready.</p>
           </div>
 
           <div className='pricing-plans'>

@@ -225,15 +225,16 @@
   margin: var(--page-heading-margin);
   color: var(--text-white);
   font-size: var(--page-heading-size);
+  font-weight: 700;
   line-height: var(--page-heading-line-height);
   letter-spacing: var(--page-heading-letter-spacing);
 }
 
 .reports-header p {
-  margin: 4px 0 0;
+  margin: 0;
   color: var(--text-muted-light);
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+  line-height: 1.45;
 }
 
 .reports-header-actions,
@@ -994,10 +995,6 @@
 
   .reports-header {
     gap: 12px;
-  }
-
-  .reports-header p {
-    font-size: 0.78rem;
   }
 
   .reports-header-actions,

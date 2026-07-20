@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router';
 import Navbar from './components/Navbar/Navbar';
+import WebsiteFooter from './components/WebsiteFooter/WebsiteFooter';
 import LoadingScreen from './components/LoadingScreen/LoadingScreen';
 import { useAuth } from './hooks/useAuth';
 import ProtectedRoute from './utils/ProtectedRoute';
@@ -21,9 +22,13 @@ import { Elements } from '@stripe/react-stripe-js';
 const FeaturePage = lazy(() => import('./pages/FeaturePage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
+const FaqPage = lazy(() => import('./pages/FaqPage'));
 const UserAuthPage = lazy(() => import('./pages/UserAuthPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
+const InfoPage = lazy(() => import('./pages/InfoPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
 
@@ -46,6 +51,12 @@ function AppRoutes() {
   const isPricingRoute = pathname === '/pricing';
   const isPaymentRoute = pathname === '/subscription/payment';
   const isResetPasswordRoute = pathname.startsWith('/reset-password');
+  const showWebsiteChrome = !isAuthenticated && !isPaymentRoute;
+
+  useEffect(() => {
+    if (loading || isAuthenticated) return;
+    document.documentElement.dataset.theme = 'dark';
+  }, [isAuthenticated, loading]);
 
   // if loading and a dashboard route we render the custom loading screen
   // if it is a route outside of the /dashboard then it will just load as normal (logged out routes)
@@ -74,7 +85,7 @@ function AppRoutes() {
 
   return (
     <>
-      {!isAuthenticated && !isPaymentRoute && <Navbar />}
+      {showWebsiteChrome && <Navbar />}
       <Suspense fallback={isDashboardRoute ? <LoadingScreen /> : null}>
         <Routes>
           <Route path='/' element={<Navigate to='/login' replace />} />
@@ -82,6 +93,10 @@ function AppRoutes() {
           <Route path='/pricing' element={<PricingPage />} />
           <Route path='/subscription/payment' element={<PaymentPage />} />
           <Route path='/about' element={<AboutPage />} />
+          <Route path='/faq' element={<FaqPage />} />
+          <Route path='/help' element={<Navigate to='/login' replace />} />
+          <Route path='/privacy' element={<PrivacyPage />} />
+          <Route path='/terms' element={<TermsPage />} />
           <Route path='/login' element={<UserAuthPage />} />
           <Route path='/register' element={<UserAuthPage />} />
           <Route path='/forgot-password' element={<UserAuthPage />} />
@@ -104,12 +119,14 @@ function AppRoutes() {
             <Route path='reports/saved' element={<SavedReportsPage />} />
             <Route path='goals' element={<GoalsPage />} />
             <Route path='hand-history' element={<HandChartsPage />} />
+            <Route path='help' element={<InfoPage />} />
             <Route path='sessions/new' element={<AddSessionPage />} />
             <Route path='settings' element={<SettingsPage />} />
           </Route>
           <Route path='*' element={<FeaturePage />} />
         </Routes>
       </Suspense>
+      {showWebsiteChrome && <WebsiteFooter />}
     </>
   );
 }

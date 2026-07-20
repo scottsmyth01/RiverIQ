@@ -1,35 +1,35 @@
-import { BarChart3, PieChart, Sparkles, Crosshair, Trophy, Cloud } from 'lucide-react';
+import { BarChart3, ClipboardList, History, StickyNoteCheck, Table2, Target } from 'lucide-react';
 
 const features = [
   {
+    icon: <ClipboardList />,
+    title: 'Session Tracking',
+    text: 'Upload hand history files, review sessions, and edit notes or tags after every grind.',
+  },
+  {
     icon: <BarChart3 />,
-    title: 'Track Everything',
-    text: "Log sessions manually or upload hand histories. We track your results so you don't have to.",
+    title: 'Dashboard Overview',
+    text: 'Track profit, hands played, sessions, BB/100, and recent results by your preferred date range.',
   },
   {
-    icon: <PieChart />,
-    title: 'Powerful Analytics',
-    text: 'Deep breakdowns of your game with advanced statistics and interactive charts.',
+    icon: <Table2 />,
+    title: 'Position Analytics',
+    text: 'Break down VPIP, PFR, 3Bet, 4Bet, WTSD, W$SD, aggression, c-bets, and folds by position.',
   },
   {
-    icon: <Sparkles />,
-    title: 'AI-Powered Insights',
-    text: 'Get personalized feedback and leak detection to help you make better decisions at the table.',
+    icon: <StickyNoteCheck />,
+    title: 'Custom Reports',
+    text: 'Build reports with filters for dates, sites, stakes, game type, table size, position, and tags.',
   },
   {
-    icon: <Crosshair />,
-    title: 'Find Your Leaks',
-    text: "Identify expensive mistakes and focus on what's costing you the most.",
+    icon: <Target />,
+    title: 'Goal Tracking',
+    text: 'Create poker goals, track progress, filter by status or category, and keep your plan visible.',
   },
   {
-    icon: <Trophy />,
-    title: 'Set Goals & Level Up',
-    text: 'Track your progress, set goals, and stay motivated to reach your next level.',
-  },
-  {
-    icon: <Cloud />,
-    title: 'Anytime, Anywhere',
-    text: 'Secure cloud sync across all your devices. Your data is always with you.',
+    icon: <History />,
+    title: 'Hand Charts',
+    text: 'Compare recommended opening ranges with your actual hands once your uploaded sample is ready.',
   },
 ];
 

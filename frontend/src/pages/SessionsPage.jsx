@@ -7,7 +7,10 @@ const SessionsPage = () => {
 
   return (
     <section className='dashboard-content sessions-page'>
-      <h1>Sessions</h1>
+      <header className='sessions-header'>
+        <h1>Sessions</h1>
+        <p>Review, edit, and manage every imported poker session.</p>
+      </header>
       <SessionsTable sessions={sessions} sessionsPerPage={10} variant='sessions-page' />
     </section>
   );

@@ -17,8 +17,8 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
+import { useCreateSavedReport, useUpdateSavedReport } from '../hooks/useSavedReports';
 import { useSessions } from '../hooks/useSessions';
-import { saveReport as saveReportConfig } from '../utils/reports/reportData';
 
 const columns = [
   { key: 'date', label: 'Session Date', type: 'text' },
@@ -32,6 +32,9 @@ const columns = [
   { key: 'vpip', label: 'VPIP', type: 'rate1' },
   { key: 'pfr', label: 'PFR', type: 'rate1' },
   { key: 'threeBet', label: '3-Bet %', type: 'rate1' },
+  { key: 'foldToThreeBet', label: 'F3Bet %', type: 'rate1' },
+  { key: 'fourBet', label: '4-Bet %', type: 'rate1' },
+  { key: 'foldToFourBet', label: 'F4Bet %', type: 'rate1' },
   { key: 'wtsd', label: 'WTSD%', type: 'rate1' },
   { key: 'wsd', label: 'WSD%', type: 'rate1' },
 ];
@@ -179,6 +182,9 @@ function getSessionRows(sessions) {
       vpip: stats.vpip,
       pfr: stats.pfr,
       threeBet: stats.threeBet,
+      foldToThreeBet: stats.foldToThreeBet,
+      fourBet: stats.fourBet,
+      foldToFourBet: stats.foldToFourBet,
       wtsd: stats.wtsd,
       wsd: stats.wsd,
     };
@@ -219,11 +225,14 @@ function getReportSummary(rows) {
       summary.profit += Number(row.profit) || 0;
       summary.bbWeighted += (Number(row.bb100) || 0) * hands;
       summary.threeBet += Number(row.threeBet) || 0;
+      summary.foldToThreeBet += Number(row.foldToThreeBet) || 0;
+      summary.fourBet += Number(row.fourBet) || 0;
+      summary.foldToFourBet += Number(row.foldToFourBet) || 0;
       summary.wtsd += Number(row.wtsd) || 0;
       summary.wsd += Number(row.wsd) || 0;
       return summary;
     },
-    { hands: 0, profit: 0, bbWeighted: 0, threeBet: 0, wtsd: 0, wsd: 0 },
+    { hands: 0, profit: 0, bbWeighted: 0, threeBet: 0, foldToThreeBet: 0, fourBet: 0, foldToFourBet: 0, wtsd: 0, wsd: 0 },
   );
 
   return {
@@ -231,6 +240,9 @@ function getReportSummary(rows) {
     profit: totals.profit,
     bb100: totals.hands ? totals.bbWeighted / totals.hands : 0,
     threeBet: rows.length ? totals.threeBet / rows.length : 0,
+    foldToThreeBet: rows.length ? totals.foldToThreeBet / rows.length : 0,
+    fourBet: rows.length ? totals.fourBet / rows.length : 0,
+    foldToFourBet: rows.length ? totals.foldToFourBet / rows.length : 0,
     wtsd: rows.length ? totals.wtsd / rows.length : 0,
     wsd: rows.length ? totals.wsd / rows.length : 0,
   };
@@ -283,6 +295,8 @@ function ReportActionButton({ children, variant = 'secondary', icon: Icon, onCli
 
 const ReportsPage = () => {
   const { data: sessions = [] } = useSessions();
+  const createSavedReportMutation = useCreateSavedReport();
+  const updateSavedReportMutation = useUpdateSavedReport();
   const rows = useMemo(() => getSessionRows(sessions), [sessions]);
   const columnsMenuRef = useRef(null);
   const runReportTimeoutRef = useRef(null);
@@ -305,6 +319,7 @@ const ReportsPage = () => {
   const [draftReportTitle, setDraftReportTitle] = useState('Untitled Report');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [savedReportId, setSavedReportId] = useState(null);
+  const isSavingReport = createSavedReportMutation.isPending || updateSavedReportMutation.isPending;
 
   const tableSizeOptions = useMemo(() => {
     return [...new Set([...standardTableSizes, ...uniqueValues(rows, 'tableSize')])]
@@ -471,21 +486,36 @@ const ReportsPage = () => {
     return {
       id,
       title,
+      reportType: 'session-report',
+      dateRange: {
+        preset: filters.dateRange,
+        startDate: filters.startDate || null,
+        endDate: filters.endDate || null,
+      },
       filters,
       appliedFilters: filters,
       visibleColumnKeys,
       sort,
       groupBy,
       rowsPerPage,
+      summary,
     };
   }
 
-  function saveCurrentReport() {
-    const savedReport = saveReportConfig(getReportConfig(savedReportId, reportTitle));
-    setSavedReportId(savedReport.id);
-    setReportTitle(savedReport.title);
-    setAppliedFilters(filters);
-    setToast('Saved report successfully');
+  async function saveCurrentReport() {
+    try {
+      const reportData = getReportConfig(savedReportId, reportTitle);
+      const savedReport = savedReportId
+        ? await updateSavedReportMutation.mutateAsync({ id: savedReportId, reportData })
+        : await createSavedReportMutation.mutateAsync(reportData);
+
+      setSavedReportId(savedReport.id);
+      setReportTitle(savedReport.title);
+      setAppliedFilters(filters);
+      setToast('Saved report successfully');
+    } catch (error) {
+      setToast(error.message || 'Could not save report');
+    }
   }
 
   return (
@@ -552,7 +582,9 @@ const ReportsPage = () => {
           <Link className='reports-action reports-action--secondary' to='/dashboard/reports/saved'>
             Saved Reports
           </Link>
-          <ReportActionButton onClick={() => saveCurrentReport()}>Save Report</ReportActionButton>
+          <ReportActionButton onClick={() => saveCurrentReport()} disabled={isSavingReport}>
+            {isSavingReport ? 'Saving...' : 'Save Report'}
+          </ReportActionButton>
           <ReportActionButton variant='primary' icon={Play} onClick={runReport} disabled={isRunningReport}>
             {isRunningReport ? 'Running...' : 'Run Report'}
           </ReportActionButton>
@@ -873,6 +905,9 @@ const ReportsPage = () => {
                             </td>
                           );
                         if (column.key === 'threeBet') return <td key={column.key}>{formatNumber(summary.threeBet)}</td>;
+                        if (column.key === 'foldToThreeBet') return <td key={column.key}>{formatNumber(summary.foldToThreeBet)}</td>;
+                        if (column.key === 'fourBet') return <td key={column.key}>{formatNumber(summary.fourBet)}</td>;
+                        if (column.key === 'foldToFourBet') return <td key={column.key}>{formatNumber(summary.foldToFourBet)}</td>;
                         if (column.key === 'wtsd') return <td key={column.key}>{formatNumber(summary.wtsd)}</td>;
                         if (column.key === 'wsd') return <td key={column.key}>{formatNumber(summary.wsd)}</td>;
                         return <td key={column.key} />;

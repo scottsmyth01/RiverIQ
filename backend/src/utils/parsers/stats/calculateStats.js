@@ -5,6 +5,8 @@ import { getVPIP } from './getVPIP.js';
 import { getPFR } from './getPFR.js';
 import { getThreeBet } from './getThreeBet.js';
 import { getFoldToThreeBet } from './getFoldToThreeBet.js';
+import { getFourBet } from './getFourBet.js';
+import { getFoldToFourBet } from './getFoldToFourBet.js';
 import { getThreeBetVsOpen } from './getThreeBetVsOpen.js';
 import { getSteal } from './getSteal.js';
 import { getFoldToCBet } from './getFoldToCBet.js';
@@ -19,6 +21,8 @@ import { getAF } from './getAF.js';
 function calculateBasicStats(hands) {
   const threeBet = getThreeBet(hands);
   const foldToThreeBet = getFoldToThreeBet(hands);
+  const fourBet = getFourBet(hands);
+  const foldToFourBet = getFoldToFourBet(hands);
   const steal = getSteal(hands);
   const cBet = getCBet(hands);
   const foldToCBet = getFoldToCBet(hands);
@@ -36,6 +40,8 @@ function calculateBasicStats(hands) {
     pfr: getPFR(hands),
     threeBet: threeBet.percentage,
     foldToThreeBet: foldToThreeBet.percentage,
+    fourBet: fourBet.percentage,
+    foldToFourBet: foldToFourBet.percentage,
     steal: steal.percentage,
     cBet: cBet.percentage,
     foldToCBet: foldToCBet.percentage,

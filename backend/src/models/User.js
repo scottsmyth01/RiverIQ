@@ -38,6 +38,9 @@ const userSchema = new mongoose.Schema(
     stripeCustomerId: {
       type: String,
     },
+    stripeSubscriptionId: {
+      type: String,
+    },
     bankroll: {
       type: Number,
       default: 0,
@@ -45,6 +48,14 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       default: 'user',
+    },
+    avatarUrl: {
+      type: String,
+      default: '',
+    },
+    avatarKey: {
+      type: String,
+      default: '',
     },
     preferences: {
       theme: {

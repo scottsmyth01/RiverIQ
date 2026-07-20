@@ -8,6 +8,8 @@ const statFields = {
   pfr: { type: Number, default: 0 },
   threeBet: { type: Number, default: 0 },
   foldToThreeBet: { type: Number, default: 0 },
+  fourBet: { type: Number, default: 0 },
+  foldToFourBet: { type: Number, default: 0 },
   steal: { type: Number, default: 0 },
   foldToSteal: { type: Number, default: 0 },
   cBet: { type: Number, default: 0 },

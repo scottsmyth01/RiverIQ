@@ -10,6 +10,9 @@ export const reportColumns = [
   { key: 'vpip', label: 'VPIP', type: 'rate1' },
   { key: 'pfr', label: 'PFR', type: 'rate1' },
   { key: 'threeBet', label: '3-Bet %', type: 'rate1' },
+  { key: 'foldToThreeBet', label: 'F3Bet %', type: 'rate1' },
+  { key: 'fourBet', label: '4-Bet %', type: 'rate1' },
+  { key: 'foldToFourBet', label: 'F4Bet %', type: 'rate1' },
   { key: 'wtsd', label: 'WTSD%', type: 'rate1' },
   { key: 'wsd', label: 'WSD%', type: 'rate1' },
 ];
@@ -100,6 +103,9 @@ export function getReportRows(sessions) {
       vpip: stats.vpip,
       pfr: stats.pfr,
       threeBet: stats.threeBet,
+      foldToThreeBet: stats.foldToThreeBet,
+      fourBet: stats.fourBet,
+      foldToFourBet: stats.foldToFourBet,
       wtsd: stats.wtsd,
       wsd: stats.wsd,
     };

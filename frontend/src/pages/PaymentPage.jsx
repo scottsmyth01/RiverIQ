@@ -1,6 +1,7 @@
 import './PaymentPage.css';
 
 import { CardCvcElement, CardExpiryElement, CardNumberElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
   Bell,
@@ -83,6 +84,7 @@ const PaymentPage = () => {
   const { user, logout } = useAuth();
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
   const accountMenuRef = useRef(null);
   const displayName = getDisplayName(user);
   const email = getEmail(user);
@@ -91,6 +93,7 @@ const PaymentPage = () => {
   const planPrice = planPrices[preferredCurrency] || planPrices.USD;
   const stripe = useStripe();
   const elements = useElements();
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -109,64 +112,74 @@ const PaymentPage = () => {
       return;
     }
 
-    const cardElement = elements.getElement(CardNumberElement);
-    const res = await fetch(`${API_URL}/api/payments/subscribe`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
+    setPaymentError('');
 
-    const responseText = await res.text();
-    const data = responseText ? JSON.parse(responseText) : {};
+    try {
+      const cardElement = elements.getElement(CardNumberElement);
+      const res = await fetch(`${API_URL}/api/payments/subscribe`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-    if (!res.ok) {
-      throw new Error(data.message || 'Unable to create subscription');
-    }
+      const responseText = await res.text();
+      const data = responseText ? JSON.parse(responseText) : {};
 
-    if (!data.clientSecret) {
-      throw new Error('Missing subscription client secret');
-    }
+      if (!res.ok) {
+        throw new Error(data.message || 'Unable to create subscription');
+      }
 
-    const { error, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret, {
-      payment_method: {
-        card: cardElement,
-        billing_details: {
-          name: formData.fullName,
-          email: formData.email,
-          address: {
-            postal_code: formData.postalCode,
+      if (!data.clientSecret) {
+        throw new Error('Missing subscription client secret');
+      }
+
+      const { error, paymentIntent } = await stripe.confirmCardPayment(data.clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: formData.fullName,
+            email: formData.email,
+            address: {
+              postal_code: formData.postalCode,
+            },
           },
         },
-      },
-    });
+      });
 
-    if (error) {
-      throw new Error(error.message || 'Unable to confirm payment');
+      if (error) {
+        throw new Error(error.message || 'Unable to confirm payment');
+      }
+
+      const confirmRes = await fetch(`${API_URL}/api/payments/subscription/confirm`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subscriptionId: data.subscriptionId,
+          paymentIntentId: paymentIntent?.id,
+        }),
+      });
+
+      const confirmResponseText = await confirmRes.text();
+      const confirmData = confirmResponseText ? JSON.parse(confirmResponseText) : {};
+
+      if (!confirmRes.ok) {
+        throw new Error(confirmData.message || 'Unable to activate subscription');
+      }
+
+      if (confirmData.user) {
+        queryClient.setQueryData(['authUser'], { user: confirmData.user });
+      }
+
+      setShowSuccessModal(true);
+    } catch (error) {
+      setPaymentError(error.message || 'Unable to process payment');
     }
-
-    const confirmRes = await fetch(`${API_URL}/api/payments/subscription/confirm`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        subscriptionId: data.subscriptionId,
-        paymentIntentId: paymentIntent?.id,
-      }),
-    });
-
-    const confirmResponseText = await confirmRes.text();
-    const confirmData = confirmResponseText ? JSON.parse(confirmResponseText) : {};
-
-    if (!confirmRes.ok) {
-      throw new Error(confirmData.message || 'Unable to activate subscription');
-    }
-
-    setShowSuccessModal(true);
   }
 
   useEffect(() => {
@@ -355,6 +368,12 @@ const PaymentPage = () => {
                 {isSubmitting ? 'Processing...' : 'Subscribe to Pro'}
               </button>
 
+              {paymentError && (
+                <p className='payment-submit-error' role='alert'>
+                  {paymentError}
+                </p>
+              )}
+
               <p className='payment-after-note'>
                 You&apos;ll be charged {planPrice.monthly} per month.
                 <br />
@@ -364,8 +383,8 @@ const PaymentPage = () => {
           </form>
 
           <p className='payment-terms'>
-            By subscribing, you agree to our <Link to='/about'>Terms of Service</Link> and{' '}
-            <Link to='/about'>Privacy Policy</Link>.
+            By subscribing, you agree to our <Link to='/terms'>Terms of Service</Link> and{' '}
+            <Link to='/privacy'>Privacy Policy</Link>.
           </p>
         </section>
 

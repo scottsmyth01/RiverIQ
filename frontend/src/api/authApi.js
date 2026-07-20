@@ -61,6 +61,28 @@ export function updatePreferences(preferences) {
   });
 }
 
+export function uploadAvatar(file) {
+  const formData = new FormData();
+  formData.append('avatar', file);
+
+  return request('/api/auth/avatar', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export function deleteAvatar() {
+  return request('/api/auth/avatar', {
+    method: 'DELETE',
+  });
+}
+
+export function cancelSubscription() {
+  return request('/api/payments/subscription/cancel', {
+    method: 'POST',
+  });
+}
+
 export function forgotPassword({ email }) {
   return request('/api/auth/forgot-password', {
     method: 'POST',

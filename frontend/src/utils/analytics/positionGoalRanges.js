@@ -4,6 +4,8 @@ export const positionGoalRanges = {
     pfr: [18, 24],
     threeBet: [7, 10],
     foldToThreeBet: [50, 60],
+    fourBet: [4, 7],
+    foldToFourBet: [45, 60],
     steal: [40, 50],
     foldToStealSb: [70, 85],
     foldToStealBb: [70, 80],

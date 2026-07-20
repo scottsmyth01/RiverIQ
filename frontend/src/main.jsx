@@ -8,7 +8,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 const rootElement = document.getElementById('root');
 const queryClient = new QueryClient();
 
-document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light';
+document.documentElement.dataset.theme = 'dark';
 
 window.__TANSTACK_QUERY_CLIENT__ = queryClient;
 

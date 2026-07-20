@@ -1,0 +1,89 @@
+.privacy-page {
+  min-height: calc(100vh - 130px);
+  padding: clamp(2rem, 6vw, 4.5rem) 1rem;
+  background:
+    radial-gradient(circle at top left, var(--accent-green-glow-faint), transparent 32rem),
+    var(--bg-main);
+}
+
+.privacy-document {
+  width: min(100%, 860px);
+  margin: 0 auto;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: linear-gradient(145deg, var(--surface-field), var(--gradient-card-bottom));
+  box-shadow: var(--shadow-lg);
+}
+
+.privacy-document__back {
+  display: inline-flex;
+  margin-bottom: 1.4rem;
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.privacy-document__header {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.privacy-document h1 {
+  margin: var(--page-heading-margin);
+  color: var(--text-primary);
+  font-size: var(--page-heading-size);
+  line-height: var(--page-heading-line-height);
+  letter-spacing: var(--page-heading-letter-spacing);
+}
+
+.privacy-document__header p {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.privacy-document__intro,
+.privacy-document__section,
+.privacy-document__group {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.privacy-document__intro,
+.privacy-document__section {
+  padding-top: 1.35rem;
+}
+
+.privacy-document__section h2 {
+  margin-top: 0.35rem;
+  color: var(--text-primary);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.3;
+}
+
+.privacy-document__group h3 {
+  margin-top: 0.4rem;
+  color: var(--text-softest);
+  font-size: var(--font-size-sm);
+  line-height: 1.35;
+}
+
+.privacy-document p,
+.privacy-document li {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.65;
+}
+
+.privacy-document ul {
+  display: grid;
+  gap: 0.5rem;
+  padding-left: 1.2rem;
+}
+
+@media (max-width: 640px) {
+  .privacy-document {
+    border-radius: var(--radius-sm);
+  }
+}

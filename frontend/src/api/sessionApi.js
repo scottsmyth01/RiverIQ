@@ -55,7 +55,7 @@ export async function getSessions(params = {}) {
 }
 
 export async function addSession(sessionData) {
-  const data = await request('/api/sessions/addSession', {
+  const data = await request('/api/sessions/add-session', {
     method: 'POST',
     body: sessionData,
   });

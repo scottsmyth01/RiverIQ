@@ -24,18 +24,19 @@
 }
 
 .goals-header h1 {
-  margin: 0;
+  margin: var(--page-heading-margin);
   color: var(--text-white);
   font-size: var(--page-heading-size);
-  line-height: 1;
-  letter-spacing: 0;
+  font-weight: 700;
+  line-height: var(--page-heading-line-height);
+  letter-spacing: var(--page-heading-letter-spacing);
 }
 
 .goals-header p {
-  margin-top: 12px;
+  margin: 0;
   color: var(--text-muted-light);
-  font-size: 0.98rem;
-  font-weight: 650;
+  font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+  line-height: 1.45;
 }
 
 .goals-new-button {
@@ -780,16 +781,6 @@
   .goals-page {
     gap: 14px;
     padding: 12px;
-  }
-
-  .goals-header h1 {
-    font-size: 2rem;
-  }
-
-  .goals-header p {
-    margin-top: 8px;
-    font-size: 0.86rem;
-    line-height: 1.35;
   }
 
   .goals-summary-grid {

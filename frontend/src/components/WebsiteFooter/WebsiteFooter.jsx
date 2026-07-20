@@ -1,0 +1,27 @@
+import { Link } from 'react-router';
+import './WebsiteFooter.css';
+
+const footerLinks = [
+  { label: 'Privacy Policy', to: '/privacy' },
+  { label: 'Terms & Conditions', to: '/terms' },
+  { label: 'FAQ', to: '/faq' },
+];
+
+const WebsiteFooter = () => {
+  return (
+    <footer className='website-footer'>
+      <div className='website-footer__inner'>
+        <span>© {new Date().getFullYear()} RiverIQ</span>
+        <nav aria-label='Website footer'>
+          {footerLinks.map((link) => (
+            <Link key={link.to} to={link.to}>
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </footer>
+  );
+};
+
+export default WebsiteFooter;

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   CalendarDays,
+  Camera,
   ChevronDown,
   ChevronRight,
   CloudUpload,
@@ -38,7 +39,16 @@ const tableSizeOptions = [
 ];
 
 const SettingsPage = () => {
-  const { user, updatePreferences } = useAuth();
+  const {
+    user,
+    updatePreferences,
+    uploadAvatar,
+    uploadAvatarLoading,
+    deleteAvatar,
+    deleteAvatarLoading,
+    cancelSubscription,
+    cancelSubscriptionLoading,
+  } = useAuth();
   const [theme, setTheme] = useState(() => user?.preferences?.theme || localStorage.getItem('theme') || 'light');
   const [dateRange, setDateRange] = useState(user?.preferences?.defaultTimeFilter || '30d');
   const [tableSize, setTableSize] = useState(user?.preferences?.defaultTableSize || '9max');
@@ -47,7 +57,12 @@ const SettingsPage = () => {
   const [savingControl, setSavingControl] = useState(null);
   const [autoDetectSite, setAutoDetectSite] = useState(true);
   const [importUnknownHands, setImportUnknownHands] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState('');
+  const [avatarFileName, setAvatarFileName] = useState('');
+  const [avatarNotice, setAvatarNotice] = useState('');
   const [passwordNotice, setPasswordNotice] = useState('');
+  const [subscriptionNotice, setSubscriptionNotice] = useState('');
+  const avatarInputRef = useRef(null);
   const menuRef = useRef(null);
 
   const selectedDateRange = dateRangeOptions.find((option) => option.value === dateRange) || dateRangeOptions[2];
@@ -139,6 +154,82 @@ const SettingsPage = () => {
     );
   }
 
+  async function handleCancelSubscription() {
+    const shouldCancel = window.confirm('Cancel your RiverIQ Pro subscription?');
+
+    if (!shouldCancel) return;
+
+    setSubscriptionNotice('');
+
+    try {
+      await cancelSubscription();
+      setSubscriptionNotice('Subscription canceled. Your account is now on the Free plan.');
+    } catch (error) {
+      setSubscriptionNotice(error.message || 'Could not cancel subscription.');
+    }
+  }
+
+  async function handleAvatarChange(event) {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setAvatarNotice('Choose an image file for your avatar.');
+      event.target.value = '';
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setAvatarNotice('Avatar images must be smaller than 2 MB.');
+      event.target.value = '';
+      return;
+    }
+
+    if (avatarPreview) {
+      URL.revokeObjectURL(avatarPreview);
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+    setAvatarFileName(file.name);
+    setAvatarNotice('Uploading avatar...');
+
+    try {
+      await uploadAvatar(file);
+      setAvatarNotice('Avatar uploaded successfully.');
+    } catch (error) {
+      setAvatarNotice(error.message || 'Could not upload avatar.');
+    }
+  }
+
+  async function handleRemoveAvatar() {
+    if (avatarPreview) {
+      URL.revokeObjectURL(avatarPreview);
+    }
+
+    setAvatarPreview('');
+    setAvatarFileName('');
+
+    if (avatarInputRef.current) {
+      avatarInputRef.current.value = '';
+    }
+
+    if (!user?.avatarUrl && !user?.avatarKey) {
+      setAvatarNotice('Avatar preview removed.');
+      return;
+    }
+
+    setAvatarNotice('Removing avatar...');
+
+    try {
+      await deleteAvatar();
+      setAvatarNotice('Avatar removed.');
+    } catch (error) {
+      setAvatarNotice(error.message || 'Could not remove avatar.');
+    }
+  }
+
   useEffect(() => {
     const preferences = user?.preferences;
     if (!preferences) return;
@@ -160,14 +251,86 @@ const SettingsPage = () => {
     return () => document.removeEventListener('mousedown', closeMenu);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (avatarPreview) {
+        URL.revokeObjectURL(avatarPreview);
+      }
+    };
+  }, [avatarPreview]);
+
   return (
     <section className='settings-page'>
       <header className='settings-header'>
-        <h1>Settings</h1>
-        <p>Manage your account and preferences.</p>
+        <div className='settings-header__top'>
+          <div>
+            <h1>Settings</h1>
+            <p>Manage your account and preferences.</p>
+          </div>
+          <Link className='settings-header__help' to='/dashboard/help'>
+            Need help?
+          </Link>
+        </div>
       </header>
 
       <div className='settings-stack'>
+        <section className='settings-card settings-card--profile'>
+          <div className='settings-card__header'>
+            <User aria-hidden='true' />
+            <div>
+              <h2>Profile</h2>
+              <p>Manage how your account appears in RiverIQ.</p>
+            </div>
+          </div>
+
+          <div className='settings-avatar-row'>
+            <div className='settings-avatar-preview' aria-label='Avatar preview'>
+              {avatarPreview || user?.avatarUrl ? (
+                <img src={avatarPreview || user.avatarUrl} alt='' />
+              ) : (
+                <span>{(user?.username || user?.name || 'RI').slice(0, 2).toUpperCase()}</span>
+              )}
+            </div>
+
+            <div className='settings-avatar-copy'>
+              <h3>Profile Avatar</h3>
+              <p>Upload a square image under 2 MB. JPG, PNG, and WebP files work best.</p>
+              {avatarFileName && <small>{avatarFileName}</small>}
+            </div>
+
+            <div className='settings-avatar-actions'>
+              <input
+                ref={avatarInputRef}
+                id='avatar-upload'
+                type='file'
+                accept='image/*'
+                className='settings-avatar-input'
+                onChange={handleAvatarChange}
+              />
+              <button
+                className='settings-avatar-button settings-avatar-button--primary'
+                type='button'
+                disabled={uploadAvatarLoading || deleteAvatarLoading}
+                onClick={() => avatarInputRef.current?.click()}
+              >
+                <Camera aria-hidden='true' />
+                {uploadAvatarLoading ? 'Uploading...' : 'Upload Avatar'}
+              </button>
+              {(avatarPreview || user?.avatarUrl) && (
+                <button
+                  className='settings-avatar-button'
+                  type='button'
+                  disabled={uploadAvatarLoading || deleteAvatarLoading}
+                  onClick={handleRemoveAvatar}
+                >
+                  {deleteAvatarLoading ? 'Removing...' : 'Remove'}
+                </button>
+              )}
+            </div>
+          </div>
+          {avatarNotice && <p className='settings-inline-note'>{avatarNotice}</p>}
+        </section>
+
         <section className='settings-card'>
           <div className='settings-card__header'>
             <Monitor aria-hidden='true' />
@@ -283,7 +446,9 @@ const SettingsPage = () => {
                   <div className='settings-menu' role='listbox' aria-label='Default Table Size'>
                     {tableSizeOptions.map((option) => (
                       <button
-                        className={option.value === tableSize ? 'settings-menu__option active' : 'settings-menu__option'}
+                        className={
+                          option.value === tableSize ? 'settings-menu__option active' : 'settings-menu__option'
+                        }
                         key={option.value}
                         type='button'
                         role='option'
@@ -397,7 +562,9 @@ const SettingsPage = () => {
           <div className='settings-row settings-row--subscription'>
             <div className='settings-row__copy'>
               <h3>Current Subscription</h3>
-              <p>{isPro ? 'You have access to all RiverIQ Pro features.' : 'Upgrade to unlock every RiverIQ feature.'}</p>
+              <p>
+                {isPro ? 'You have access to all RiverIQ Pro features.' : 'Upgrade to unlock every RiverIQ feature.'}
+              </p>
             </div>
 
             <div className='subscription-panel'>
@@ -406,8 +573,13 @@ const SettingsPage = () => {
               </span>
 
               {isPro ? (
-                <button className='subscription-action subscription-action--secondary' type='button'>
-                  Cancel Subscription
+                <button
+                  className='subscription-action subscription-action--secondary'
+                  type='button'
+                  disabled={cancelSubscriptionLoading}
+                  onClick={handleCancelSubscription}
+                >
+                  {cancelSubscriptionLoading ? 'Canceling...' : 'Cancel Subscription'}
                 </button>
               ) : (
                 <Link className='subscription-action subscription-action--primary' to='/subscription/payment'>
@@ -416,6 +588,7 @@ const SettingsPage = () => {
               )}
             </div>
           </div>
+          {subscriptionNotice && <p className='settings-inline-note'>{subscriptionNotice}</p>}
         </section>
 
         <section className='settings-card settings-card--account'>

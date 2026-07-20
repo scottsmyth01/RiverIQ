@@ -4,6 +4,8 @@ export const statKeys = [
   'pfr',
   'threeBet',
   'foldToThreeBet',
+  'fourBet',
+  'foldToFourBet',
   'steal',
   'foldToSteal',
   'cBet',
