@@ -31,6 +31,7 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
+const SessionStatsPage = lazy(() => import('./pages/SessionStatsPage'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -113,14 +114,16 @@ function AppRoutes() {
           >
             <Route index element={<DashboardPage />} />
             <Route path='sessions' element={<SessionsPage />} />
+            <Route path='sessions/:id/stats' element={<SessionStatsPage />} />
             <Route path='sessions/:id' element={<SessionDetailPage />} />
+            <Route path='sessions/new' element={<AddSessionPage />} />
             <Route path='analytics' element={<AnalyticsPage />} />
-            <Route path='reports' element={<ReportsPage />} />
-            <Route path='reports/saved' element={<SavedReportsPage />} />
+            <Route path='reports' element={<SavedReportsPage />} />
+            <Route path='reports/new' element={<ReportsPage />} />
+            <Route path='reports/saved' element={<Navigate to='/dashboard/reports' replace />} />
             <Route path='goals' element={<GoalsPage />} />
             <Route path='hand-history' element={<HandChartsPage />} />
             <Route path='help' element={<InfoPage />} />
-            <Route path='sessions/new' element={<AddSessionPage />} />
             <Route path='settings' element={<SettingsPage />} />
           </Route>
           <Route path='*' element={<FeaturePage />} />

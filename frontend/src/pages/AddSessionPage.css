@@ -196,6 +196,60 @@
   transform: translateY(-1px);
 }
 
+.selected-file {
+  min-width: 0;
+  margin-top: 0.85rem;
+  padding: 0.7rem 0.8rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--text-primary);
+  background: var(--surface-input);
+  border: 1px solid var(--border-light);
+  border-radius: 7px;
+  font-size: var(--font-size-sm);
+}
+
+.selected-file > svg {
+  width: 18px;
+  height: 18px;
+  color: var(--color-primary);
+}
+
+.selected-file span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selected-file button {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  transition:
+    color var(--transition),
+    background var(--transition);
+}
+
+.selected-file button:hover:not(:disabled),
+.selected-file button:focus-visible {
+  color: var(--text-primary);
+  background: var(--surface-control-deep);
+}
+
+.selected-file button svg {
+  width: 17px;
+  height: 17px;
+}
+
 .compatible-sites-card {
   padding: clamp(1rem, 2vw, 1.35rem) clamp(1rem, 2vw, 1.5rem);
   display: flex;
@@ -320,6 +374,15 @@
 .session-fields textarea:focus {
   border-color: var(--accent-green-border-max);
   box-shadow: 0 0 0 3px var(--overlay-success);
+}
+
+.compatible-site-option input:disabled + span,
+.session-fields input:disabled,
+.session-fields textarea:disabled,
+.selected-file button:disabled,
+.session-save-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .session-form-actions {

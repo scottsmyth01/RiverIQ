@@ -1,16 +1,107 @@
-import { Chart as ChartJS, LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler } from 'chart.js';
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  Filler,
+  Legend,
+} from 'chart.js';
+import { Maximize2, X } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import { useEffect, useState } from 'react';
 import './ProfitChart.css';
 
-ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler);
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler, Legend);
 
-export default function ProfitChart({ sessions, periods = [], selectedPeriod = 'all-time', onPeriodChange }) {
+const optionalMetrics = [
+  { key: 'allInEV', label: 'All-In EV', color: '#14b8a6', axis: 'allInEV', format: (value) => formatCurrency(value) },
+  { key: 'bbWon', label: 'BB Won', color: '#38bdf8', axis: 'bb', format: (value) => `${formatSigned(value, 1)} BB` },
+  { key: 'bb100', label: 'BB/100', color: '#f59e0b', axis: 'rate', format: (value) => formatSigned(value, 2) },
+  {
+    key: 'handsPlayed',
+    label: 'Hands Played',
+    color: '#a78bfa',
+    axis: 'hands',
+    format: (value) => Math.round(value).toLocaleString('en-US'),
+  },
+  {
+    key: 'hourlyProfit',
+    label: 'Hourly Profit',
+    color: '#f43f5e',
+    axis: 'hourly',
+    format: (value) => formatCurrency(value),
+  },
+];
+
+function formatCurrency(value) {
+  return `${value < 0 ? '-' : ''}$${Math.abs(value).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+function formatSigned(value, digits) {
+  return `${value > 0 ? '+' : ''}${value.toLocaleString('en-US', {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  })}`;
+}
+
+function parseBigBlind(stakes) {
+  if (!stakes) return null;
+
+  const amounts = String(stakes)
+    .match(/\d+(?:\.\d+)?/g)
+    ?.map(Number)
+    .filter((amount) => Number.isFinite(amount));
+  return amounts?.length ? amounts.at(-1) : null;
+}
+
+function getSessionBbWon(session) {
+  const profit = Number(session.profit) || 0;
+  const bigBlind = parseBigBlind(session.stakes);
+
+  if (bigBlind > 0) {
+    return profit / bigBlind;
+  }
+
+  const hands = Number(session.hands) || 0;
+  const bb100 = Number(session.bb100);
+
+  return hands > 0 && Number.isFinite(bb100) ? (bb100 * hands) / 100 : null;
+}
+
+function getMetricSeries(chartData, key) {
+  return chartData.map((item) => ({
+    x: item.handsPlayed,
+    y: item[key],
+  }));
+}
+
+export default function ProfitChart({
+  sessions,
+  periods = [],
+  selectedPeriod = 'all-time',
+  onPeriodChange,
+  isLoading = false,
+}) {
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'light');
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [selectedMetrics, setSelectedMetrics] = useState({
+    allInEV: false,
+    bbWon: false,
+    bb100: false,
+    handsPlayed: false,
+    hourlyProfit: true,
+  });
   const activePeriod = periods.find((period) => period.id === selectedPeriod) || periods[0];
   const isLightTheme = theme === 'light';
   const chartTextColor = isLightTheme ? '#111827' : '#cbd5e1';
   const chartGridColor = isLightTheme ? 'rgba(17, 24, 39, 0.14)' : 'rgba(148, 163, 184, 0.15)';
+  const fullScreenTextColor = isLightTheme ? '#111827' : '#d8dee8';
+  const fullScreenGridColor = isLightTheme ? '#d1d5db' : '#263545';
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -25,14 +116,49 @@ export default function ProfitChart({ sessions, periods = [], selectedPeriod = '
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!isFullScreen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    function closeOnEscape(event) {
+      if (event.key === 'Escape') {
+        setIsFullScreen(false);
+      }
+    }
+
+    window.addEventListener('keydown', closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [isFullScreen]);
+
   const visibleSessions = [...sessions].sort(
     (firstSession, secondSession) => new Date(firstSession.date) - new Date(secondSession.date),
   );
 
   let runningProfit = 0;
+  let runningAllInEV = 0;
+  let runningBbWon = 0;
+  let runningHands = 0;
+  let runningMinutes = 0;
 
   const chartData = visibleSessions.map((session) => {
+    const sessionBbWon = getSessionBbWon(session);
+    const sessionHands = Number(session.hands) || 0;
+    const sessionDuration = Number(session.duration);
+    const sessionAllInEV = Number(session.allInEV ?? session.stats?.allInEV ?? session.profit);
+
     runningProfit += Number(session.profit) || 0;
+    runningAllInEV += Number.isFinite(sessionAllInEV) ? sessionAllInEV : Number(session.profit) || 0;
+    runningBbWon += Number.isFinite(sessionBbWon) ? sessionBbWon : 0;
+    runningHands += sessionHands;
+    runningMinutes += Number.isFinite(sessionDuration) ? sessionDuration : 0;
+
+    const runningHours = runningMinutes / 60;
 
     return {
       date: new Date(session.date).toLocaleDateString('en-US', {
@@ -40,132 +166,356 @@ export default function ProfitChart({ sessions, periods = [], selectedPeriod = '
         day: 'numeric',
       }),
       profit: Number(runningProfit.toFixed(2)),
+      allInEV: Number(runningAllInEV.toFixed(2)),
+      bbWon: Number(runningBbWon.toFixed(1)),
+      bb100: runningHands > 0 ? Number(((runningBbWon / runningHands) * 100).toFixed(2)) : null,
+      handsPlayed: runningHands,
+      hourlyProfit: runningHours > 0 ? Number((runningProfit / runningHours).toFixed(2)) : null,
     };
   });
 
-  const data = {
-    labels: chartData.map((item) => item.date),
-    datasets: [
-      {
-        label: 'Total Profit',
-        data: chartData.map((item) => item.profit),
-        borderColor: '#39ff64',
-        backgroundColor: (context) => {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
+  const datasets = [
+    {
+      label: 'Total Profit',
+      data: getMetricSeries(chartData, 'profit'),
+      yAxisID: 'money',
+      borderColor: '#39ff64',
+      backgroundColor: (context) => {
+        const chart = context.chart;
+        const { ctx, chartArea } = chart;
 
-          if (!chartArea) return null;
+        if (!chartArea) return null;
 
-          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
 
-          gradient.addColorStop(0, 'rgba(57, 255, 100, 0.35)');
-          gradient.addColorStop(1, 'rgba(57, 255, 100, 0)');
+        gradient.addColorStop(0, 'rgba(57, 255, 100, 0.35)');
+        gradient.addColorStop(1, 'rgba(57, 255, 100, 0)');
 
-          return gradient;
-        },
-        fill: true,
+        return gradient;
+      },
+      fill: true,
+      tension: 0,
+      pointRadius: 0,
+      pointHoverRadius: 5,
+      pointHitRadius: 16,
+      pointHoverBackgroundColor: '#39ff64',
+      pointHoverBorderColor: '#ffffff',
+      pointHoverBorderWidth: 2,
+      borderWidth: 2,
+      metricKey: 'profit',
+    },
+    ...optionalMetrics
+      .filter((metric) => selectedMetrics[metric.key])
+      .map((metric) => ({
+        label: metric.label,
+        data: getMetricSeries(chartData, metric.key),
+        yAxisID: metric.axis,
+        borderColor: metric.color,
+        backgroundColor: `${metric.color}26`,
+        fill: false,
         tension: 0,
         pointRadius: 0,
         pointHoverRadius: 5,
         pointHitRadius: 16,
-        pointHoverBackgroundColor: '#39ff64',
+        pointHoverBackgroundColor: metric.color,
         pointHoverBorderColor: '#ffffff',
         pointHoverBorderWidth: 2,
         borderWidth: 2,
-      },
-    ],
+        spanGaps: false,
+        metricKey: metric.key,
+      })),
+  ];
+
+  const data = {
+    datasets,
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      mode: 'index',
-      intersect: false,
-    },
+  const fullScreenData = {
+    datasets: datasets.map((dataset) => ({
+      ...dataset,
+      backgroundColor: 'transparent',
+      fill: false,
+      borderWidth: dataset.metricKey === 'profit' ? 2.5 : 2,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+    })),
+  };
 
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: true,
+  function getChartOptions({ fullScreen = false } = {}) {
+    const textColor = fullScreen ? fullScreenTextColor : chartTextColor;
+    const gridColor = fullScreen ? fullScreenGridColor : chartGridColor;
+
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
         mode: 'index',
         intersect: false,
-        backgroundColor: '#0f1720',
-        titleColor: '#ffffff',
-        bodyColor: '#d1d5db',
-        borderColor: '#263545',
-        borderWidth: 1,
-        displayColors: false,
-        callbacks: {
-          label: (context) =>
-            `Profit: ${context.raw < 0 ? '-' : ''}$${Math.abs(context.raw).toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}`,
-        },
-      },
-    },
-
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: chartTextColor,
-          maxTicksLimit: 7,
-        },
-        border: {
-          display: false,
-        },
       },
 
-      y: {
-        beginAtZero: true,
-        grace: '10%',
-        ticks: {
-          color: chartTextColor,
-          maxTicksLimit: 5,
-          callback: (value) => `$${value.toLocaleString()}`,
+      plugins: {
+        legend: {
+          display: datasets.length > 1,
+          align: 'start',
+          labels: {
+            color: textColor,
+            boxHeight: 2,
+            boxWidth: 28,
+            usePointStyle: false,
+          },
         },
-        grid: {
-          color: chartGridColor,
-          borderDash: [6, 6],
-        },
-        border: {
-          display: false,
+        tooltip: {
+          enabled: true,
+          mode: 'index',
+          intersect: false,
+          backgroundColor: '#0f1720',
+          titleColor: '#ffffff',
+          bodyColor: '#d1d5db',
+          borderColor: '#263545',
+          borderWidth: 1,
+          displayColors: true,
+          callbacks: {
+            title: (items) => {
+              const hands = items[0]?.parsed.x || 0;
+              return `${Math.round(hands).toLocaleString('en-US')} hands`;
+            },
+            afterTitle: (items) => chartData[items[0]?.dataIndex]?.date || '',
+            label: (context) => {
+              const metric = optionalMetrics.find((item) => item.key === context.dataset.metricKey);
+              const formatter = metric?.format || formatCurrency;
+              return `${context.dataset.label}: ${formatter(Number(context.parsed.y) || 0)}`;
+            },
+          },
         },
       },
-    },
-  };
+
+      scales: {
+        x: {
+          type: 'linear',
+          beginAtZero: true,
+          title: {
+            display: true,
+            color: textColor,
+            font: {
+              weight: '700',
+            },
+            text: 'Hands Played',
+          },
+          grid: {
+            color: gridColor,
+            display: fullScreen,
+          },
+          ticks: {
+            color: textColor,
+            maxTicksLimit: fullScreen ? 12 : 7,
+            callback: (value) => Math.round(value).toLocaleString('en-US'),
+          },
+          border: {
+            color: gridColor,
+            display: fullScreen,
+          },
+        },
+
+        money: {
+          type: 'linear',
+          position: 'left',
+          beginAtZero: true,
+          grace: '10%',
+          ticks: {
+            color: textColor,
+            maxTicksLimit: fullScreen ? 9 : 5,
+            callback: (value) => `$${value.toLocaleString()}`,
+          },
+          grid: {
+            color: gridColor,
+            borderDash: fullScreen ? [] : [6, 6],
+          },
+          border: {
+            color: gridColor,
+            display: fullScreen,
+          },
+        },
+        allInEV: {
+          type: 'linear',
+          display: selectedMetrics.allInEV,
+          position: 'right',
+          grace: '10%',
+          grid: {
+            drawOnChartArea: false,
+          },
+          ticks: {
+            color: textColor,
+            maxTicksLimit: fullScreen ? 9 : 5,
+            callback: (value) => formatCurrency(value),
+          },
+          border: {
+            color: gridColor,
+            display: fullScreen,
+          },
+        },
+        bb: {
+          type: 'linear',
+          display: selectedMetrics.bbWon,
+          position: 'right',
+          grid: {
+            drawOnChartArea: false,
+          },
+          ticks: {
+            color: textColor,
+            maxTicksLimit: fullScreen ? 9 : 5,
+            callback: (value) => `${value.toLocaleString()} BB`,
+          },
+          border: {
+            color: gridColor,
+            display: fullScreen,
+          },
+        },
+        rate: {
+          type: 'linear',
+          display: selectedMetrics.bb100,
+          position: 'right',
+          grid: {
+            drawOnChartArea: false,
+          },
+          ticks: {
+            color: textColor,
+            maxTicksLimit: fullScreen ? 9 : 5,
+            callback: (value) => value.toLocaleString(),
+          },
+          border: {
+            color: gridColor,
+            display: fullScreen,
+          },
+        },
+        hands: {
+          type: 'linear',
+          display: selectedMetrics.handsPlayed,
+          position: 'right',
+          grid: {
+            drawOnChartArea: false,
+          },
+          ticks: {
+            color: textColor,
+            maxTicksLimit: fullScreen ? 9 : 5,
+            callback: (value) => Math.round(value).toLocaleString('en-US'),
+          },
+          border: {
+            color: gridColor,
+            display: fullScreen,
+          },
+        },
+        hourly: {
+          type: 'linear',
+          display: selectedMetrics.hourlyProfit,
+          position: 'right',
+          grid: {
+            drawOnChartArea: false,
+          },
+          ticks: {
+            color: textColor,
+            maxTicksLimit: fullScreen ? 9 : 5,
+            callback: (value) => `${formatCurrency(value)}/hr`,
+          },
+          border: {
+            color: gridColor,
+            display: fullScreen,
+          },
+        },
+      },
+    };
+  }
+
+  const options = getChartOptions();
+  const fullScreenOptions = getChartOptions({ fullScreen: true });
 
   return (
     <div className='profit-card'>
       <div className='profit-header'>
         <h2>{activePeriod?.chartLabel || 'Total Profit'}</h2>
-        <div className='profit-period-buttons' aria-label='Profit chart period'>
-          {periods.map((period) => (
-            <button
-              className={selectedPeriod === period.id ? 'active' : ''}
-              type='button'
-              aria-pressed={selectedPeriod === period.id}
-              disabled={!period.available}
-              title={!period.available ? 'No sessions found for this period' : undefined}
-              onClick={() => onPeriodChange?.(period.id)}
-              key={period.id}
-            >
-              {period.label}
-              {!period.available && <span className='period-unavailable'>N/A</span>}
-            </button>
-          ))}
+        <div className='profit-header-actions'>
+          <div className='profit-period-buttons' aria-label='Profit chart period'>
+            {periods.map((period) => (
+              <button
+                className={selectedPeriod === period.id ? 'active' : ''}
+                type='button'
+                aria-pressed={selectedPeriod === period.id}
+                disabled={!period.available}
+                title={!period.available ? 'No sessions found for this period' : undefined}
+                onClick={() => onPeriodChange?.(period.id)}
+                key={period.id}
+              >
+                {period.label}
+                {!period.available && <span className='period-unavailable'>N/A</span>}
+              </button>
+            ))}
+          </div>
+          <button
+            className='profit-expand-button'
+            type='button'
+            aria-label='Open graph full page'
+            onClick={() => setIsFullScreen(true)}
+          >
+            <Maximize2 aria-hidden='true' />
+          </button>
         </div>
       </div>
 
-      <div className='chart-wrapper'>
-        <Line data={data} options={options} />
+      <div className='profit-metric-toggles' aria-label='Profit chart metrics'>
+        {optionalMetrics.map((metric) => (
+          <label style={{ '--metric-color': metric.color }} key={metric.key}>
+            <input
+              type='checkbox'
+              checked={selectedMetrics[metric.key]}
+              onChange={(event) =>
+                setSelectedMetrics((currentMetrics) => ({
+                  ...currentMetrics,
+                  [metric.key]: event.target.checked,
+                }))
+              }
+            />
+            <span className='metric-check' aria-hidden='true'></span>
+            <span className='metric-label'>{metric.label}</span>
+          </label>
+        ))}
       </div>
+
+      <div className='chart-wrapper' aria-busy={isLoading}>
+        <Line data={data} options={options} />
+        {isLoading && (
+          <div className='profit-chart-loading' role='status' aria-live='polite'>
+            <span aria-hidden='true'></span>
+            <strong>Updating graph...</strong>
+          </div>
+        )}
+      </div>
+
+      {isFullScreen && (
+        <div className='profit-fullscreen' role='dialog' aria-modal='true' aria-labelledby='profit-fullscreen-title'>
+          <div className='profit-fullscreen__surface'>
+            <header className='profit-fullscreen__header'>
+              <div>
+                <h2 id='profit-fullscreen-title'>Results Graph</h2>
+                <p>
+                  {activePeriod?.label || 'All Time'} · {visibleSessions.length.toLocaleString('en-US')} sessions
+                </p>
+              </div>
+              <button type='button' aria-label='Close full page graph' onClick={() => setIsFullScreen(false)}>
+                <X aria-hidden='true' />
+              </button>
+            </header>
+
+            <div className='profit-fullscreen__toolbar'>
+              <span>Graph</span>
+              <span>Hands: {runningHands.toLocaleString('en-US')}</span>
+              <span>Profit: {formatCurrency(runningProfit)}</span>
+            </div>
+
+            <div className='profit-fullscreen__chart'>
+              <Line data={fullScreenData} options={fullScreenOptions} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

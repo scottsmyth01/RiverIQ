@@ -1,7 +1,7 @@
 import './SessionsTable.css';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { BarChart3, ChevronLeft, ChevronRight, ExternalLink, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import SessionToolbar from './SessionToolbar';
@@ -20,6 +20,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
   const [numTables, setNumTables] = useState('all');
   const [finish, setFinish] = useState('all');
   const [openActionMenuId, setOpenActionMenuId] = useState(null);
+  const [sessionPendingDelete, setSessionPendingDelete] = useState(null);
 
   const filteredSessions = useMemo(() => {
     let result = [...sessions];
@@ -60,6 +61,19 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
     return () => document.removeEventListener('pointerdown', closeActionMenu);
   }, []);
 
+  useEffect(() => {
+    if (!sessionPendingDelete) return undefined;
+
+    function closeOnEscape(event) {
+      if (event.key === 'Escape') {
+        closeDeleteModal();
+      }
+    }
+
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [sessionPendingDelete, isDeletingSession]);
+
   const currentSessions = filteredSessions.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(filteredSessions.length / sessionsPerPage);
   const firstVisiblePage = currentPage === totalPages ? Math.max(1, totalPages - 1) : currentPage;
@@ -77,16 +91,26 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
     return hands > 0 ? (profit / 0.1 / hands) * 100 : 0;
   }
 
-  async function handleDeleteSession(event, sessionId) {
+  function openDeleteModal(event, session) {
     event.stopPropagation();
+    setOpenActionMenuId(null);
+    setSessionPendingDelete(session);
+  }
 
-    if (!window.confirm('Delete this session? This cannot be undone.')) {
-      return;
-    }
+  function closeDeleteModal() {
+    if (isDeletingSession) return;
+    setSessionPendingDelete(null);
+  }
+
+  async function handleConfirmDelete() {
+    if (!sessionPendingDelete) return;
+
+    const sessionId = sessionPendingDelete._id || sessionPendingDelete.id;
 
     try {
       await deleteSession(sessionId);
       setOpenActionMenuId(null);
+      setSessionPendingDelete(null);
       toast.success('Session deleted');
     } catch (error) {
       toast.error(error.message || 'Could not delete session');
@@ -122,7 +146,6 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
               <th scope='col'>Date</th>
               <th scope='col'>Game</th>
               <th scope='col'>Stakes</th>
-              <th scope='col'># Tables</th>
               <th scope='col'>Profit</th>
               <th scope='col'>Win Rate</th>
               <th scope='col'>Duration</th>
@@ -154,25 +177,13 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
               const sessionId = session._id || session.id;
 
               return (
-                <tr
-                  className='sessions-table__row'
-                  key={sessionId}
-                  tabIndex={0}
-                  onClick={() => navigate(`/dashboard/sessions/${sessionId}`)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      navigate(`/dashboard/sessions/${sessionId}`);
-                    }
-                  }}
-                >
+                <tr className='sessions-table__row' key={sessionId}>
                   <td>
                     <span className='session-date-desktop'>{formattedDate}</span>
                     <span className='session-date-mobile'>{mobileFormattedDate}</span>
                   </td>
                   <td>{session.game}</td>
                   <td>{session.stakes}</td>
-                  <td>{session.numTables}</td>
                   <td
                     className={`session-result ${profitIsPositive ? 'session-result--positive' : 'session-result--negative'}`}
                   >
@@ -185,22 +196,42 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                   </td>
                   <td>{hasDuration ? `${hours}h ${minutes}m` : 'N/A'}</td>
                   <td className='sessions-actions-cell' onClick={(event) => event.stopPropagation()}>
-                    <button
-                      className='sessions-actions-button'
-                      type='button'
-                      aria-label={`Actions for ${session.sessionName || formattedDate}`}
-                      aria-expanded={openActionMenuId === sessionId}
-                      onClick={() => setOpenActionMenuId(openActionMenuId === sessionId ? null : sessionId)}
-                    >
-                      <MoreVertical aria-hidden='true' />
-                    </button>
+                    <div className='sessions-row-actions'>
+                      <button
+                        className='sessions-stats-button'
+                        type='button'
+                        aria-label={`View stats for ${session.sessionName || formattedDate}`}
+                        title='View stats'
+                        onClick={() => navigate(`/dashboard/sessions/${sessionId}/stats`)}
+                      >
+                        <BarChart3 aria-hidden='true' />
+                      </button>
+                      <button
+                        className='sessions-details-button'
+                        type='button'
+                        aria-label={`View details for ${session.sessionName || formattedDate}`}
+                        title='View details'
+                        onClick={() => navigate(`/dashboard/sessions/${sessionId}`)}
+                      >
+                        <ExternalLink aria-hidden='true' />
+                      </button>
+                      <button
+                        className='sessions-actions-button'
+                        type='button'
+                        aria-label={`Actions for ${session.sessionName || formattedDate}`}
+                        aria-expanded={openActionMenuId === sessionId}
+                        onClick={() => setOpenActionMenuId(openActionMenuId === sessionId ? null : sessionId)}
+                      >
+                        <MoreVertical aria-hidden='true' />
+                      </button>
+                    </div>
                     {openActionMenuId === sessionId && (
                       <div className='sessions-actions-menu'>
                         <button type='button' onClick={() => navigate(`/dashboard/sessions/${sessionId}`)}>
                           <Pencil aria-hidden='true' />
                           <span>Edit</span>
                         </button>
-                        <button type='button' disabled={isDeletingSession} onClick={(event) => handleDeleteSession(event, sessionId)}>
+                        <button type='button' disabled={isDeletingSession} onClick={(event) => openDeleteModal(event, session)}>
                           <Trash2 aria-hidden='true' />
                           <span>{isDeletingSession ? 'Deleting...' : 'Delete'}</span>
                         </button>
@@ -267,6 +298,34 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
           </nav>
         </div>
       </div>
+
+      {sessionPendingDelete && (
+        <div className='session-delete-modal-backdrop' role='presentation' onMouseDown={closeDeleteModal}>
+          <section
+            className='session-delete-modal'
+            role='dialog'
+            aria-modal='true'
+            aria-labelledby='session-delete-modal-title'
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className='session-delete-modal-icon'>
+              <Trash2 aria-hidden='true' />
+            </div>
+            <div>
+              <h2 id='session-delete-modal-title'>Delete this session?</h2>
+              <p>This cannot be undone.</p>
+            </div>
+            <div className='session-delete-modal-actions'>
+              <button type='button' disabled={isDeletingSession} onClick={closeDeleteModal}>
+                Cancel
+              </button>
+              <button type='button' disabled={isDeletingSession} onClick={handleConfirmDelete}>
+                {isDeletingSession ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </section>
   );
 };

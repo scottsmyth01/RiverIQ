@@ -1,6 +1,27 @@
 import { ClipboardPen, Star, TrendingUp } from 'lucide-react';
 import { IconCards } from '@tabler/icons-react';
 
+function parseBigBlind(stakes) {
+  if (!stakes) return null;
+
+  const amounts = String(stakes).match(/\d+(?:\.\d+)?/g)?.map(Number).filter((amount) => Number.isFinite(amount));
+  return amounts?.length ? amounts.at(-1) : null;
+}
+
+function getSessionBbWon(session) {
+  const profit = Number(session.profit) || 0;
+  const bigBlind = parseBigBlind(session.stakes);
+
+  if (bigBlind > 0) {
+    return profit / bigBlind;
+  }
+
+  const hands = Number(session.hands) || Number(session.stats?.handsPlayed) || 0;
+  const bb100 = Number(session.bb100 ?? session.stats?.bb100 ?? session.winRate);
+
+  return hands > 0 && Number.isFinite(bb100) ? (bb100 * hands) / 100 : 0;
+}
+
 export const getStatCards = (sessions = []) => {
   const totalProfit = sessions.reduce((sum, session) => {
     return sum + (Number(session.profit) || 0);
@@ -12,7 +33,11 @@ export const getStatCards = (sessions = []) => {
 
   const totalSessions = sessions.length;
 
-  const bb100 = totalHands > 0 ? (totalProfit / 0.1 / totalHands) * 100 : 0;
+  const totalBbWon = sessions.reduce((sum, session) => {
+    return sum + getSessionBbWon(session);
+  }, 0);
+
+  const bb100 = totalHands > 0 ? (totalBbWon / totalHands) * 100 : 0;
 
   return [
     {

@@ -1,7 +1,7 @@
 import './SessionDetailPage.css';
 
 import { useEffect, useState } from 'react';
-import { ArrowLeft, FileText } from 'lucide-react';
+import { ArrowLeft, BarChart3, FileText } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { toast } from 'sonner';
 import { useSessions, useUpdateSession } from '../hooks/useSessions';
@@ -171,6 +171,10 @@ const SessionDetailPage = () => {
           <h1>{session.sessionName || 'Poker Session'}</h1>
           <p>{session.pokerSite || session.game || 'Session'} session notes, tags, and metadata.</p>
         </div>
+        <Link to={`/dashboard/sessions/${id}/stats`}>
+          <BarChart3 aria-hidden='true' />
+          Stats
+        </Link>
       </header>
 
       <section className='session-detail-layout'>

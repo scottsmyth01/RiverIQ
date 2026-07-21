@@ -21,19 +21,89 @@ async function request(endpoint, options = {}) {
   return data;
 }
 
+function formatGameType(gameType) {
+  if (!gameType) return 'Unknown';
+
+  const normalizedGameType = String(gameType).trim();
+
+  if (/hold'?em no limit/i.test(normalizedGameType)) {
+    return 'NL Holdem';
+  }
+
+  return normalizedGameType;
+}
+
+function getCurrencySymbol(currency) {
+  const symbols = {
+    USD: '$',
+    CAD: 'C$',
+    EUR: '€',
+    GBP: '£',
+  };
+
+  return symbols[currency] || currency || '';
+}
+
+function formatBlindAmount(amount) {
+  const numericAmount = Number(amount);
+
+  if (!Number.isFinite(numericAmount)) return null;
+  if (numericAmount < 1) return numericAmount.toFixed(2);
+  if (Number.isInteger(numericAmount)) return String(numericAmount);
+
+  return numericAmount.toFixed(2).replace(/0$/, '');
+}
+
+function getStakesCurrencySymbol(stakes, currency) {
+  const stakesText = String(stakes);
+
+  if (stakesText.includes('C$')) return 'C$';
+  if (stakesText.includes('$')) return '$';
+  if (stakesText.includes('€')) return '€';
+  if (stakesText.includes('£')) return '£';
+
+  return getCurrencySymbol(currency) || getCurrencySymbol(stakesText.match(/[A-Z]{3}/)?.[0]);
+}
+
+function normalizeStakes(stakes, currency) {
+  if (!stakes) return undefined;
+
+  const amounts = String(stakes).match(/\d+(?:\.\d+)?/g);
+
+  if (!amounts || amounts.length < 2) {
+    return stakes;
+  }
+
+  const smallBlind = formatBlindAmount(amounts[0]);
+  const bigBlind = formatBlindAmount(amounts[1]);
+
+  if (!smallBlind || !bigBlind) {
+    return stakes;
+  }
+
+  const currencySymbol = getStakesCurrencySymbol(stakes, currency);
+
+  return `${currencySymbol}${smallBlind}/${currencySymbol}${bigBlind}`;
+}
+
 function normalizeSession(session = {}) {
   const stats = session.stats || {};
   const profit = Number(session.profit ?? stats.profit ?? 0);
+  const allInEV = Number(session.allInEV ?? stats.allInEV ?? profit);
   const hands = Number(session.hands ?? session.handsPlayed ?? stats.handsPlayed ?? 0);
   const bb100 = Number(session.bb100 ?? stats.bb100 ?? session.winRate ?? 0);
   const duration = session.duration ?? stats.duration;
   const tableSize = session.tableSize ?? stats.tableSize ?? session.maxPlayers ?? session.numPlayers;
+  const gameType = formatGameType(session.gameType || session.game || session.pokerSite);
 
   return {
     ...session,
-    game: session.game || session.gameType || session.pokerSite || 'Unknown',
+    game: gameType,
+    gameType,
+    stakes: normalizeStakes(session.stakes, session.currency),
     hands,
     profit,
+    allInEV,
     bb100,
     winRate: Number(session.winRate ?? bb100),
     duration: duration === null || duration === undefined || duration === '' ? null : Number(duration),

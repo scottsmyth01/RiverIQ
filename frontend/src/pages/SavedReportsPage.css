@@ -9,7 +9,9 @@
 .saved-reports-list {
   min-height: 0;
   padding: 18px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: linear-gradient(145deg, color-mix(in srgb, var(--surface-chart) 92%, transparent), var(--surface-panel-deep));
   border: 1px solid var(--theme-border-card);
   border-radius: 8px;
@@ -20,6 +22,15 @@
   margin: 0 0 14px;
   color: var(--text-white);
   font-size: 1rem;
+}
+
+.saved-reports-list__items {
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .saved-report-item {
@@ -86,6 +97,47 @@
   max-width: 180px;
   font-size: 0.76rem;
   line-height: 1.35;
+}
+
+.saved-reports-new-button {
+  min-height: 40px;
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-on-primary);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--success-bright) 86%, var(--surface-white)), var(--success-bright));
+  border: 1px solid color-mix(in srgb, var(--success-bright) 78%, var(--theme-border-card));
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--success-bright) 16%, transparent),
+    0 10px 22px color-mix(in srgb, var(--success-bright) 18%, transparent);
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.saved-reports-new-button:hover {
+  border-color: var(--success-bright);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--success-bright) 30%, transparent),
+    0 12px 26px color-mix(in srgb, var(--success-bright) 26%, transparent);
+  transform: translateY(-1px);
+}
+
+.saved-reports-new-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.saved-report-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .saved-report-summary {

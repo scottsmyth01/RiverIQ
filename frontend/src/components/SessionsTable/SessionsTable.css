@@ -174,7 +174,7 @@
 
 .sessions-table th,
 .sessions-table td {
-  width: calc(100% / 8);
+  width: calc(100% / 7);
 }
 
 .sessions-table th,
@@ -205,15 +205,6 @@
   background: var(--overlay-chart-hover);
 }
 
-.sessions-table__row {
-  cursor: pointer;
-}
-
-.sessions-table__row:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-}
-
 .sessions-table th:nth-child(n + 3),
 .sessions-table td:nth-child(n + 3) {
   text-align: right;
@@ -221,7 +212,7 @@
 
 .sessions-table th:last-child,
 .sessions-table td:last-child {
-  width: 54px;
+  width: 132px;
   text-align: center;
 }
 
@@ -229,6 +220,15 @@
   position: relative;
 }
 
+.sessions-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.sessions-details-button,
+.sessions-stats-button,
 .sessions-actions-button {
   width: 32px;
   height: 32px;
@@ -244,6 +244,21 @@
     border-color var(--transition);
 }
 
+.sessions-details-button {
+  color: var(--text-on-primary);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--success-bright) 84%, var(--surface-white)), var(--success-bright));
+  border-color: color-mix(in srgb, var(--success-bright) 78%, var(--theme-border-card));
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--success-bright) 14%, transparent);
+}
+
+.sessions-stats-button {
+  color: #dbeafe;
+  background: linear-gradient(180deg, #2563eb, #1d4ed8);
+  border-color: color-mix(in srgb, #3b82f6 78%, var(--theme-border-card));
+  box-shadow: 0 8px 18px color-mix(in srgb, #2563eb 18%, transparent);
+}
+
 .sessions-actions-button:hover,
 .sessions-actions-button[aria-expanded='true'] {
   color: var(--text-white);
@@ -251,6 +266,27 @@
   border-color: var(--accent-green-border-strong);
 }
 
+.sessions-details-button:hover {
+  color: var(--text-on-primary);
+  border-color: var(--success-bright);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--success-bright) 22%, transparent);
+}
+
+.sessions-stats-button:hover {
+  color: #ffffff;
+  border-color: #60a5fa;
+  box-shadow: 0 10px 22px color-mix(in srgb, #2563eb 28%, transparent);
+}
+
+.sessions-details-button:focus-visible,
+.sessions-stats-button:focus-visible,
+.sessions-actions-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.sessions-details-button svg,
+.sessions-stats-button svg,
 .sessions-actions-button svg {
   width: 16px;
   height: 16px;
@@ -399,6 +435,87 @@
   text-align: center;
 }
 
+.session-delete-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(3, 8, 14, 0.58);
+}
+
+.session-delete-modal {
+  width: min(100%, 360px);
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+  color: var(--text-control);
+  background: var(--surface-auth-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+}
+
+.session-delete-modal-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: var(--danger-bright);
+  background: var(--overlay-danger);
+  border: 1px solid var(--danger-border);
+  border-radius: 8px;
+}
+
+.session-delete-modal-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.session-delete-modal h2 {
+  margin: 0;
+  color: var(--text-white);
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.session-delete-modal p {
+  margin: 6px 0 0;
+  color: var(--text-table-muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.session-delete-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.session-delete-modal-actions button {
+  min-height: 38px;
+  padding: 0 13px;
+  color: var(--text-control);
+  background: var(--surface-control-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.session-delete-modal-actions button:last-child {
+  color: #ffffff;
+  background: linear-gradient(180deg, var(--surface-danger), var(--surface-danger-deep));
+  border-color: var(--danger-border-strong);
+}
+
+.session-delete-modal-actions button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 @media (min-width: 761px) and (max-height: 800px) {
   .sessions-card {
     margin-top: 8px;
@@ -472,7 +589,7 @@
 
   .sessions-table th,
   .sessions-table td {
-    width: 25%;
+    width: 20%;
     padding: 16px 8px;
   }
 
@@ -483,10 +600,8 @@
 
   .sessions-table th:nth-child(3),
   .sessions-table td:nth-child(3),
-  .sessions-table th:nth-child(4),
-  .sessions-table td:nth-child(4),
-  .sessions-table th:nth-child(7),
-  .sessions-table td:nth-child(7) {
+  .sessions-table th:nth-child(6),
+  .sessions-table td:nth-child(6) {
     display: none;
   }
 

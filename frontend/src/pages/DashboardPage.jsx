@@ -21,7 +21,7 @@ const DashboardPage = () => {
   const defaultPeriod = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
   const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod);
   const { data: allSessions = [] } = useSessions();
-  const { data: sessions = [] } = useSessions({ period: selectedPeriod });
+  const { data: sessions = [], isFetching: isChartFetching } = useSessions({ period: selectedPeriod });
   const username = user?.username || user?.name || 'there';
 
   useEffect(() => {
@@ -97,6 +97,7 @@ const DashboardPage = () => {
             periods={chartPeriodsWithAvailability}
             selectedPeriod={selectedPeriod}
             onPeriodChange={setSelectedPeriod}
+            isLoading={isChartFetching}
           />
           <SessionsTable sessions={sessions} sessionsPerPage={5} variant='home-page' />
         </section>

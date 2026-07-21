@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ArrowLeft, ChevronRight, CloudUpload } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { ArrowLeft, ChevronRight, CloudUpload, FileText, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useAddSession } from '../hooks/useSessions';
@@ -12,16 +12,64 @@ const pokerSites = [
 
 const AddSessionPage = () => {
   const [selectedPokerSite, setSelectedPokerSite] = useState('pokerstars');
+  const [sessionDetails, setSessionDetails] = useState({
+    sessionName: '',
+    notes: '',
+    tags: '',
+  });
+  const [handHistoryFile, setHandHistoryFile] = useState(null);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const { mutateAsync: addSession, isPending } = useAddSession();
+
+  function handleDetailsChange(event) {
+    const { name, value } = event.target;
+
+    setSessionDetails((details) => ({
+      ...details,
+      [name]: value,
+    }));
+  }
+
+  function handleFileChange(event) {
+    const [file] = event.target.files || [];
+    setHandHistoryFile(file || null);
+  }
+
+  function clearSelectedFile() {
+    setHandHistoryFile(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }
+
+  function handleDrop(event) {
+    event.preventDefault();
+
+    if (isPending) return;
+
+    const [file] = event.dataTransfer.files || [];
+    setHandHistoryFile(file || null);
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
+    if (!handHistoryFile) {
+      toast.error('Please choose a hand history file');
+      return;
+    }
+
+    const formData = new FormData();
     formData.set('pokerSite', selectedPokerSite);
+    formData.set('sessionName', sessionDetails.sessionName.trim());
+    formData.set('notes', sessionDetails.notes.trim());
+    formData.set('tags', sessionDetails.tags.trim());
+    formData.set('handHistory', handHistoryFile);
 
     try {
+      console.log([...formData.entries()]);
       await addSession(formData);
       toast.success('Session uploaded');
       navigate('/dashboard/sessions');
@@ -65,6 +113,7 @@ const AddSessionPage = () => {
                     name='pokerSite'
                     value={site.value}
                     checked={selectedPokerSite === site.value}
+                    disabled={isPending}
                     onChange={() => setSelectedPokerSite(site.value)}
                   />
                   <span>{site.label}</span>
@@ -73,13 +122,26 @@ const AddSessionPage = () => {
             </div>
           </section>
           <section className='add-session-card upload-card'>
-            <label className='upload-dropzone' htmlFor='hand-history-file'>
+            <label
+              className='upload-dropzone'
+              htmlFor='hand-history-file'
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={handleDrop}
+            >
               <CloudUpload aria-hidden='true' />
               <h2>Upload Hand History File</h2>
               <p>Drag and drop your file here, or click to browse</p>
 
               <span className='choose-file-button'>Choose File</span>
-              <input id='hand-history-file' name='handHistory' type='file' accept='.txt,.hhh' />
+              <input
+                ref={fileInputRef}
+                id='hand-history-file'
+                name='handHistory'
+                type='file'
+                accept='.txt,.hhh'
+                disabled={isPending}
+                onChange={handleFileChange}
+              />
 
               <small>
                 Supports .txt and .hhh files
@@ -87,6 +149,21 @@ const AddSessionPage = () => {
                 Max file size: 50MB
               </small>
             </label>
+
+            {handHistoryFile && (
+              <div className='selected-file'>
+                <FileText aria-hidden='true' />
+                <span>{handHistoryFile.name}</span>
+                <button
+                  type='button'
+                  aria-label='Remove selected file'
+                  disabled={isPending}
+                  onClick={clearSelectedFile}
+                >
+                  <X aria-hidden='true' />
+                </button>
+              </div>
+            )}
           </section>
 
           <section className='add-session-card session-details-card'>
@@ -94,13 +171,39 @@ const AddSessionPage = () => {
 
             <div className='session-fields'>
               <label>
+                <span>Session Title</span>
+                <input
+                  name='sessionName'
+                  type='text'
+                  placeholder='e.g. Friday night 50NL'
+                  value={sessionDetails.sessionName}
+                  disabled={isPending}
+                  onChange={handleDetailsChange}
+                />
+              </label>
+
+              <label>
                 <span>Notes</span>
-                <textarea name='notes' rows='5' placeholder='Add any notes about this session...' />
+                <textarea
+                  name='notes'
+                  rows='5'
+                  placeholder='Add any notes about this session...'
+                  value={sessionDetails.notes}
+                  disabled={isPending}
+                  onChange={handleDetailsChange}
+                />
               </label>
 
               <label>
                 <span>Tags</span>
-                <input name='tags' type='text' placeholder='e.g. evening, 50NL, review' />
+                <input
+                  name='tags'
+                  type='text'
+                  placeholder='e.g. evening, 50NL, review'
+                  value={sessionDetails.tags}
+                  disabled={isPending}
+                  onChange={handleDetailsChange}
+                />
               </label>
             </div>
 

@@ -16,6 +16,6 @@ createRoot(rootElement).render(
   <QueryClientProvider client={queryClient}>
     <App />
     <ReactQueryDevtools initialIsOpen={true} />
-    <Toaster />
+    <Toaster position='top-center' richColors closeButton />
   </QueryClientProvider>,
 );

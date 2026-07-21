@@ -9,6 +9,7 @@ import {
   Columns3,
   Download,
   Edit3,
+  FileSearch,
   Grid2X2,
   Play,
   Plus,
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
+import { toast } from 'sonner';
 import { useCreateSavedReport, useUpdateSavedReport } from '../hooks/useSavedReports';
 import { useSessions } from '../hooks/useSessions';
 
@@ -232,7 +234,17 @@ function getReportSummary(rows) {
       summary.wsd += Number(row.wsd) || 0;
       return summary;
     },
-    { hands: 0, profit: 0, bbWeighted: 0, threeBet: 0, foldToThreeBet: 0, fourBet: 0, foldToFourBet: 0, wtsd: 0, wsd: 0 },
+    {
+      hands: 0,
+      profit: 0,
+      bbWeighted: 0,
+      threeBet: 0,
+      foldToThreeBet: 0,
+      fourBet: 0,
+      foldToFourBet: 0,
+      wtsd: 0,
+      wsd: 0,
+    },
   );
 
   return {
@@ -271,6 +283,7 @@ function ReportSelect({ label, value, options, onChange, icon: Icon }) {
       <span>{label}</span>
       <span className='report-select-shell'>
         {Icon && <Icon aria-hidden='true' />}
+        <span className='report-select-value'>{value}</span>
         <select value={value} onChange={(event) => onChange(event.target.value)}>
           {options.map((option) => (
             <option key={option} value={option}>
@@ -314,7 +327,6 @@ const ReportsPage = () => {
   const [pendingExtraFilters, setPendingExtraFilters] = useState([]);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [notice, setNotice] = useState('');
-  const [toast, setToast] = useState('');
   const [reportTitle, setReportTitle] = useState('Untitled Report');
   const [draftReportTitle, setDraftReportTitle] = useState('Untitled Report');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -378,13 +390,6 @@ const ReportsPage = () => {
     : [];
 
   useEffect(() => {
-    if (!toast) return undefined;
-
-    const timeoutId = window.setTimeout(() => setToast(''), 2600);
-    return () => window.clearTimeout(timeoutId);
-  }, [toast]);
-
-  useEffect(() => {
     if (!showColumns) return undefined;
 
     function closeColumnsOnOutsideClick(event) {
@@ -416,7 +421,7 @@ const ReportsPage = () => {
       setHasRunReport(true);
       setIsRunningReport(false);
       setNotice(`Report updated: ${rows.filter((row) => rowMatchesFilters(row, filters)).length} sessions found.`);
-      setToast('Report successfully run');
+      toast.success('Report successfully run');
     }, 1400);
   }
 
@@ -512,20 +517,14 @@ const ReportsPage = () => {
       setSavedReportId(savedReport.id);
       setReportTitle(savedReport.title);
       setAppliedFilters(filters);
-      setToast('Saved report successfully');
+      toast.success('Saved report successfully');
     } catch (error) {
-      setToast(error.message || 'Could not save report');
+      toast.error(error.message || 'Could not save report');
     }
   }
 
   return (
     <main className='reports-page'>
-      {toast && (
-        <div className='reports-toast' role='status' aria-live='polite'>
-          {toast}
-        </div>
-      )}
-
       {isFilterModalOpen && (
         <div className='report-modal-backdrop' role='presentation' onMouseDown={() => setIsFilterModalOpen(false)}>
           <section
@@ -579,7 +578,7 @@ const ReportsPage = () => {
           <p>Create a custom report to analyze your game.</p>
         </div>
         <div className='reports-header-actions'>
-          <Link className='reports-action reports-action--secondary' to='/dashboard/reports/saved'>
+          <Link className='reports-action reports-action--secondary' to='/dashboard/reports'>
             Saved Reports
           </Link>
           <ReportActionButton onClick={() => saveCurrentReport()} disabled={isSavingReport}>
@@ -766,6 +765,7 @@ const ReportsPage = () => {
                 </div>
                 <label className='reports-group-select'>
                   <Grid2X2 aria-hidden='true' />
+                  <span>{groupBy === 'None' ? 'Group By' : groupBy}</span>
                   <select value={groupBy} onChange={(event) => setGroupBy(event.target.value)}>
                     {groupOptions.map((option) => (
                       <option key={option} value={option}>
@@ -803,7 +803,17 @@ const ReportsPage = () => {
                 </div>
               ) : isEmptyReportState ? (
                 <div className='reports-empty-state'>
-                  <strong>{hasRunReport ? 'No sessions match these filters.' : 'Configure filters, then run the report.'}</strong>
+                  <div className='reports-empty-state__visual' aria-hidden='true'>
+                    <FileSearch />
+                  </div>
+                  <div className='reports-empty-state__copy'>
+                    <strong>{hasRunReport ? 'No matching sessions' : 'Build your report and view it here.'}</strong>
+                    <p>
+                      {hasRunReport
+                        ? 'Try widening your date range, removing a filter, or switching the grouping.'
+                        : 'Choose your filters and columns, then run the report to turn sessions into a clean review table.'}
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className='reports-table-scroll'>
@@ -828,92 +838,104 @@ const ReportsPage = () => {
                       </tr>
                     </thead>
                     <tbody>
-                  {groupKey ? groupedVisibleRows.flatMap(([groupLabel, groupRows]) => [
-                    <tr className='reports-group-row' key={`group-${groupLabel}`}>
-                      <td colSpan={visibleColumns.length}>
-                        <span>{groupBy}</span>
-                        <strong>{groupLabel}</strong>
-                        <em>{groupRows.length} session{groupRows.length === 1 ? '' : 's'}</em>
-                      </td>
-                    </tr>,
-                    ...groupRows.map((row, rowIndex) => (
-                      <tr key={`${groupLabel}-${row.date}-${rowIndex}`}>
-                        {visibleColumns.map((column) => {
-                          const isMoney = column.key === 'profit';
-                          const isRate = column.key === 'bb100';
-                          const cellNumber = Number(row[column.key]);
+                      {groupKey
+                        ? groupedVisibleRows.flatMap(([groupLabel, groupRows]) => [
+                            <tr className='reports-group-row' key={`group-${groupLabel}`}>
+                              <td colSpan={visibleColumns.length}>
+                                <span>{groupBy}</span>
+                                <strong>{groupLabel}</strong>
+                                <em>
+                                  {groupRows.length} session{groupRows.length === 1 ? '' : 's'}
+                                </em>
+                              </td>
+                            </tr>,
+                            ...groupRows.map((row, rowIndex) => (
+                              <tr key={`${groupLabel}-${row.date}-${rowIndex}`}>
+                                {visibleColumns.map((column) => {
+                                  const isMoney = column.key === 'profit';
+                                  const isRate = column.key === 'bb100';
+                                  const cellNumber = Number(row[column.key]);
 
-                          return (
-                            <td
-                              className={
-                                isMoney || isRate
-                                  ? cellNumber >= 0
-                                    ? 'reports-positive'
-                                    : 'reports-negative'
-                                  : undefined
-                              }
-                              key={column.key}
-                            >
-                              {formatCell(row[column.key], column.type)}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    )),
-                  ]) : visibleRows.map((row, rowIndex) => (
-                    <tr key={`${row.date}-${rowIndex}`}>
-                      {visibleColumns.map((column) => {
-                        const isMoney = column.key === 'profit';
-                        const isRate = column.key === 'bb100';
-                        const cellNumber = Number(row[column.key]);
+                                  return (
+                                    <td
+                                      className={
+                                        isMoney || isRate
+                                          ? cellNumber >= 0
+                                            ? 'reports-positive'
+                                            : 'reports-negative'
+                                          : undefined
+                                      }
+                                      key={column.key}
+                                    >
+                                      {formatCell(row[column.key], column.type)}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            )),
+                          ])
+                        : visibleRows.map((row, rowIndex) => (
+                            <tr key={`${row.date}-${rowIndex}`}>
+                              {visibleColumns.map((column) => {
+                                const isMoney = column.key === 'profit';
+                                const isRate = column.key === 'bb100';
+                                const cellNumber = Number(row[column.key]);
 
-                        return (
-                          <td
-                            className={
-                              isMoney || isRate
-                                ? cellNumber >= 0
-                                  ? 'reports-positive'
-                                  : 'reports-negative'
-                                : undefined
-                            }
-                            key={column.key}
-                          >
-                            {formatCell(row[column.key], column.type)}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                  {hasRunReport && !isRunningReport && (
-                    <tr className='reports-total-row'>
-                      {visibleColumns.map((column, index) => {
-                        if (index === 0) return <td key={column.key}>Totals ({sortedRows.length} sessions)</td>;
-                        if (column.key === 'hands') return <td key={column.key}>{summary.hands.toLocaleString()}</td>;
-                        if (column.key === 'profit')
-                          return (
-                            <td
-                              className={summary.profit >= 0 ? 'reports-positive' : 'reports-negative'}
-                              key={column.key}
-                            >
-                              {formatCurrency(summary.profit)}
-                            </td>
-                          );
-                        if (column.key === 'bb100')
-                          return (
-                            <td className={summary.bb100 >= 0 ? 'reports-positive' : 'reports-negative'} key={column.key}>
-                              {summary.bb100.toFixed(2)}
-                            </td>
-                          );
-                        if (column.key === 'threeBet') return <td key={column.key}>{formatNumber(summary.threeBet)}</td>;
-                        if (column.key === 'foldToThreeBet') return <td key={column.key}>{formatNumber(summary.foldToThreeBet)}</td>;
-                        if (column.key === 'fourBet') return <td key={column.key}>{formatNumber(summary.fourBet)}</td>;
-                        if (column.key === 'foldToFourBet') return <td key={column.key}>{formatNumber(summary.foldToFourBet)}</td>;
-                        if (column.key === 'wtsd') return <td key={column.key}>{formatNumber(summary.wtsd)}</td>;
-                        if (column.key === 'wsd') return <td key={column.key}>{formatNumber(summary.wsd)}</td>;
-                        return <td key={column.key} />;
-                      })}
-                    </tr>
-                  )}
+                                return (
+                                  <td
+                                    className={
+                                      isMoney || isRate
+                                        ? cellNumber >= 0
+                                          ? 'reports-positive'
+                                          : 'reports-negative'
+                                        : undefined
+                                    }
+                                    key={column.key}
+                                  >
+                                    {formatCell(row[column.key], column.type)}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                      {hasRunReport && !isRunningReport && (
+                        <tr className='reports-total-row'>
+                          {visibleColumns.map((column, index) => {
+                            if (index === 0) return <td key={column.key}>Totals ({sortedRows.length} sessions)</td>;
+                            if (column.key === 'hands')
+                              return <td key={column.key}>{summary.hands.toLocaleString()}</td>;
+                            if (column.key === 'profit')
+                              return (
+                                <td
+                                  className={summary.profit >= 0 ? 'reports-positive' : 'reports-negative'}
+                                  key={column.key}
+                                >
+                                  {formatCurrency(summary.profit)}
+                                </td>
+                              );
+                            if (column.key === 'bb100')
+                              return (
+                                <td
+                                  className={summary.bb100 >= 0 ? 'reports-positive' : 'reports-negative'}
+                                  key={column.key}
+                                >
+                                  {summary.bb100.toFixed(2)}
+                                </td>
+                              );
+                            if (column.key === 'threeBet')
+                              return <td key={column.key}>{formatNumber(summary.threeBet)}</td>;
+                            if (column.key === 'foldToThreeBet')
+                              return <td key={column.key}>{formatNumber(summary.foldToThreeBet)}</td>;
+                            if (column.key === 'fourBet')
+                              return <td key={column.key}>{formatNumber(summary.fourBet)}</td>;
+                            if (column.key === 'foldToFourBet')
+                              return <td key={column.key}>{formatNumber(summary.foldToFourBet)}</td>;
+                            if (column.key === 'wtsd') return <td key={column.key}>{formatNumber(summary.wtsd)}</td>;
+                            if (column.key === 'wsd') return <td key={column.key}>{formatNumber(summary.wsd)}</td>;
+                            return <td key={column.key} />;
+                          })}
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>

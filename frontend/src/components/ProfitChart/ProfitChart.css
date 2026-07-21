@@ -24,6 +24,56 @@
   transform: translateY(-6px);
 }
 
+.profit-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profit-expand-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  min-width: 36px;
+  height: 32px;
+  padding: 0;
+  color: var(--text-on-primary);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--success-bright) 86%, var(--surface-white)), var(--success-bright));
+  border: 1px solid color-mix(in srgb, var(--success-bright) 78%, var(--theme-border-card));
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--success-bright) 16%, transparent),
+    0 10px 22px color-mix(in srgb, var(--success-bright) 18%, transparent);
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.profit-expand-button svg {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.4;
+}
+
+.profit-expand-button:hover {
+  color: var(--text-on-primary);
+  border-color: var(--success-bright);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--success-bright) 30%, transparent),
+    0 12px 26px color-mix(in srgb, var(--success-bright) 26%, transparent);
+  transform: translateY(-2px);
+}
+
+.profit-expand-button:focus-visible {
+  outline: 2px solid var(--success-bright);
+  outline-offset: 2px;
+}
+
 .profit-period-buttons {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -93,6 +143,119 @@
   outline-offset: 2px;
 }
 
+.profit-metric-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 6px;
+}
+
+.profit-metric-toggles label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 6px 10px;
+  color: var(--text-subtle);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-control-deep) 92%, var(--surface-white)), var(--surface-control-deep));
+  border: 1px solid var(--theme-border-card);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+:root[data-theme='light'] .profit-metric-toggles label {
+  color: var(--text-primary);
+}
+
+.profit-metric-toggles label:has(input:checked) {
+  color: var(--text-white);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--metric-color) 24%, var(--surface-control-deep)), var(--surface-control-deep));
+  border-color: var(--metric-color);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--metric-color) 18%, transparent),
+    0 8px 20px color-mix(in srgb, var(--metric-color) 12%, transparent);
+}
+
+.profit-metric-toggles label:hover {
+  color: var(--text-white);
+  border-color: color-mix(in srgb, var(--metric-color) 72%, var(--theme-hover-border));
+  transform: translateY(-1px);
+}
+
+.profit-metric-toggles label:has(input:focus-visible) {
+  outline: 2px solid var(--metric-color);
+  outline-offset: 2px;
+}
+
+.profit-metric-toggles input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+.metric-check {
+  position: relative;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--metric-color) 62%, var(--theme-border-card));
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--surface-panel-deep) 88%, transparent);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--surface-control-deep) 86%, transparent);
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.metric-check::after {
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--text-white);
+  border-width: 0 2px 2px 0;
+  content: '';
+  opacity: 0;
+  transform: rotate(45deg) scale(0.72);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.profit-metric-toggles label:has(input:checked) .metric-check {
+  background: var(--metric-color);
+  border-color: var(--metric-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--metric-color) 18%, transparent);
+}
+
+.profit-metric-toggles label:has(input:checked) .metric-check::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1);
+}
+
+.metric-label {
+  white-space: nowrap;
+}
+
 .chart-wrapper {
   position: relative;
   width: 100%;
@@ -102,6 +265,199 @@
 
 .chart-wrapper canvas {
   max-width: 100% !important;
+}
+
+.profit-chart-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 9px;
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--surface-chart) 72%, transparent);
+  border-radius: 8px;
+  backdrop-filter: blur(3px);
+  pointer-events: none;
+}
+
+.profit-chart-loading span {
+  width: 34px;
+  height: 34px;
+  border: 3px solid color-mix(in srgb, var(--success-bright) 18%, var(--theme-border-card));
+  border-top-color: var(--success-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--success-bright) 18%, transparent);
+  animation: profit-chart-spin 760ms linear infinite;
+}
+
+.profit-chart-loading strong {
+  color: var(--text-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+@keyframes profit-chart-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.profit-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: clamp(10px, 2vw, 24px);
+  background: rgba(4, 9, 14, 0.78);
+  backdrop-filter: blur(8px);
+}
+
+.profit-fullscreen__surface {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  color: #111827;
+  background: #f3f4f6;
+  border: 1px solid #a8b0ba;
+  border-radius: 4px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+}
+
+.profit-fullscreen__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  background: linear-gradient(#f9fafb, #d9dde3);
+  border-bottom: 1px solid #a8b0ba;
+}
+
+.profit-fullscreen__header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 0.98rem;
+  line-height: 1.2;
+}
+
+.profit-fullscreen__header p {
+  margin: 2px 0 0;
+  color: #4b5563;
+  font-size: 0.76rem;
+}
+
+.profit-fullscreen__header button {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: #111827;
+  background: #eef1f5;
+  border: 1px solid #9ca3af;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.profit-fullscreen__header button:hover {
+  background: #ffffff;
+}
+
+.profit-fullscreen__header svg {
+  width: 16px;
+  height: 16px;
+}
+
+.profit-fullscreen__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  min-height: 32px;
+  background: #e5e7eb;
+  border-bottom: 1px solid #b8c0ca;
+}
+
+.profit-fullscreen__toolbar span {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  color: #1f2937;
+  border-right: 1px solid #c4cbd4;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.profit-fullscreen__chart {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 14px 16px 12px;
+  background-color: #ffffff;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(156, 163, 175, 0.16) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgba(156, 163, 175, 0.14) 47px 48px);
+}
+
+.profit-fullscreen__chart canvas {
+  max-width: 100% !important;
+}
+
+:root[data-theme='dark'] .profit-fullscreen {
+  background: rgba(4, 9, 14, 0.84);
+}
+
+:root[data-theme='dark'] .profit-fullscreen__surface {
+  color: var(--text-primary);
+  background: var(--surface-chart);
+  border-color: var(--theme-border-card);
+}
+
+:root[data-theme='dark'] .profit-fullscreen__header {
+  background: linear-gradient(180deg, var(--surface-panel-deep), var(--surface-control-deep));
+  border-bottom-color: var(--theme-border-card);
+}
+
+:root[data-theme='dark'] .profit-fullscreen__header h2 {
+  color: var(--text-primary);
+}
+
+:root[data-theme='dark'] .profit-fullscreen__header p {
+  color: var(--text-secondary);
+}
+
+:root[data-theme='dark'] .profit-fullscreen__header button {
+  color: var(--text-primary);
+  background: var(--surface-control-deep);
+  border-color: var(--theme-border-card);
+}
+
+:root[data-theme='dark'] .profit-fullscreen__header button:hover {
+  background: var(--surface-panel-deep);
+  border-color: var(--theme-hover-border);
+}
+
+:root[data-theme='dark'] .profit-fullscreen__toolbar {
+  background: var(--surface-control-deep);
+  border-bottom-color: var(--theme-border-card);
+}
+
+:root[data-theme='dark'] .profit-fullscreen__toolbar span {
+  color: var(--text-secondary);
+  border-right-color: var(--theme-border-card);
+}
+
+:root[data-theme='dark'] .profit-fullscreen__chart {
+  background-color: var(--surface-chart);
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(148, 163, 184, 0.1) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgba(148, 163, 184, 0.08) 47px 48px);
 }
 
 @media (min-width: 761px) and (max-height: 800px) {
@@ -133,7 +489,18 @@
     flex-direction: column;
   }
 
+  .profit-header-actions {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .profit-expand-button {
+    order: 2;
+    flex: 0 0 36px;
+  }
+
   .profit-period-buttons {
+    order: 1;
     width: 100%;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -144,7 +511,26 @@
     font-size: 0.64rem;
   }
 
+  .profit-metric-toggles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profit-metric-toggles label {
+    justify-content: center;
+    padding-inline: 6px;
+    font-size: 0.66rem;
+  }
+
   .chart-wrapper {
     height: 220px;
+  }
+
+  .profit-fullscreen {
+    padding: 6px;
+  }
+
+  .profit-fullscreen__chart {
+    padding: 10px 8px 8px;
   }
 }

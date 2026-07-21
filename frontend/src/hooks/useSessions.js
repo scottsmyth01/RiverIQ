@@ -10,6 +10,8 @@ export function useSessions(params = {}) {
   return useQuery({
     queryKey: [...sessionsQueryKey, { period }],
     queryFn: () => getSessions({ period }),
+    placeholderData: (previousSessions) => previousSessions,
+    refetchOnWindowFocus: false,
   });
 }
 
