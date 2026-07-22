@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CreditCard, FileUp, LifeBuoy, Lock, Settings, TrendingUp } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import './InfoPage.css';
 
 const helpTopics = [
@@ -38,21 +38,29 @@ const helpTopics = [
     ],
   },
   {
-    id: 'uploads',
-    label: 'Hand Uploads',
+    id: 'hand-history-uploads',
+    label: 'Hand History Uploads',
     icon: FileUp,
     title: 'Hand History Uploads',
-    description: 'Help for importing PokerStars or GGPoker hand histories and resolving upload issues.',
+    description: 'Help for importing PokerStars, GGPoker, 888poker, or partypoker hand histories and resolving upload issues.',
+    subtopics: [
+      { id: 'pokerstars', label: 'PokerStars', title: 'PokerStars Hand History Uploads' },
+      { id: 'ggpoker', label: 'GGPoker', title: 'GGPoker Hand History Uploads' },
+      { id: '888poker', label: '888poker', title: '888poker Hand History Uploads' },
+      { id: 'partypoker', label: 'partypoker', title: 'partypoker Hand History Uploads' },
+    ],
     sections: [
       {
+        id: 'supported-uploads',
         heading: 'Supported uploads',
         items: [
-          'RiverIQ currently supports PokerStars and GGPoker hand history files.',
+          'RiverIQ currently supports PokerStars, GGPoker, 888poker, and partypoker hand history files.',
           'Upload original hand history text files when possible instead of edited or reformatted copies.',
           'Files should contain complete hand histories, including table details, actions, showdown, and summary lines.',
         ],
       },
       {
+        id: 'before-upload',
         heading: 'Before you upload',
         items: [
           'Make sure the file is from the correct poker site and game format.',
@@ -61,6 +69,68 @@ const helpTopics = [
         ],
       },
       {
+        id: 'pokerstars',
+        heading: 'PokerStars',
+        items: [
+          <>
+            From the PokerStars lobby, click on <strong>Options</strong> -&gt;{' '}
+            <strong>Instant Hand history Options</strong>.
+          </>,
+          <>
+            Check <strong>Save My Hands History</strong>.
+          </>,
+          <>
+            Please note the default location where PokerStars is saving your hand histories under{' '}
+            <strong>Where To Save</strong>.
+          </>,
+          <>
+            Click <strong>OK</strong> to save the settings.
+          </>,
+        ],
+      },
+      {
+        id: 'ggpoker',
+        heading: 'GGPoker',
+        items: [
+          <>
+            Select <strong>Pokercraft</strong> in the bottom right corner.
+          </>,
+          'Select the type of game whose hands you’re trying to export.',
+          <>
+            Select the <strong>HH date ranges</strong>.
+          </>,
+          <>
+            Select <strong>ALL</strong> and click on <strong>Download</strong>.
+          </>,
+        ],
+      },
+      {
+        id: '888poker',
+        heading: '888poker',
+        items: [
+          <>
+            Go to the <strong>User Settings</strong> screen and choose the <strong>Game settings</strong> tab, and the{' '}
+            <strong>Hand History</strong> option.
+          </>,
+          <>
+            To save all of your hand history, check the <strong>Save My Hand History</strong> box.
+          </>,
+          'Once this option is enabled, every hand you play will be saved in the destination folder.',
+        ],
+      },
+      {
+        id: 'partypoker',
+        heading: 'partypoker',
+        items: [
+          <>
+            Go to <strong>MyGame</strong> in the partypoker client.
+          </>,
+          'Download the hand history file for the sessions or date range you want to import.',
+          'Upload the original exported hand history file to RiverIQ.',
+        ],
+      },
+      {
+        id: 'after-upload',
         heading: 'After upload',
         items: [
           'Check the imported session in the Sessions page to confirm the result and hand count.',
@@ -213,9 +283,29 @@ const helpTopics = [
 ];
 
 const InfoPage = () => {
-  const [activeTopicId, setActiveTopicId] = useState(helpTopics[0].id);
+  const { hash } = useLocation();
+  const initialTopicId = hash.replace('#', '');
+  const [activeTopicId, setActiveTopicId] = useState(
+    helpTopics.some((topic) => topic.id === initialTopicId) ? initialTopicId : helpTopics[0].id,
+  );
+  const [activeSubtopicId, setActiveSubtopicId] = useState('');
   const activeTopic = helpTopics.find((topic) => topic.id === activeTopicId) || helpTopics[0];
+  const activeSubtopic = activeTopic.subtopics?.find((subtopic) => subtopic.id === activeSubtopicId);
+  const subtopicIds = activeTopic.subtopics?.map((subtopic) => subtopic.id) || [];
+  const visibleSections = activeSubtopic
+    ? activeTopic.sections.filter((section) => section.id === activeSubtopic.id)
+    : activeTopic.sections.filter((section) => !subtopicIds.includes(section.id));
   const ActiveIcon = activeTopic.icon;
+
+  function handleTopicSelect(topicId) {
+    setActiveTopicId(topicId);
+    setActiveSubtopicId('');
+  }
+
+  function handleSubtopicSelect(topicId, subtopicId) {
+    setActiveTopicId(topicId);
+    setActiveSubtopicId(subtopicId);
+  }
 
   return (
     <main className='info-page'>
@@ -232,35 +322,56 @@ const InfoPage = () => {
           <aside className='help-sidebar' aria-label='Help topics'>
             {helpTopics.map((topic) => {
               const TopicIcon = topic.icon;
+              const isActiveTopic = topic.id === activeTopic.id;
 
               return (
-                <button
-                  className={`help-sidebar__button${topic.id === activeTopic.id ? ' help-sidebar__button--active' : ''}`}
-                  key={topic.id}
-                  type='button'
-                  onClick={() => setActiveTopicId(topic.id)}
-                >
-                  <TopicIcon aria-hidden='true' />
-                  <span>{topic.label}</span>
-                </button>
+                <div className='help-sidebar__item' key={topic.id}>
+                  <button
+                    className={`help-sidebar__button${isActiveTopic && !activeSubtopicId ? ' help-sidebar__button--active' : ''}${
+                      isActiveTopic && activeSubtopicId ? ' help-sidebar__button--parent-active' : ''
+                    }`}
+                    type='button'
+                    onClick={() => handleTopicSelect(topic.id)}
+                  >
+                    <TopicIcon aria-hidden='true' />
+                    <span>{topic.label}</span>
+                  </button>
+
+                  {topic.subtopics && isActiveTopic ? (
+                    <div className='help-sidebar__submenu' aria-label={`${topic.label} options`}>
+                      {topic.subtopics.map((subtopic) => (
+                        <button
+                          className={`help-sidebar__submenu-button${
+                            activeSubtopicId === subtopic.id ? ' help-sidebar__submenu-button--active' : ''
+                          }`}
+                          key={subtopic.id}
+                          type='button'
+                          onClick={() => handleSubtopicSelect(topic.id, subtopic.id)}
+                        >
+                          {subtopic.label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               );
             })}
           </aside>
 
-          <section className='help-content' aria-live='polite'>
+          <section className='help-content' id={activeTopic.id} aria-live='polite'>
             <div className='help-content__eyebrow'>
               <ActiveIcon aria-hidden='true' />
               <span>{activeTopic.label}</span>
             </div>
-            <h2>{activeTopic.title}</h2>
+            <h2>{activeSubtopic?.title || activeTopic.title}</h2>
             <p>{activeTopic.description}</p>
             <div className='help-content__sections'>
-              {activeTopic.sections.map((section) => (
-                <article className='help-content__section' key={section.heading}>
+              {visibleSections.map((section) => (
+                <article className='help-content__section' id={section.id} key={section.heading}>
                   <h3>{section.heading}</h3>
                   <ul>
-                    {section.items.map((item) => (
-                      <li key={item}>{item}</li>
+                    {section.items.map((item, itemIndex) => (
+                      <li key={`${section.heading}-${itemIndex}`}>{item}</li>
                     ))}
                   </ul>
                 </article>

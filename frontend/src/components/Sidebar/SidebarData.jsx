@@ -19,7 +19,7 @@ export const SidebarData = [
   {
     title: 'Reports',
     icon: <StickyNoteCheck />,
-    link: '/dashboard/reports',
+    link: '/dashboard/reports/new',
   },
   {
     title: 'Goals',

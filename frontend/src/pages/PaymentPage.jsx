@@ -4,24 +4,20 @@ import { CardCvcElement, CardExpiryElement, CardNumberElement, useElements, useS
 import { useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
-  Bell,
   Check,
-  ChevronDown,
   CircleHelp,
   CreditCard,
   Crown,
   LoaderCircle,
   Lock,
-  LogOut,
-  Settings,
   ShieldCheck,
   Sparkle,
   Star,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
-import logo from '../components/Navbar_dashboard/logo.png';
+import Navbar from '../components/Navbar_dashboard/Navbar';
 import { useAuth } from '../hooks/useAuth';
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
@@ -70,25 +66,12 @@ function getEmail(user) {
   return user?.email || 'scott.smyth@email.com';
 }
 
-function getInitials(name) {
-  return name
-    .split(/[\s@._-]+/)
-    .filter(Boolean)
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-}
-
 const PaymentPage = () => {
-  const { user, logout } = useAuth();
-  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const { user } = useAuth();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [paymentError, setPaymentError] = useState('');
-  const accountMenuRef = useRef(null);
   const displayName = getDisplayName(user);
   const email = getEmail(user);
-  const initials = getInitials(displayName);
   const preferredCurrency = user?.preferences?.currency || 'USD';
   const planPrice = planPrices[preferredCurrency] || planPrices.USD;
   const stripe = useStripe();
@@ -183,17 +166,6 @@ const PaymentPage = () => {
   }
 
   useEffect(() => {
-    const closeAccountMenu = (event) => {
-      if (!accountMenuRef.current?.contains(event.target)) {
-        setIsAccountOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', closeAccountMenu);
-    return () => document.removeEventListener('mousedown', closeAccountMenu);
-  }, []);
-
-  useEffect(() => {
     reset({
       fullName: displayName,
       email,
@@ -203,45 +175,7 @@ const PaymentPage = () => {
 
   return (
     <main className='payment-page'>
-      <header className='payment-topbar'>
-        <Link className='payment-brand' to='/dashboard' aria-label='RiverIQ dashboard'>
-          <img src={logo} alt='' />
-          <span>
-            River<strong>IQ</strong>
-          </span>
-        </Link>
-
-        <div className='payment-account' ref={accountMenuRef}>
-          <button type='button' aria-label='Notifications'>
-            <Bell aria-hidden='true' />
-          </button>
-
-          <button
-            className='payment-account-trigger'
-            type='button'
-            aria-expanded={isAccountOpen}
-            aria-haspopup='menu'
-            onClick={() => setIsAccountOpen((isOpen) => !isOpen)}
-          >
-            <span className='payment-avatar'>{initials}</span>
-            <span>{displayName}</span>
-            <ChevronDown className={isAccountOpen ? 'open' : ''} aria-hidden='true' />
-          </button>
-
-          {isAccountOpen && (
-            <div className='payment-account-menu' role='menu'>
-              <Link to='/dashboard/settings' role='menuitem' onClick={() => setIsAccountOpen(false)}>
-                <Settings aria-hidden='true' />
-                Settings
-              </Link>
-              <button type='button' role='menuitem' onClick={() => logout()}>
-                <LogOut aria-hidden='true' />
-                Log out
-              </button>
-            </div>
-          )}
-        </div>
-      </header>
+      <Navbar />
 
       <div className='payment-shell'>
         <section className='payment-main-panel'>

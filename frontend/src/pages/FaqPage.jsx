@@ -10,7 +10,7 @@ const faqs = [
   {
     question: 'Which poker sites does RiverIQ support?',
     answer:
-      'RiverIQ currently supports PokerStars and GGPoker hand history uploads. More formats can be added as the parser grows.',
+      'RiverIQ currently supports PokerStars, GGPoker, 888poker, and partypoker hand history uploads. More formats can be added as the parser grows.',
   },
   {
     question: 'What happens when I upload hand histories?',

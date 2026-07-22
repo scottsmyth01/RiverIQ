@@ -156,8 +156,8 @@ const PricingPage = () => {
               ))}
             </ul>
 
-            <Link className='start-trial-button' to='/subscription/payment'>
-              Start Pro Trial
+            <Link className='start-trial-button' to={user ? '/subscription/payment' : '/login'}>
+              Start Pro Subscription
             </Link>
             <p className='pricing-cancel-note'>
               <LockKeyhole aria-hidden='true' />

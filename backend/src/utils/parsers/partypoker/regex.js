@@ -1,0 +1,16 @@
+export const REGEX = {
+  handStart: /(?=^partypoker Hand #)/m,
+  handNumber: /partypoker Hand #(\d+)/,
+  tableHeader: /partypoker Hand #\d+: (.+?) \((?:[$€£]?)([\d.]+)\/(?:[$€£]?)([\d.]+) ([A-Z]+)\)/,
+  table: /Table '.+?' (\d+)-max/,
+  players: /^Seat (\d+): (.+?) \(\$?([\d,.]+) in chips\)$/gm,
+  hero: /^Dealt to (.+?) \[([^\]]+)\]$/,
+  buttonSeat: /Seat #(\d+) is the button/,
+  date: /- (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})/,
+  preflop: /\*\*\* HOLE CARDS \*\*\*\n([\s\S]*?)(?=\*\*\* FLOP \*\*\*|\*\*\* SUMMARY \*\*\*|\*\*\* SHOW DOWN \*\*\*)/,
+  flop: /\*\*\* FLOP \*\*\* \[([^\]]+)\]\n([\s\S]*?)(?=\*\*\* TURN \*\*\*|\*\*\* SHOW DOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  turn: /\*\*\* TURN \*\*\* \[([^\]]+)\]\n([\s\S]*?)(?=\*\*\* RIVER \*\*\*|\*\*\* SHOW DOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  river: /\*\*\* RIVER \*\*\* \[([^\]]+)\]\n([\s\S]*?)(?=\*\*\* SHOW DOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  showdown: /\*\*\* SHOW DOWN \*\*\*([\s\S]*?)(?=\*\*\* SUMMARY \*\*\*|$)/,
+  summary: /\*\*\* SUMMARY \*\*\*([\s\S]*)$/,
+};

@@ -48,6 +48,13 @@ export function loginUser(formData) {
   });
 }
 
+export function loginWithGoogle(credential) {
+  return request('/api/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ credential }),
+  });
+}
+
 export function logoutUser() {
   return request('/api/auth/logout', {
     method: 'POST',
@@ -56,7 +63,7 @@ export function logoutUser() {
 
 export function updatePreferences(preferences) {
   return request('/api/auth/preferences', {
-    method: 'PATCH',
+    method: 'POST',
     body: JSON.stringify(preferences),
   });
 }

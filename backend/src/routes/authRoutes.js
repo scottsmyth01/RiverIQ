@@ -2,6 +2,7 @@ import express from 'express';
 import {
   registerUser,
   loginUser,
+  loginWithGoogle,
   getMe,
   logoutUser,
   forgotPassword,
@@ -19,12 +20,14 @@ const router = express.Router();
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+router.post('/google', loginWithGoogle);
 router.post('/logout', logoutUser);
 router.get('/me', protect, getMe);
 router.post('/forgot-password', forgotPassword);
 router.get('/reset-password/:id/:token', validateResetToken);
 router.post('/reset-password/:id/:token', resetPassword);
 router.get('/verify-email/:token', validateEmail);
+router.post('/preferences', protect, updatePreferences);
 router.patch('/preferences', protect, updatePreferences);
 router.post('/avatar', protect, avatarUpload.single('avatar'), uploadAvatar);
 router.delete('/avatar', protect, deleteAvatar);

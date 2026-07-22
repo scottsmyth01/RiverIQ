@@ -37,6 +37,61 @@ const serializeUser = (user) => ({
   avatarKey: user.avatarKey,
 });
 
+function createUsernameFromEmail(email) {
+  return email
+    .split('@')[0]
+    .replace(/[^a-zA-Z0-9_-]/g, '')
+    .slice(0, 12)
+    .toLowerCase();
+}
+
+async function createUniqueUsername(email) {
+  const baseUsername = createUsernameFromEmail(email) || 'riveriq';
+  let username = baseUsername;
+  let suffix = 1;
+
+  while (await User.exists({ username })) {
+    const suffixText = String(suffix);
+    username = `${baseUsername.slice(0, 15 - suffixText.length)}${suffixText}`;
+    suffix += 1;
+  }
+
+  return username;
+}
+
+async function verifyGoogleCredential(credential) {
+  const googleClientId = process.env.GOOGLE_CLIENT_ID;
+
+  if (!googleClientId) {
+    const error = new Error('Google login is not configured');
+    error.statusCode = 500;
+    throw error;
+  }
+
+  const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`);
+  const profile = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const error = new Error(profile.error_description || 'Invalid Google credential');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (profile.aud !== googleClientId) {
+    const error = new Error('Google credential was issued for a different client');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  if (profile.email_verified !== 'true' && profile.email_verified !== true) {
+    const error = new Error('Google email is not verified');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  return profile;
+}
+
 const sendPasswordResetEmail = async (email, resetLink) => {
   const apiToken = process.env.CLOUDFLARE_KEY;
   if (!apiToken) {
@@ -213,6 +268,50 @@ export const loginUser = async (req, res, next) => {
     if (!isMatch) return res.status(401).json({ field: 'password', message: 'Invalid password' });
 
     // set jwt cookie
+    generateToken(res, user._id);
+
+    return res.status(200).json({
+      user: serializeUser(user),
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const loginWithGoogle = async (req, res, next) => {
+  try {
+    const { credential } = req.body;
+
+    if (!credential) {
+      return res.status(400).json({ message: 'Missing Google credential' });
+    }
+
+    const profile = await verifyGoogleCredential(credential);
+    const email = profile.email?.toLowerCase();
+
+    if (!email) {
+      return res.status(400).json({ message: 'Google account did not include an email address' });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      const username = await createUniqueUsername(email);
+      const randomPassword = crypto.randomBytes(32).toString('hex');
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+      user = await User.create({
+        username,
+        email,
+        password: hashedPassword,
+        isEmailVerified: true,
+      });
+    } else if (!user.isEmailVerified) {
+      user.isEmailVerified = true;
+      user.verifyEmailToken = undefined;
+      await user.save();
+    }
+
     generateToken(res, user._id);
 
     return res.status(200).json({

@@ -9,6 +9,7 @@ import {
   DollarSign,
   Monitor,
   Moon,
+  Save,
   Sun,
   Table2,
   User,
@@ -48,6 +49,9 @@ const SettingsPage = () => {
     deleteAvatarLoading,
     cancelSubscription,
     cancelSubscriptionLoading,
+    forgotPassword,
+    forgotPasswordLoading,
+    updatePreferencesLoading,
   } = useAuth();
   const [theme, setTheme] = useState(() => user?.preferences?.theme || localStorage.getItem('theme') || 'light');
   const [dateRange, setDateRange] = useState(user?.preferences?.defaultTimeFilter || '30d');
@@ -61,6 +65,7 @@ const SettingsPage = () => {
   const [avatarFileName, setAvatarFileName] = useState('');
   const [avatarNotice, setAvatarNotice] = useState('');
   const [passwordNotice, setPasswordNotice] = useState('');
+  const [settingsNotice, setSettingsNotice] = useState('');
   const [subscriptionNotice, setSubscriptionNotice] = useState('');
   const avatarInputRef = useRef(null);
   const menuRef = useRef(null);
@@ -69,89 +74,64 @@ const SettingsPage = () => {
   const selectedTableSize = tableSizeOptions.find((option) => option.value === tableSize) || tableSizeOptions[3];
   const selectedCurrency = currencyOptions.find((option) => option.value === currency) || currencyOptions[0];
   const isPro = user?.subscription === 'pro';
-
-  async function savePreference(key, value, onOptimisticChange, onRevert) {
-    const controlId = `${key}:${value}`;
-    const previousValue = onOptimisticChange(value);
-
-    setSavingControl(controlId);
-
-    try {
-      await updatePreferences({ [key]: value });
-    } catch {
-      onRevert(previousValue);
-    } finally {
-      setSavingControl((currentControl) => (currentControl === controlId ? null : currentControl));
-    }
-  }
+  const savedPreferences = user?.preferences || {};
+  const isSavingSettings = updatePreferencesLoading || savingControl === 'settings';
+  const hasSettingsChanges =
+    theme !== (savedPreferences.theme || 'light') ||
+    dateRange !== (savedPreferences.defaultTimeFilter || '30d') ||
+    tableSize !== (savedPreferences.defaultTableSize || '9max') ||
+    currency !== (savedPreferences.currency || 'USD');
 
   function handleThemeChange(nextTheme) {
     if (nextTheme === theme) return;
 
-    savePreference(
-      'theme',
-      nextTheme,
-      (value) => {
-        const previousTheme = theme;
-        localStorage.setItem('theme', value);
-        document.documentElement.dataset.theme = value;
-        setTheme(value);
-        return previousTheme;
-      },
-      (previousTheme) => {
-        localStorage.setItem('theme', previousTheme);
-        document.documentElement.dataset.theme = previousTheme;
-        setTheme(previousTheme);
-      },
-    );
+    localStorage.setItem('theme', nextTheme);
+    document.documentElement.dataset.theme = nextTheme;
+    setTheme(nextTheme);
+    setSettingsNotice('');
   }
 
   function handleDateRangeChange(nextDateRange) {
     setOpenMenu(null);
     if (nextDateRange === dateRange) return;
 
-    savePreference(
-      'defaultTimeFilter',
-      nextDateRange,
-      (value) => {
-        const previousDateRange = dateRange;
-        setDateRange(value);
-        return previousDateRange;
-      },
-      setDateRange,
-    );
+    setDateRange(nextDateRange);
+    setSettingsNotice('');
   }
 
   function handleCurrencyChange(nextCurrency) {
     setOpenMenu(null);
     if (nextCurrency === currency) return;
 
-    savePreference(
-      'currency',
-      nextCurrency,
-      (value) => {
-        const previousCurrency = currency;
-        setCurrency(value);
-        return previousCurrency;
-      },
-      setCurrency,
-    );
+    setCurrency(nextCurrency);
+    setSettingsNotice('');
   }
 
   function handleTableSizeChange(nextTableSize) {
     setOpenMenu(null);
     if (nextTableSize === tableSize) return;
 
-    savePreference(
-      'defaultTableSize',
-      nextTableSize,
-      (value) => {
-        const previousTableSize = tableSize;
-        setTableSize(value);
-        return previousTableSize;
-      },
-      setTableSize,
-    );
+    setTableSize(nextTableSize);
+    setSettingsNotice('');
+  }
+
+  async function handleSaveSettings() {
+    setSettingsNotice('');
+    setSavingControl('settings');
+
+    try {
+      await updatePreferences({
+        theme,
+        currency,
+        defaultTimeFilter: dateRange,
+        defaultTableSize: tableSize,
+      });
+      setSettingsNotice('Settings saved successfully.');
+    } catch (error) {
+      setSettingsNotice(error.message || 'Could not save settings.');
+    } finally {
+      setSavingControl(null);
+    }
   }
 
   async function handleCancelSubscription() {
@@ -166,6 +146,22 @@ const SettingsPage = () => {
       setSubscriptionNotice('Subscription canceled. Your account is now on the Free plan.');
     } catch (error) {
       setSubscriptionNotice(error.message || 'Could not cancel subscription.');
+    }
+  }
+
+  async function handleSendPasswordReset() {
+    setPasswordNotice('');
+
+    if (!user?.email) {
+      setPasswordNotice('No email address is available for this account.');
+      return;
+    }
+
+    try {
+      await forgotPassword({ email: user.email });
+      setPasswordNotice(`Password reset email sent to ${user.email}.`);
+    } catch (error) {
+      setPasswordNotice(error.message || 'Could not send password reset email.');
     }
   }
 
@@ -329,6 +325,17 @@ const SettingsPage = () => {
             </div>
           </div>
           {avatarNotice && <p className='settings-inline-note'>{avatarNotice}</p>}
+
+          <div className='settings-profile-fields' aria-label='Account details'>
+            <label className='settings-profile-field'>
+              <span>Username</span>
+              <input type='text' value={user?.username || ''} disabled />
+            </label>
+            <label className='settings-profile-field'>
+              <span>Email</span>
+              <input type='email' value={user?.email || ''} disabled />
+            </label>
+          </div>
         </section>
 
         <section className='settings-card'>
@@ -351,7 +358,7 @@ const SettingsPage = () => {
                 className={`theme-segmented__option${theme === 'light' ? ' theme-segmented__option--active' : ''}`}
                 type='button'
                 aria-pressed={theme === 'light'}
-                disabled={savingControl === 'theme:light'}
+                disabled={isSavingSettings}
                 onClick={() => handleThemeChange('light')}
               >
                 <Sun aria-hidden='true' />
@@ -361,7 +368,7 @@ const SettingsPage = () => {
                 className={`theme-segmented__option${theme === 'dark' ? ' theme-segmented__option--active' : ''}`}
                 type='button'
                 aria-pressed={theme === 'dark'}
-                disabled={savingControl === 'theme:dark'}
+                disabled={isSavingSettings}
                 onClick={() => handleThemeChange('dark')}
               >
                 <Moon aria-hidden='true' />
@@ -393,7 +400,7 @@ const SettingsPage = () => {
                   type='button'
                   aria-expanded={openMenu === 'dateRange'}
                   aria-haspopup='listbox'
-                  disabled={savingControl?.startsWith('defaultTimeFilter:')}
+                  disabled={isSavingSettings}
                   onClick={() => setOpenMenu((menu) => (menu === 'dateRange' ? null : 'dateRange'))}
                 >
                   <CalendarDays aria-hidden='true' />
@@ -434,7 +441,7 @@ const SettingsPage = () => {
                   type='button'
                   aria-expanded={openMenu === 'tableSize'}
                   aria-haspopup='listbox'
-                  disabled={savingControl?.startsWith('defaultTableSize:')}
+                  disabled={isSavingSettings}
                   onClick={() => setOpenMenu((menu) => (menu === 'tableSize' ? null : 'tableSize'))}
                 >
                   <Table2 aria-hidden='true' />
@@ -475,7 +482,7 @@ const SettingsPage = () => {
                   type='button'
                   aria-expanded={openMenu === 'currency'}
                   aria-haspopup='listbox'
-                  disabled={savingControl?.startsWith('currency:')}
+                  disabled={isSavingSettings}
                   onClick={() => setOpenMenu((menu) => (menu === 'currency' ? null : 'currency'))}
                 >
                   <DollarSign aria-hidden='true' />
@@ -603,16 +610,30 @@ const SettingsPage = () => {
           <button
             className='account-action'
             type='button'
-            onClick={() => setPasswordNotice('Password changes will be added here next.')}
+            disabled={forgotPasswordLoading}
+            onClick={handleSendPasswordReset}
           >
             <span>
-              <strong>Change Password</strong>
-              <small>Update your account password.</small>
+              <strong>{forgotPasswordLoading ? 'Sending Reset Email...' : 'Reset Password'}</strong>
+              <small>Send a password reset email to your account address.</small>
             </span>
             <ChevronRight aria-hidden='true' />
           </button>
           {passwordNotice && <p className='settings-inline-note'>{passwordNotice}</p>}
         </section>
+
+        <div className='settings-save-bar'>
+          {settingsNotice && <p className='settings-save-bar__notice'>{settingsNotice}</p>}
+          <button
+            className='settings-save-button'
+            type='button'
+            disabled={isSavingSettings || !hasSettingsChanges}
+            onClick={handleSaveSettings}
+          >
+            <Save aria-hidden='true' />
+            {isSavingSettings ? 'Saving...' : 'Save Settings'}
+          </button>
+        </div>
       </div>
 
       <footer className='settings-support'>

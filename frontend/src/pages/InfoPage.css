@@ -64,6 +64,10 @@
   background: var(--surface-control-deep);
 }
 
+.help-sidebar__item {
+  min-width: 0;
+}
+
 .help-sidebar__button {
   width: 100%;
   min-height: 46px;
@@ -99,7 +103,52 @@
   color: var(--text-primary);
 }
 
+.help-sidebar__button--parent-active {
+  color: var(--text-primary);
+  background: var(--surface-control);
+  border-color: var(--border);
+}
+
 .help-sidebar__button:focus-visible {
+  outline: 2px solid var(--accent-green-focus);
+  outline-offset: 2px;
+}
+
+.help-sidebar__submenu {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.45rem 0 0.15rem 1.25rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--border);
+}
+
+.help-sidebar__submenu-button {
+  width: 100%;
+  min-height: 36px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.help-sidebar__submenu-button:hover,
+.help-sidebar__submenu-button:focus-visible,
+.help-sidebar__submenu-button--active {
+  border-color: var(--accent-green-border-soft);
+  background: var(--overlay-success-weak);
+  color: var(--text-primary);
+}
+
+.help-sidebar__submenu-button:focus-visible {
   outline: 2px solid var(--accent-green-focus);
   outline-offset: 2px;
 }
@@ -159,6 +208,16 @@
   padding-left: 1.2rem;
 }
 
+.help-content li strong {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.help-content li a {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
 .help-content__contact {
   display: grid;
   gap: 0.45rem;
@@ -185,6 +244,10 @@
 
   .help-sidebar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .help-sidebar__submenu {
+    margin-left: 0.4rem;
   }
 }
 

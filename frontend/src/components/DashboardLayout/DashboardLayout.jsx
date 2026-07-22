@@ -16,7 +16,9 @@ const DashboardLayout = () => {
       <Navbar />
       <div className='dashboard-layout'>
         <Sidebar />
-        <Outlet />
+        <div className='dashboard-layout__content'>
+          <Outlet />
+        </div>
       </div>
     </main>
   );

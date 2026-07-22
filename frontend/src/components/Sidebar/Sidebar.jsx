@@ -18,7 +18,10 @@ const Sidebar = () => {
     <aside className='sidebar'>
       <nav className='sidebar__nav' aria-label='Dashboard sections'>
         {navigationItems.map((item) => {
-          const isLocked = lockedItemTitles.has(item.title) && !hasUnlockedInsights;
+          const isSessionsLocked = item.title === 'Sessions' && sessions.length < 1;
+          const isInsightsLocked = lockedItemTitles.has(item.title) && !hasUnlockedInsights;
+          const isLocked = isSessionsLocked || isInsightsLocked;
+          const sessionsNeeded = isSessionsLocked ? 1 : Math.max(5 - sessions.length, 0);
 
           if (isLocked) {
             return (
@@ -26,7 +29,7 @@ const Sidebar = () => {
                 className='sidebar__item sidebar__item--locked'
                 disabled
                 key={item.title}
-                title={`Upload ${5 - sessions.length} more session${5 - sessions.length === 1 ? '' : 's'} to unlock ${item.title}`}
+                title={`Upload ${sessionsNeeded} more session${sessionsNeeded === 1 ? '' : 's'} to unlock ${item.title}`}
                 type='button'
               >
                 <span className='sidebar__icon'>{item.icon}</span>

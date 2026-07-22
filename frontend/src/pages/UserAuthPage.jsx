@@ -12,6 +12,7 @@ import {
   Spade,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router';
+import { GoogleLogin } from '@react-oauth/google';
 import './UserAuthPage.css';
 import { useAuth } from '../hooks/useAuth';
 import { useForm } from 'react-hook-form';
@@ -31,7 +32,7 @@ const UserAuthPage = () => {
   const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false);
   const [showSuccessLoader, setShowSuccessLoader] = useState(false);
 
-  const { register: registerUser, login, forgotPassword, loginLoading } = useAuth();
+  const { register: registerUser, login, loginGoogle, forgotPassword, loginLoading, googleLoginLoading } = useAuth();
   const {
     register,
     handleSubmit,
@@ -93,6 +94,34 @@ const UserAuthPage = () => {
         });
       }
     }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    if (!credentialResponse.credential) {
+      setError('form', {
+        type: 'server',
+        message: 'Google did not return a sign-in credential.',
+      });
+      return;
+    }
+
+    try {
+      const data = await loginGoogle(credentialResponse.credential);
+      setShowSuccessLoader(true);
+      navigate(data.user?.isEmailVerified ? '/dashboard' : '/verify-email', { replace: true });
+    } catch (error) {
+      setError('form', {
+        type: 'server',
+        message: error.message || 'Google login failed.',
+      });
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('form', {
+      type: 'server',
+      message: 'Google login failed.',
+    });
   };
 
   return (
@@ -388,10 +417,28 @@ const UserAuthPage = () => {
                     <span>or</span>
                   </div>
 
-                  <button className='social-auth-button' type='button'>
-                    <span className='google-mark'>G</span>
-                    Continue with Google
-                  </button>
+                  <div className={`social-auth-button social-auth-button--google${googleLoginLoading ? ' loading' : ''}`}>
+                    {googleLoginLoading ? (
+                      <>
+                        <LoaderCircle aria-hidden='true' />
+                        <span>Signing in with Google...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className='google-mark'>G</span>
+                        <span>Continue with Google</span>
+                        <span className='google-login-hitbox' aria-hidden='true'>
+                          <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={handleGoogleError}
+                            text={authMode === 'register' ? 'signup_with' : 'signin_with'}
+                            shape='rectangular'
+                            width='100%'
+                          />
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </>
               )}
 

@@ -8,6 +8,8 @@ import './AddSessionPage.css';
 const pokerSites = [
   { label: 'PokerStars', value: 'pokerstars' },
   { label: 'GGPoker', value: 'ggpoker' },
+  { label: '888poker', value: '888poker' },
+  { label: 'partypoker', value: 'partypoker' },
 ];
 
 const AddSessionPage = () => {

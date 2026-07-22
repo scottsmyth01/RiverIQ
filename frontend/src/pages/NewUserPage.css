@@ -3,6 +3,34 @@
   margin-top: clamp(-20px, -2vw, -8px);
 }
 
+.import-help-button {
+  position: absolute;
+  top: clamp(1rem, 2vw, 1.35rem);
+  right: clamp(1rem, 2vw, 1.35rem);
+  min-height: 34px;
+  padding: 0 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  background: var(--surface-control-deep);
+  border: 1px solid var(--accent-green-border-soft);
+  border-radius: 7px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  transition:
+    color var(--transition),
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.import-help-button:hover {
+  color: var(--text-primary);
+  background: var(--overlay-success-weak);
+  border-color: var(--accent-green-border-strong);
+}
+
 .prompt h3 {
   margin-bottom: 0.4rem;
   color: var(--text-primary);
@@ -51,6 +79,7 @@
 }
 
 .main-content {
+  position: relative;
   width: 100%;
   min-height: fit-content;
   padding: clamp(1.25rem, 3vw, 2.25rem);
@@ -141,5 +170,12 @@
 
   .main-content {
     border-radius: var(--radius-sm);
+  }
+
+  .import-help-button {
+    position: static;
+    align-self: stretch;
+    width: auto;
+    margin-bottom: 0.85rem;
   }
 }

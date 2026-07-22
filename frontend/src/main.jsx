@@ -4,6 +4,7 @@ import App from './App';
 import { Toaster } from 'sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const rootElement = document.getElementById('root');
 const queryClient = new QueryClient();
@@ -14,7 +15,9 @@ window.__TANSTACK_QUERY_CLIENT__ = queryClient;
 
 createRoot(rootElement).render(
   <QueryClientProvider client={queryClient}>
-    <App />
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'missing-google-client-id'}>
+      <App />
+    </GoogleOAuthProvider>
     <ReactQueryDevtools initialIsOpen={true} />
     <Toaster position='top-center' richColors closeButton />
   </QueryClientProvider>,

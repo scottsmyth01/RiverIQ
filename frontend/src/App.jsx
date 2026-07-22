@@ -45,7 +45,7 @@ function ScrollToTop() {
 
 function AppRoutes() {
   const { pathname } = useLocation();
-  const { isAuthenticated, isEmailVerified, loading } = useAuth();
+  const { isAuthenticated, isEmailVerified, loading, logoutLoading } = useAuth();
 
   const isDashboardRoute = pathname.startsWith('/dashboard');
   const isVerifyEmailRoute = pathname.startsWith('/verify-email');
@@ -63,6 +63,10 @@ function AppRoutes() {
   // if it is a route outside of the /dashboard then it will just load as normal (logged out routes)
 
   if (loading && isDashboardRoute) {
+    return <LoadingScreen />;
+  }
+
+  if (logoutLoading) {
     return <LoadingScreen />;
   }
 
@@ -92,7 +96,14 @@ function AppRoutes() {
           <Route path='/' element={<Navigate to='/login' replace />} />
           <Route path='/features' element={<FeaturePage />} />
           <Route path='/pricing' element={<PricingPage />} />
-          <Route path='/subscription/payment' element={<PaymentPage />} />
+          <Route
+            path='/subscription/payment'
+            element={
+              <ProtectedRoute>
+                <PaymentPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path='/about' element={<AboutPage />} />
           <Route path='/faq' element={<FaqPage />} />
           <Route path='/help' element={<Navigate to='/login' replace />} />

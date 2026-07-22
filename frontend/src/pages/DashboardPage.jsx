@@ -75,33 +75,31 @@ const DashboardPage = () => {
 
   return (
     <>
-      {allSessions.length < 5 && <NewUserPage sessions={allSessions} />}
-      {allSessions.length > 4 && (
-        <section className='dashboard-content'>
-          <header className='dashboard-page-header'>
-            <div className='dashboard-page-header__top'>
-              <div>
-                <h1>Dashboard</h1>
-                <p>Welcome back, {username}! Here is your poker performance review.</p>
-              </div>
+      {allSessions.length <= 2 && <NewUserPage sessions={allSessions} />}
+      <section className='dashboard-content'>
+        <header className='dashboard-page-header'>
+          <div className='dashboard-page-header__top'>
+            <div>
+              <h1>Dashboard</h1>
+              <p>Welcome back, {username}! Here is your poker performance review.</p>
             </div>
-          </header>
-          <StatCards
-            sessions={sessions}
-            periods={periodsWithAvailability}
-            selectedPeriod={selectedPeriod}
-            onPeriodChange={setSelectedPeriod}
-          />
-          <ProfitChart
-            sessions={sessions}
-            periods={chartPeriodsWithAvailability}
-            selectedPeriod={selectedPeriod}
-            onPeriodChange={setSelectedPeriod}
-            isLoading={isChartFetching}
-          />
-          <SessionsTable sessions={sessions} sessionsPerPage={5} variant='home-page' />
-        </section>
-      )}
+          </div>
+        </header>
+        <StatCards
+          sessions={sessions}
+          periods={periodsWithAvailability}
+          selectedPeriod={selectedPeriod}
+          onPeriodChange={setSelectedPeriod}
+        />
+        <ProfitChart
+          sessions={sessions}
+          periods={chartPeriodsWithAvailability}
+          selectedPeriod={selectedPeriod}
+          onPeriodChange={setSelectedPeriod}
+          isLoading={isChartFetching}
+        />
+        <SessionsTable sessions={sessions} sessionsPerPage={5} variant='home-page' />
+      </section>
     </>
   );
 };
