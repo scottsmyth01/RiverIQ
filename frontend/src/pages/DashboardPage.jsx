@@ -20,7 +20,7 @@ const DashboardPage = () => {
   const { user } = useAuth();
   const defaultPeriod = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
   const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod);
-  const { data: allSessions = [] } = useSessions();
+  const { data: allSessions = [], isLoading: isAllSessionsLoading } = useSessions();
   const { data: sessions = [], isFetching: isChartFetching } = useSessions({ period: selectedPeriod });
   const username = user?.username || user?.name || 'there';
 
@@ -72,6 +72,10 @@ const DashboardPage = () => {
       ),
     [periodsWithAvailability],
   );
+
+  if (isAllSessionsLoading) {
+    return null;
+  }
 
   return (
     <>
