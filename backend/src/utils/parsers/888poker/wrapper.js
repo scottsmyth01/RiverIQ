@@ -31,6 +31,9 @@ function normalizeActionLine(line) {
   match = line.match(/^(.+?) (bets|calls|raises) \[([^\]]+)\]( and is all-in)?$/i);
   if (match) return `${match[1]}: ${match[2].toLowerCase()} ${match[3].trim()}${match[4] || ''}`;
 
+  match = line.match(/^Uncalled bet \[([^\]]+)\] returned to (.+)$/i);
+  if (match) return `Uncalled bet (${match[1].trim()}) returned to ${match[2]}`;
+
   match = line.match(/^(.+?) shows \[([^\]]+)\]$/i);
   if (match) return `${match[1]}: shows [${cleanCards(match[2])}]`;
 

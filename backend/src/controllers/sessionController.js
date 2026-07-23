@@ -207,12 +207,15 @@ export const addSession = async (req, res, next) => {
 
 export const updateSession = async (req, res, next) => {
   try {
+    const sessionName =
+      typeof req.body.sessionName === 'string' && req.body.sessionName.trim() ? req.body.sessionName.trim() : undefined;
     const session = await Session.findOneAndUpdate(
       {
         _id: req.params.id,
         user: req.user._id,
       },
       {
+        ...(sessionName ? { sessionName } : {}),
         notes: req.body.notes || '',
         tags: normalizeTags(req.body.tags),
       },

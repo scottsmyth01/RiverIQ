@@ -82,6 +82,7 @@ const SessionDetailPage = () => {
   const { id } = useParams();
   const { data: sessions = [], isLoading, error } = useSessions();
   const { mutateAsync: updateSession, isPending: isUpdatingSession } = useUpdateSession();
+  const [sessionTitle, setSessionTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [tagsInput, setTagsInput] = useState('');
   const session = sessions.find((item) => item._id === id || item.id === id);
@@ -91,6 +92,7 @@ const SessionDetailPage = () => {
       return;
     }
 
+    setSessionTitle(session.sessionName || '');
     setNotes(session.notes || '');
     setTagsInput(getSessionTags(session.tags).join(', '));
   }, [session]);
@@ -137,20 +139,23 @@ const SessionDetailPage = () => {
     { label: 'Game', value: session.gameType || session.game || 'Unknown' },
     { label: 'Stakes', value: session.stakes || 'N/A' },
     { label: 'Table Size', value: session.tableSize ? `${session.tableSize} max` : 'N/A' },
-    { label: 'File', value: session.handHistory?.originalFileName || session.sessionName || 'N/A' },
   ];
 
   async function handleSaveSession(event) {
     event.preventDefault();
+    const fallbackTitle = session.sessionName || session.handHistory?.originalFileName || 'Poker Session';
+    const nextSessionTitle = sessionTitle.trim() || fallbackTitle;
 
     try {
       await updateSession({
         id,
         sessionData: {
+          sessionName: nextSessionTitle,
           notes,
           tags: tagsInput,
         },
       });
+      setSessionTitle(nextSessionTitle);
       toast.success('Session updated');
     } catch (updateError) {
       toast.error(updateError.message || 'Could not update session');
@@ -188,6 +193,16 @@ const SessionDetailPage = () => {
               <strong>{pokerSite.label}</strong>
             </div>
           </section>
+
+          <label className='session-detail-field'>
+            <span>Session Title</span>
+            <input
+              value={sessionTitle}
+              type='text'
+              placeholder='Session title'
+              onChange={(event) => setSessionTitle(event.target.value)}
+            />
+          </label>
 
           <label className='session-detail-field'>
             <span>Notes</span>

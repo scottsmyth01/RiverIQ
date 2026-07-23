@@ -92,52 +92,6 @@ async function verifyGoogleCredential(credential) {
   return profile;
 }
 
-const sendPasswordResetEmail = async (email, resetLink) => {
-  const apiToken = process.env.CLOUDFLARE_KEY;
-  if (!apiToken) {
-    throw new Error('Cloudflare API token is not configured');
-  }
-  const client = new Cloudflare({
-    apiToken,
-  });
-  const pwResetEmail = readFileSync(new URL('../data/password-reset-email.html', import.meta.url), 'utf8')
-    .replaceAll('{{reset_url}}', () => escapeHtml(resetLink))
-    .replaceAll('{{current_year}}', () => escapeHtml(new Date().getFullYear().toString()));
-
-  const response = await client.emailSending.send({
-    account_id: 'a6dbd6263cba6aeb30176d034c765748',
-    from: 'RiverIQ <support@riveriq.app>',
-    to: email,
-    subject: 'RiverIQ - Here is your password reset link',
-    html: pwResetEmail,
-  });
-};
-
-const sendVerifyEmail = async (username, email, verifyLink) => {
-  const apiToken = process.env.CLOUDFLARE_KEY;
-
-  if (!apiToken) {
-    throw new Error('Cloudflare API token is not configured');
-  }
-
-  const client = new Cloudflare({
-    apiToken,
-  });
-  const verificationEmail = readFileSync(new URL('../data/welcome-email.html', import.meta.url), 'utf8')
-    .replaceAll('{{customer_name}}', () => escapeHtml(username))
-    .replaceAll('{{verify_url}}', () => escapeHtml(verifyLink))
-    .replaceAll('{{current_year}}', new Date().getFullYear().toString());
-
-  const response = await client.emailSending.send({
-    account_id: 'a6dbd6263cba6aeb30176d034c765748',
-    from: 'RiverIQ <welcome@riveriq.app>',
-    to: email,
-    subject: 'Welcome to RiverIQ — verify your email',
-    html: verificationEmail,
-    text: `Welcome to RiverIQ, ${username}! Verify your email to activate your account: ${verifyLink}`,
-  });
-};
-
 export const registerUser = async (req, res, next) => {
   const { username, email, password, passwordConfirm } = req.body;
   try {
@@ -333,6 +287,52 @@ export const logoutUser = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+};
+
+const sendPasswordResetEmail = async (email, resetLink) => {
+  const apiToken = process.env.CLOUDFLARE_KEY;
+  if (!apiToken) {
+    throw new Error('Cloudflare API token is not configured');
+  }
+  const client = new Cloudflare({
+    apiToken,
+  });
+  const pwResetEmail = readFileSync(new URL('../data/password-reset-email.html', import.meta.url), 'utf8')
+    .replaceAll('{{reset_url}}', () => escapeHtml(resetLink))
+    .replaceAll('{{current_year}}', () => escapeHtml(new Date().getFullYear().toString()));
+
+  const response = await client.emailSending.send({
+    account_id: 'a6dbd6263cba6aeb30176d034c765748',
+    from: 'RiverIQ <support@riveriq.app>',
+    to: email,
+    subject: 'RiverIQ - Here is your password reset link',
+    html: pwResetEmail,
+  });
+};
+
+const sendVerifyEmail = async (username, email, verifyLink) => {
+  const apiToken = process.env.CLOUDFLARE_KEY;
+
+  if (!apiToken) {
+    throw new Error('Cloudflare API token is not configured');
+  }
+
+  const client = new Cloudflare({
+    apiToken,
+  });
+  const verificationEmail = readFileSync(new URL('../data/welcome-email.html', import.meta.url), 'utf8')
+    .replaceAll('{{customer_name}}', () => escapeHtml(username))
+    .replaceAll('{{verify_url}}', () => escapeHtml(verifyLink))
+    .replaceAll('{{current_year}}', new Date().getFullYear().toString());
+
+  const response = await client.emailSending.send({
+    account_id: 'a6dbd6263cba6aeb30176d034c765748',
+    from: 'RiverIQ <welcome@riveriq.app>',
+    to: email,
+    subject: 'Welcome to RiverIQ — verify your email',
+    html: verificationEmail,
+    text: `Welcome to RiverIQ, ${username}! Verify your email to activate your account: ${verifyLink}`,
+  });
 };
 
 // @desc    Get current logged-in user

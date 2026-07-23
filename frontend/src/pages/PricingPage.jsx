@@ -5,27 +5,24 @@ import { useAuth } from '../hooks/useAuth';
 import './PricingPage.css';
 
 const freeFeatures = [
-  '100 sessions',
-  'Bankroll tracking',
+  '20 sessions',
   'Profit over time graph',
   'Manual session entry',
   'Recent sessions',
   'Total profit, hands, sessions, BB/100',
-  'Basic graphs & filters (1w / 30d / All)',
+  'Basic graphs & filters',
 ];
 
 const proFeatures = [
   'Unlimited sessions & hands',
-  'Position breakdowns',
-  'Upload hand histories',
+  'Analytics',
+  'Reports',
+  'Goal Tracking',
+  'Hand Charts',
   'AI-powered leak detection',
   'Advanced statistics',
   'Advanced filters & search',
-  'Goal tracking',
-  'Session notes & tags',
   'Export to CSV / Excel',
-  'Profit by stake, game, site, day, hour',
-  'Cloud sync across devices',
 ];
 
 const trustItems = [

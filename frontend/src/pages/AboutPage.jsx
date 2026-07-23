@@ -56,15 +56,15 @@ const AboutPage = () => {
           </div>
 
           <div className='about-dashboard'>
-            <div className='dashboard-topbar'>
-              <span className='dashboard-brand'>
+            <div className='about-dashboard-topbar'>
+              <span className='about-dashboard-brand'>
                 <Spade aria-hidden='true' /> RiverIQ
               </span>
-              <span className='dashboard-user'>Scott Smyth⌄</span>
+              <span className='about-dashboard-user'>Scott Smyth⌄</span>
             </div>
 
-            <div className='dashboard-layout'>
-              <div className='dashboard-sidebar'>
+            <div className='about-dashboard-layout'>
+              <div className='about-dashboard-sidebar'>
                 {['Dashboard', 'Sessions', 'Analytics', 'Reports', 'Goals', 'Settings'].map((item, index) => (
                   <span className={index === 0 ? 'selected' : ''} key={item}>
                     {item}
@@ -78,7 +78,7 @@ const AboutPage = () => {
                   <strong>$3,450.75</strong>
                 </div>
                 <img src='/hero.png' alt='RiverIQ profit chart trending upward' />
-                <div className='dashboard-stats'>
+                <div className='about-dashboard-stats'>
                   <span>
                     BB/100 <strong>12.35</strong>
                   </span>

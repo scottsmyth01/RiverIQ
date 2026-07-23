@@ -20,13 +20,6 @@ const optionalMetrics = [
   { key: 'bbWon', label: 'BB Won', color: '#38bdf8', axis: 'bb', format: (value) => `${formatSigned(value, 1)} BB` },
   { key: 'bb100', label: 'BB/100', color: '#f59e0b', axis: 'rate', format: (value) => formatSigned(value, 2) },
   {
-    key: 'handsPlayed',
-    label: 'Hands Played',
-    color: '#a78bfa',
-    axis: 'hands',
-    format: (value) => Math.round(value).toLocaleString('en-US'),
-  },
-  {
     key: 'hourlyProfit',
     label: 'Hourly Profit',
     color: '#f43f5e',
@@ -80,6 +73,10 @@ function getMetricSeries(chartData, key) {
   }));
 }
 
+function roundUpToNearestTen(value) {
+  return Math.ceil(value / 10) * 10;
+}
+
 export default function ProfitChart({
   sessions,
   periods = [],
@@ -93,7 +90,6 @@ export default function ProfitChart({
     allInEV: false,
     bbWon: false,
     bb100: false,
-    handsPlayed: false,
     hourlyProfit: true,
   });
   const activePeriod = periods.find((period) => period.id === selectedPeriod) || periods[0];
@@ -146,7 +142,7 @@ export default function ProfitChart({
   let runningHands = 0;
   let runningMinutes = 0;
 
-  const chartData = visibleSessions.map((session) => {
+  const sessionChartData = visibleSessions.map((session) => {
     const sessionBbWon = getSessionBbWon(session);
     const sessionHands = Number(session.hands) || 0;
     const sessionDuration = Number(session.duration);
@@ -173,6 +169,47 @@ export default function ProfitChart({
       hourlyProfit: runningHours > 0 ? Number((runningProfit / runningHours).toFixed(2)) : null,
     };
   });
+
+  const chartData = visibleSessions.length
+    ? [
+        {
+          date: 'Start',
+          profit: 0,
+          allInEV: 0,
+          bbWon: 0,
+          bb100: 0,
+          handsPlayed: 0,
+          hourlyProfit: 0,
+        },
+        ...sessionChartData,
+      ]
+    : [];
+
+  function getMetricBounds(key, paddingRatio = 0.28) {
+    const values = chartData.map((item) => Number(item[key])).filter((value) => Number.isFinite(value));
+
+    if (!values.length) {
+      return {};
+    }
+
+    const min = Math.min(0, ...values);
+    const max = Math.max(0, ...values);
+    const span = Math.max(max - min, Math.abs(max), Math.abs(min), 1);
+    const padding = span * paddingRatio;
+
+    return {
+      suggestedMin: min < 0 ? min - padding : 0,
+      suggestedMax: max > 0 ? max + padding : 0,
+    };
+  }
+
+  const metricBounds = {
+    profit: getMetricBounds('profit'),
+    allInEV: getMetricBounds('allInEV'),
+    bbWon: getMetricBounds('bbWon'),
+    bb100: getMetricBounds('bb100'),
+    hourlyProfit: getMetricBounds('hourlyProfit'),
+  };
 
   const datasets = [
     {
@@ -293,6 +330,7 @@ export default function ProfitChart({
         x: {
           type: 'linear',
           beginAtZero: true,
+          max: runningHands > 0 ? roundUpToNearestTen(runningHands) : undefined,
           title: {
             display: true,
             color: textColor,
@@ -320,7 +358,7 @@ export default function ProfitChart({
           type: 'linear',
           position: 'left',
           beginAtZero: true,
-          grace: '10%',
+          ...metricBounds.profit,
           ticks: {
             color: textColor,
             maxTicksLimit: fullScreen ? 9 : 5,
@@ -339,7 +377,7 @@ export default function ProfitChart({
           type: 'linear',
           display: selectedMetrics.allInEV,
           position: 'right',
-          grace: '10%',
+          ...metricBounds.allInEV,
           grid: {
             drawOnChartArea: false,
           },
@@ -357,6 +395,7 @@ export default function ProfitChart({
           type: 'linear',
           display: selectedMetrics.bbWon,
           position: 'right',
+          ...metricBounds.bbWon,
           grid: {
             drawOnChartArea: false,
           },
@@ -374,6 +413,7 @@ export default function ProfitChart({
           type: 'linear',
           display: selectedMetrics.bb100,
           position: 'right',
+          ...metricBounds.bb100,
           grid: {
             drawOnChartArea: false,
           },
@@ -387,27 +427,11 @@ export default function ProfitChart({
             display: fullScreen,
           },
         },
-        hands: {
-          type: 'linear',
-          display: selectedMetrics.handsPlayed,
-          position: 'right',
-          grid: {
-            drawOnChartArea: false,
-          },
-          ticks: {
-            color: textColor,
-            maxTicksLimit: fullScreen ? 9 : 5,
-            callback: (value) => Math.round(value).toLocaleString('en-US'),
-          },
-          border: {
-            color: gridColor,
-            display: fullScreen,
-          },
-        },
         hourly: {
           type: 'linear',
           display: selectedMetrics.hourlyProfit,
           position: 'right',
+          ...metricBounds.hourlyProfit,
           grid: {
             drawOnChartArea: false,
           },

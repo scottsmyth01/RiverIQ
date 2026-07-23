@@ -19,7 +19,10 @@ const RANK_VALUE = {
 const RANKS = Object.keys(RANK_VALUE);
 const SUITS = ['c', 'd', 'h', 's'];
 const STREET_ORDER = ['preflop', 'flop', 'turn', 'river'];
-const MAX_EQUITY_RUNOUTS = 20000;
+const DEFAULT_MAX_EQUITY_RUNOUTS = 1000;
+const configuredMaxRunouts = Number(process.env.ALL_IN_EV_RUNOUTS);
+const MAX_EQUITY_RUNOUTS = Number.isFinite(configuredMaxRunouts) && configuredMaxRunouts > 0 ? configuredMaxRunouts : DEFAULT_MAX_EQUITY_RUNOUTS;
+const allInEvCache = new WeakMap();
 
 function parseCard(card) {
   if (typeof card !== 'string' || card.length < 2) return null;
@@ -189,12 +192,20 @@ function seededRandom(seed) {
 function sampleRunout(deck, size, random) {
   const cards = [...deck];
 
-  for (let index = cards.length - 1; index > 0; index--) {
-    const swapIndex = Math.floor(random() * (index + 1));
+  for (let index = 0; index < size; index++) {
+    const swapIndex = index + Math.floor(random() * (cards.length - index));
     [cards[index], cards[swapIndex]] = [cards[swapIndex], cards[index]];
   }
 
   return cards.slice(0, size);
+}
+
+function* sampledRunouts(deck, size, total, seed) {
+  const random = seededRandom(seed);
+
+  for (let index = 0; index < total; index++) {
+    yield sampleRunout(deck, size, random);
+  }
 }
 
 function getHeroEquity({ heroCards, opponentCards, knownBoard, seed = 1 }) {
@@ -208,7 +219,7 @@ function getHeroEquity({ heroCards, opponentCards, knownBoard, seed = 1 }) {
   const useExactEnumeration = runoutCount <= MAX_EQUITY_RUNOUTS;
   const runouts = useExactEnumeration
     ? combinations(deck, neededBoardCards)
-    : Array.from({ length: MAX_EQUITY_RUNOUTS }, () => sampleRunout(deck, neededBoardCards, seededRandom(seed++)));
+    : sampledRunouts(deck, neededBoardCards, MAX_EQUITY_RUNOUTS, seed);
   let heroShare = 0;
   let totalRunouts = 0;
 
@@ -229,6 +240,10 @@ function getHeroEquity({ heroCards, opponentCards, knownBoard, seed = 1 }) {
 }
 
 function getAllInAdjustedHandProfit(hand) {
+  if (allInEvCache.has(hand)) {
+    return allInEvCache.get(hand);
+  }
+
   const allInStreet = findHeroAllInStreet(hand);
   const heroCards = hand.hero?.cards?.map(parseCard).filter(Boolean) || [];
   const shownCards = getShownCards(hand);
@@ -238,7 +253,9 @@ function getAllInAdjustedHandProfit(hand) {
   const totalPot = Number(hand.summary?.totalPot);
 
   if (!allInStreet || heroCards.length !== 2 || !opponentCards.length || !Number.isFinite(totalPot)) {
-    return getProfit([hand]);
+    const handProfit = getProfit([hand]);
+    allInEvCache.set(hand, handProfit);
+    return handProfit;
   }
 
   const equity = getHeroEquity({
@@ -249,10 +266,14 @@ function getAllInAdjustedHandProfit(hand) {
   });
 
   if (equity === null) {
-    return getProfit([hand]);
+    const handProfit = getProfit([hand]);
+    allInEvCache.set(hand, handProfit);
+    return handProfit;
   }
 
-  return Number((equity * totalPot - getHeroInvestment(hand)).toFixed(2));
+  const adjustedProfit = Number((equity * totalPot - getHeroInvestment(hand)).toFixed(2));
+  allInEvCache.set(hand, adjustedProfit);
+  return adjustedProfit;
 }
 
 export function getAllInEV(hands) {
