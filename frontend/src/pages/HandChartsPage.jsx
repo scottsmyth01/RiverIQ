@@ -3,6 +3,7 @@ import './HandChartsPage.css';
 import { ChevronDown, Info, Lock, Table2, X } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useSessions } from '../hooks/useSessions';
+import { positionsByTableSize, tableSizes } from '../utils/analytics/positions';
 
 const positionTitles = {
   'UTG+2': 'UTG+2',
@@ -13,6 +14,7 @@ const positionTitles = {
   CO: 'CO (Cutoff)',
   BTN: 'BTN (Button)',
   SB: 'SB (Small blind)',
+  BB: 'BB (Big blind)',
 };
 
 const recommendedRanges = {
@@ -89,16 +91,8 @@ const widerRecommendedAdds = {
   },
 };
 
-const positionsByTableSize = {
-  '6max': ['UTG', 'HJ', 'CO', 'BTN', 'SB'],
-  '7max': ['UTG', 'LJ', 'HJ', 'CO', 'BTN', 'SB'],
-  '8max': ['UTG', 'UTG+1', 'LJ', 'HJ', 'CO', 'BTN', 'SB'],
-  '9max': ['UTG', 'UTG+1', 'UTG+2', 'LJ', 'HJ', 'CO', 'BTN', 'SB'],
-};
-
 const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
-const tableSizes = ['6max', '7max', '8max', '9max'];
-const ACTUAL_HAND_CHART_UNLOCK_HANDS = 10000;
+const ACTUAL_HAND_CHART_UNLOCK_HANDS = 5000;
 
 function getHand(rowIndex, colIndex) {
   const row = ranks[rowIndex];

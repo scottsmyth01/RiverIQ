@@ -9,6 +9,7 @@ import { getFourBet } from './getFourBet.js';
 import { getFoldToFourBet } from './getFoldToFourBet.js';
 import { getThreeBetVsOpen } from './getThreeBetVsOpen.js';
 import { getSteal } from './getSteal.js';
+import { getFoldToSteal } from './getFoldToSteal.js';
 import { getFoldToCBet } from './getFoldToCBet.js';
 import { getCBet } from './getCBet.js';
 import { getTurnCBet } from './getTurnCBet.js';
@@ -25,6 +26,7 @@ function calculateBasicStats(hands) {
   const fourBet = getFourBet(hands);
   const foldToFourBet = getFoldToFourBet(hands);
   const steal = getSteal(hands);
+  const foldToSteal = getFoldToSteal(hands);
   const cBet = getCBet(hands);
   const foldToCBet = getFoldToCBet(hands);
   const turnCBet = getTurnCBet(hands);
@@ -45,6 +47,7 @@ function calculateBasicStats(hands) {
     fourBet: fourBet.percentage,
     foldToFourBet: foldToFourBet.percentage,
     steal: steal.percentage,
+    foldToSteal: foldToSteal.percentage,
     cBet: cBet.percentage,
     foldToCBet: foldToCBet.percentage,
     turnCBet: turnCBet.percentage,

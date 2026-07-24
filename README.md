@@ -166,3 +166,32 @@ A clean, modern dark interface reduces eye strain during long analysis sessions 
 ### Scalable Architecture
 
 Built using the MERN stack, RiverIQ separates the frontend, backend, database, and parsing logic into maintainable modules, making it easy to extend with additional poker sites and new analytical features in the future.
+
+## Environment Variables
+
+### Frontend
+
+- VITE_API_URL=
+- VITE_STRIPE_PUBLISHABLE_KEY=
+- VITE_GOOGLE_CLIENT_ID=
+
+### Backend
+
+- PORT=
+- MONGO_URI=
+- JWT_SECRET=
+- NODE_ENV=
+- BACKEND_URL=
+- FRONTEND_URL=
+- COOKIE_SAME_SITE=
+- CLOUDFLARE_KEY=
+- R2_ACCOUNT_ID=
+- R2_ACCESS_KEY_ID=
+- R2_SECRET_ACCESS_KEY=
+- R2_BUCKET_NAME_HH=
+- R2_BUCKET_NAME_AVATAR=
+- R2_PUBLIC_URL_AVATAR=
+- STRIPE_PUBLISHABLE_KEY=
+- STRIPE_SECRET_KEY=
+- STRIPE_PRICE_ID=
+- GOOGLE_CLIENT_ID=

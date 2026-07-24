@@ -93,6 +93,155 @@
   height: 19px;
 }
 
+.dashboard-navbar__bankroll {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dashboard-navbar__bankroll-value {
+  min-height: 36px;
+  padding: 0 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--text-primary);
+  background: var(--surface-control-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 5px;
+  box-shadow: var(--shadow-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.dashboard-navbar__bankroll-value svg {
+  width: 15px;
+  height: 15px;
+  color: var(--color-primary);
+}
+
+.dashboard-navbar__bankroll-add {
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--text-on-primary);
+  background: var(--success-bright);
+  border: 1px solid var(--success-bright);
+  border-radius: 5px;
+  box-shadow: 0 8px 18px var(--accent-green-glow-soft);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
+}
+
+.dashboard-navbar__bankroll-add:hover,
+.dashboard-navbar__bankroll-add[aria-expanded='true'] {
+  border-color: var(--accent-green-border-strong);
+  box-shadow: 0 10px 22px var(--accent-green-shadow);
+  transform: translateY(-1px);
+}
+
+.dashboard-navbar__bankroll-add svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 3;
+}
+
+.dashboard-navbar__bankroll-menu {
+  position: absolute;
+  top: calc(100% + 0.65rem);
+  right: 0;
+  z-index: 24;
+  width: 260px;
+  padding: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  background: var(--surface-auth-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+}
+
+.dashboard-navbar__bankroll-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.dashboard-navbar__bankroll-tabs button,
+.dashboard-navbar__bankroll-submit {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  color: var(--text-muted-light);
+  background: var(--surface-control-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 5px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.dashboard-navbar__bankroll-tabs button.active {
+  color: var(--text-on-primary);
+  background: var(--success-bright);
+  border-color: var(--success-bright);
+}
+
+.dashboard-navbar__bankroll-tabs svg {
+  width: 14px;
+  height: 14px;
+}
+
+.dashboard-navbar__bankroll-menu label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dashboard-navbar__bankroll-menu label span {
+  color: var(--text-nav-muted);
+  font-size: 0.62rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard-navbar__bankroll-menu input {
+  height: 38px;
+  width: 100%;
+  padding: 0 0.65rem;
+  color: var(--text-primary);
+  background: var(--surface-input-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 5px;
+  outline: 0;
+  font: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.dashboard-navbar__bankroll-menu input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--accent-green-glow);
+}
+
+.dashboard-navbar__bankroll-submit {
+  color: var(--text-on-primary);
+  background: var(--success-bright);
+  border-color: var(--success-bright);
+}
+
+.dashboard-navbar__bankroll-submit:disabled {
+  opacity: 0.64;
+  cursor: not-allowed;
+}
+
 .dashboard-navbar__account {
   position: relative;
 }
@@ -187,6 +336,20 @@
   box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
 }
 
+:root[data-theme='light'] .dashboard-navbar__bankroll-menu {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+}
+
+:root[data-theme='light'] .dashboard-navbar__bankroll-value,
+:root[data-theme='light'] .dashboard-navbar__bankroll-tabs button,
+:root[data-theme='light'] .dashboard-navbar__bankroll-menu input {
+  color: #0f172a;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
 :root[data-theme='light'] .dashboard-navbar__menu a,
 :root[data-theme='light'] .dashboard-navbar__menu button {
   color: #1e293b;
@@ -215,6 +378,23 @@
 
   .dashboard-navbar__actions {
     gap: 0.35rem;
+  }
+
+  .dashboard-navbar__bankroll-value {
+    padding: 0 0.55rem;
+  }
+
+  .dashboard-navbar__bankroll-value svg {
+    display: none;
+  }
+
+  .dashboard-navbar__bankroll-add {
+    width: 34px;
+  }
+
+  .dashboard-navbar__bankroll-menu {
+    right: -78px;
+    width: min(260px, calc(100vw - 18px));
   }
 
   .dashboard-navbar__new-session {

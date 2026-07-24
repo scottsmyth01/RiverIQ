@@ -52,6 +52,7 @@ function AppRoutes() {
   const isPricingRoute = pathname === '/pricing';
   const isPaymentRoute = pathname === '/subscription/payment';
   const isResetPasswordRoute = pathname.startsWith('/reset-password');
+  const isLegalRoute = pathname === '/terms' || pathname === '/privacy';
   const showWebsiteChrome = !isAuthenticated && !isPaymentRoute;
 
   useEffect(() => {
@@ -78,7 +79,8 @@ function AppRoutes() {
     !isDashboardRoute &&
     !isPricingRoute &&
     !isPaymentRoute &&
-    !isResetPasswordRoute
+    !isResetPasswordRoute &&
+    !isLegalRoute
   ) {
     return <Navigate to='/dashboard' replace />;
   }

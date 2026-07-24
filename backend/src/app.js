@@ -10,26 +10,23 @@ import { globalErrorHandler, notFound } from './middleware/errorMiddleware.js';
 
 const app = express();
 
-const getAllowedOrigins = () =>
-  (process.env.FRONTEND_URL || 'http://localhost:5173')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-app.use(
-  cors({
-    origin(requestOrigin, callback) {
-      if (!requestOrigin || getAllowedOrigins().includes(requestOrigin)) {
-        return callback(null, true);
-      }
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-      const error = new Error(`CORS blocked origin: ${requestOrigin}`);
-      error.statusCode = 403;
-      return callback(error);
-    },
-    credentials: true,
-  }),
-);
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 

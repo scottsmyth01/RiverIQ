@@ -12,8 +12,6 @@ export const globalErrorHandler = (err, req, res, next) => {
   const statusCode = err.statusCode || err.status || 500;
   const isProduction = process.env.NODE_ENV === 'production';
 
-  console.error(err);
-
   return res.status(statusCode).json({
     message: isProduction && statusCode === 500 ? 'Server error' : err.message || 'Server error',
     ...(!isProduction && { stack: err.stack }),

@@ -67,14 +67,21 @@ function getSessionBbWon(session) {
 }
 
 function getMetricSeries(chartData, key) {
-  return chartData.map((item) => ({
-    x: item.handsPlayed,
-    y: item[key],
-  }));
+  return chartData.map((item) => item[key]);
 }
 
-function roundUpToNearestTen(value) {
-  return Math.ceil(value / 10) * 10;
+function formatChartDate(value, options = {}) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    ...options,
+  });
 }
 
 export default function ProfitChart({
@@ -142,25 +149,26 @@ export default function ProfitChart({
   let runningHands = 0;
   let runningMinutes = 0;
 
-  const sessionChartData = visibleSessions.map((session) => {
+  const sessionChartData = visibleSessions.map((session, index) => {
+    const sessionDate = new Date(session.date);
+    const formattedDate = formatChartDate(sessionDate);
     const sessionBbWon = getSessionBbWon(session);
     const sessionHands = Number(session.hands) || 0;
     const sessionDuration = Number(session.duration);
     const sessionAllInEV = Number(session.allInEV ?? session.stats?.allInEV ?? session.profit);
+    const sessionProfit = Number(session.profit) || 0;
 
-    runningProfit += Number(session.profit) || 0;
-    runningAllInEV += Number.isFinite(sessionAllInEV) ? sessionAllInEV : Number(session.profit) || 0;
+    runningProfit += sessionProfit;
+    runningAllInEV += Number.isFinite(sessionAllInEV) ? sessionAllInEV : sessionProfit;
     runningBbWon += Number.isFinite(sessionBbWon) ? sessionBbWon : 0;
     runningHands += sessionHands;
     runningMinutes += Number.isFinite(sessionDuration) ? sessionDuration : 0;
-
     const runningHours = runningMinutes / 60;
 
     return {
-      date: new Date(session.date).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-      }),
+      date: formattedDate,
+      xLabel: `Session ${index + 1}`,
+      timestamp: sessionDate.getTime(),
       profit: Number(runningProfit.toFixed(2)),
       allInEV: Number(runningAllInEV.toFixed(2)),
       bbWon: Number(runningBbWon.toFixed(1)),
@@ -170,20 +178,7 @@ export default function ProfitChart({
     };
   });
 
-  const chartData = visibleSessions.length
-    ? [
-        {
-          date: 'Start',
-          profit: 0,
-          allInEV: 0,
-          bbWon: 0,
-          bb100: 0,
-          handsPlayed: 0,
-          hourlyProfit: 0,
-        },
-        ...sessionChartData,
-      ]
-    : [];
+  const chartData = sessionChartData;
 
   function getMetricBounds(key, paddingRatio = 0.28) {
     const values = chartData.map((item) => Number(item[key])).filter((value) => Number.isFinite(value));
@@ -208,7 +203,6 @@ export default function ProfitChart({
     allInEV: getMetricBounds('allInEV'),
     bbWon: getMetricBounds('bbWon'),
     bb100: getMetricBounds('bb100'),
-    hourlyProfit: getMetricBounds('hourlyProfit'),
   };
 
   const datasets = [
@@ -264,10 +258,12 @@ export default function ProfitChart({
   ];
 
   const data = {
+    labels: chartData.map((item) => item.xLabel),
     datasets,
   };
 
   const fullScreenData = {
+    labels: data.labels,
     datasets: datasets.map((dataset) => ({
       ...dataset,
       backgroundColor: 'transparent',
@@ -313,10 +309,24 @@ export default function ProfitChart({
           displayColors: true,
           callbacks: {
             title: (items) => {
-              const hands = items[0]?.parsed.x || 0;
-              return `${Math.round(hands).toLocaleString('en-US')} hands`;
+              const item = chartData[items[0]?.dataIndex];
+              return item ? formatChartDate(item.timestamp, { year: 'numeric' }) : '';
             },
-            afterTitle: (items) => chartData[items[0]?.dataIndex]?.date || '',
+            afterTitle: (items) => {
+              const item = chartData[items[0]?.dataIndex];
+
+              if (!item) {
+                return '';
+              }
+
+              const details = [item.xLabel];
+
+              if (Number.isFinite(item.handsPlayed)) {
+                details.push(`${item.handsPlayed.toLocaleString('en-US')} hands`);
+              }
+
+              return details;
+            },
             label: (context) => {
               const metric = optionalMetrics.find((item) => item.key === context.dataset.metricKey);
               const formatter = metric?.format || formatCurrency;
@@ -328,16 +338,14 @@ export default function ProfitChart({
 
       scales: {
         x: {
-          type: 'linear',
-          beginAtZero: true,
-          max: runningHands > 0 ? roundUpToNearestTen(runningHands) : undefined,
+          type: 'category',
           title: {
-            display: true,
+            display: false,
             color: textColor,
             font: {
               weight: '700',
             },
-            text: 'Hands Played',
+            text: 'Date',
           },
           grid: {
             color: gridColor,
@@ -346,7 +354,6 @@ export default function ProfitChart({
           ticks: {
             color: textColor,
             maxTicksLimit: fullScreen ? 12 : 7,
-            callback: (value) => Math.round(value).toLocaleString('en-US'),
           },
           border: {
             color: gridColor,
@@ -431,7 +438,6 @@ export default function ProfitChart({
           type: 'linear',
           display: selectedMetrics.hourlyProfit,
           position: 'right',
-          ...metricBounds.hourlyProfit,
           grid: {
             drawOnChartArea: false,
           },

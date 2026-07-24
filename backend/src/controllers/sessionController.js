@@ -5,6 +5,20 @@ import { parsePokerStars } from '../utils/parsers/pokerstars/wrapper.js';
 import { parseGGPoker } from '../utils/parsers/ggpoker/wrapper.js';
 import { calculateStats } from '../utils/parsers/stats/calculateStats.js';
 
+const serializeUser = (user) => ({
+  _id: user._id,
+  name: user.name,
+  username: user.username,
+  email: user.email,
+  subscription: user.subscription,
+  bankroll: user.bankroll,
+  role: user.role,
+  isEmailVerified: user.isEmailVerified,
+  preferences: user.preferences,
+  avatarUrl: user.avatarUrl,
+  avatarKey: user.avatarKey,
+});
+
 function normalizeTags(tags) {
   if (Array.isArray(tags)) {
     return tags.map((tag) => String(tag).trim()).filter(Boolean);
@@ -176,6 +190,7 @@ export const addSession = async (req, res, next) => {
       });
     }
     const parsedStats = calculateStats(hands);
+    const sessionProfit = Number(parsedStats.profit) || 0;
     const firstHand = hands[0];
     const table = firstHand?.table || {};
     const session = await Session.create({
@@ -199,7 +214,10 @@ export const addSession = async (req, res, next) => {
       stats: parsedStats,
     });
 
-    return res.status(201).json({ status: 'success', session });
+    req.user.bankroll = Number(((Number(req.user.bankroll) || 0) + sessionProfit).toFixed(2));
+    await req.user.save();
+
+    return res.status(201).json({ status: 'success', session, user: serializeUser(req.user) });
   } catch (error) {
     return next(error);
   }
@@ -246,7 +264,11 @@ export const deleteSession = async (req, res, next) => {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    return res.status(200).json({ message: 'Session deleted', id: req.params.id });
+    const sessionProfit = Number(session.stats?.profit) || 0;
+    req.user.bankroll = Number(((Number(req.user.bankroll) || 0) - sessionProfit).toFixed(2));
+    await req.user.save();
+
+    return res.status(200).json({ message: 'Session deleted', id: req.params.id, user: serializeUser(req.user) });
   } catch (error) {
     return next(error);
   }

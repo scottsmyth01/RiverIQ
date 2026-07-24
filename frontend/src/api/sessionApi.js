@@ -129,7 +129,10 @@ export async function addSession(sessionData) {
     method: 'POST',
     body: sessionData,
   });
-  return normalizeSession(data.session);
+  return {
+    session: normalizeSession(data.session),
+    user: data.user,
+  };
 }
 
 export async function updateSession({ id, sessionData }) {
@@ -141,8 +144,11 @@ export async function updateSession({ id, sessionData }) {
 }
 
 export async function deleteSession(id) {
-  await request(`/api/sessions/${id}`, {
+  const data = await request(`/api/sessions/${id}`, {
     method: 'DELETE',
   });
-  return id;
+  return {
+    id,
+    user: data.user,
+  };
 }

@@ -380,6 +380,37 @@ export const updatePreferences = async (req, res, next) => {
   }
 };
 
+export const updateBankroll = async (req, res, next) => {
+  try {
+    const { action, amount } = req.body;
+    const numericAmount = Number(amount);
+
+    if (!['deposit', 'withdraw'].includes(action)) {
+      return res.status(400).json({ message: 'Bankroll action must be deposit or withdraw' });
+    }
+
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+      return res.status(400).json({ message: 'Please provide a positive bankroll amount' });
+    }
+
+    const currentBankroll = Number(req.user.bankroll) || 0;
+    const nextBankroll = action === 'deposit' ? currentBankroll + numericAmount : currentBankroll - numericAmount;
+
+    if (nextBankroll < 0) {
+      return res.status(400).json({ message: 'You cannot withdraw more than your current bankroll' });
+    }
+
+    req.user.bankroll = Number(nextBankroll.toFixed(2));
+    await req.user.save();
+
+    return res.status(200).json({
+      user: serializeUser(req.user),
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;

@@ -7,6 +7,7 @@ import {
   loginWithGoogle,
   logoutUser,
   updatePreferences,
+  updateBankroll,
   forgotPassword,
   validateResetToken,
   resetPassword,
@@ -16,33 +17,9 @@ import {
   deleteAvatar,
 } from '../api/authApi.js';
 
-const MIN_LOGIN_LOADING_MS = 1000;
-const MIN_LOGOUT_LOADING_MS = 1000;
-
-async function withMinimumLoadingTime(action, minimumLoadingTime) {
-  const startedAt = Date.now();
-
-  try {
-    return await action();
-  } finally {
-    const remainingTime = minimumLoadingTime - (Date.now() - startedAt);
-
-    if (remainingTime > 0) {
-      await new Promise((resolve) => setTimeout(resolve, remainingTime));
-    }
-  }
-}
-
-function loginWithMinimumLoadingTime(formData) {
-  return withMinimumLoadingTime(() => loginUser(formData), MIN_LOGIN_LOADING_MS);
-}
-
-function logoutWithMinimumLoadingTime() {
-  return withMinimumLoadingTime(logoutUser, MIN_LOGOUT_LOADING_MS);
-}
-
 export function useAuth() {
   const queryClient = useQueryClient();
+  const minimumAuthLoadingMs = 1250;
   const loginLoading = useIsMutating({ mutationKey: ['auth', 'login'] }) > 0;
   const googleLoginLoading = useIsMutating({ mutationKey: ['auth', 'google'] }) > 0;
   const registerLoading = useIsMutating({ mutationKey: ['auth', 'register'] }) > 0;
@@ -66,7 +43,18 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationKey: ['auth', 'login'],
-    mutationFn: loginWithMinimumLoadingTime,
+    mutationFn: async (formData) => {
+      const startedAt = Date.now();
+      try {
+        return await loginUser(formData);
+      } finally {
+        const remainingTime = minimumAuthLoadingMs - (Date.now() - startedAt);
+
+        if (remainingTime > 0) {
+          await new Promise((resolve) => setTimeout(resolve, remainingTime));
+        }
+      }
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(['authUser'], data);
     },
@@ -80,7 +68,19 @@ export function useAuth() {
   });
   const logoutMutation = useMutation({
     mutationKey: ['auth', 'logout'],
-    mutationFn: logoutWithMinimumLoadingTime,
+    mutationFn: async () => {
+      const startedAt = Date.now();
+
+      try {
+        return await logoutUser();
+      } finally {
+        const remainingTime = minimumAuthLoadingMs - (Date.now() - startedAt);
+
+        if (remainingTime > 0) {
+          await new Promise((resolve) => setTimeout(resolve, remainingTime));
+        }
+      }
+    },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ['sessions'] });
     },
@@ -93,6 +93,14 @@ export function useAuth() {
   const updatePreferencesMutation = useMutation({
     mutationKey: ['auth', 'preferences'],
     mutationFn: updatePreferences,
+    onSuccess: (data) => {
+      queryClient.setQueryData(['authUser'], data);
+    },
+  });
+
+  const updateBankrollMutation = useMutation({
+    mutationKey: ['auth', 'bankroll'],
+    mutationFn: updateBankroll,
     onSuccess: (data) => {
       queryClient.setQueryData(['authUser'], data);
     },
@@ -159,6 +167,7 @@ export function useAuth() {
     loginGoogle: googleLoginMutation.mutateAsync,
     logout: logoutMutation.mutate,
     updatePreferences: updatePreferencesMutation.mutateAsync,
+    updateBankroll: updateBankrollMutation.mutateAsync,
     uploadAvatar: uploadAvatarMutation.mutateAsync,
     deleteAvatar: deleteAvatarMutation.mutateAsync,
     cancelSubscription: cancelSubscriptionMutation.mutateAsync,
@@ -171,6 +180,7 @@ export function useAuth() {
     registerLoading,
     logoutLoading,
     updatePreferencesLoading: updatePreferencesMutation.isPending,
+    updateBankrollLoading: updateBankrollMutation.isPending,
     uploadAvatarLoading: uploadAvatarMutation.isPending,
     deleteAvatarLoading: deleteAvatarMutation.isPending,
     cancelSubscriptionLoading: cancelSubscriptionMutation.isPending,

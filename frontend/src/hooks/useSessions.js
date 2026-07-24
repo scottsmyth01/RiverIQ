@@ -21,8 +21,11 @@ export function useAddSession() {
   return useMutation({
     mutationKey: ['sessions', 'add'],
     mutationFn: addSession,
-    onSuccess: (newSession) => {
+    onSuccess: ({ session: newSession, user }) => {
       queryClient.setQueryData(allSessionsQueryKey, (sessions = []) => [...sessions, newSession]);
+      if (user) {
+        queryClient.setQueryData(['authUser'], { user });
+      }
       queryClient.invalidateQueries({ queryKey: sessionsQueryKey });
     },
   });
@@ -49,10 +52,13 @@ export function useDeleteSession() {
   return useMutation({
     mutationKey: ['sessions', 'delete'],
     mutationFn: deleteSession,
-    onSuccess: (deletedSessionId) => {
+    onSuccess: ({ id: deletedSessionId, user }) => {
       queryClient.setQueryData(allSessionsQueryKey, (sessions = []) =>
         sessions.filter((session) => session._id !== deletedSessionId),
       );
+      if (user) {
+        queryClient.setQueryData(['authUser'], { user });
+      }
       queryClient.invalidateQueries({ queryKey: sessionsQueryKey });
     },
   });

@@ -68,6 +68,13 @@ export function updatePreferences(preferences) {
   });
 }
 
+export function updateBankroll(payload) {
+  return request('/api/auth/bankroll', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
 export function uploadAvatar(file) {
   const formData = new FormData();
   formData.append('avatar', file);

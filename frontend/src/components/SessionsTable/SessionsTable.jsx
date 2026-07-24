@@ -1,7 +1,7 @@
 import './SessionsTable.css';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { BarChart3, ChevronLeft, ChevronRight, ExternalLink, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { BarChart3, ChevronLeft, ChevronRight, ExternalLink, Lock, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import SessionToolbar from './SessionToolbar';
@@ -13,6 +13,7 @@ import { getPeriodFromDefaultTimeFilter } from '../../utils/dateRangePreferences
 const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const hasProMembership = user?.subscription === 'pro';
   const { mutateAsync: deleteSession, isPending: isDeletingSession } = useDeleteSession();
   const defaultDateRange = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
   const [dateRange, setDateRange] = useState(defaultDateRange);
@@ -198,13 +199,19 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                   <td className='sessions-actions-cell' onClick={(event) => event.stopPropagation()}>
                     <div className='sessions-row-actions'>
                       <button
-                        className='sessions-stats-button'
+                        className={`sessions-stats-button${hasProMembership ? '' : ' sessions-stats-button--locked'}`}
                         type='button'
-                        aria-label={`View stats for ${session.sessionName || formattedDate}`}
-                        title='View stats'
-                        onClick={() => navigate(`/dashboard/sessions/${sessionId}/stats`)}
+                        aria-label={
+                          hasProMembership
+                            ? `View stats for ${session.sessionName || formattedDate}`
+                            : 'Stats are locked. Upgrade to Pro to view stats.'
+                        }
+                        title={hasProMembership ? 'View stats' : 'Upgrade to Pro to view stats'}
+                        onClick={() =>
+                          navigate(hasProMembership ? `/dashboard/sessions/${sessionId}/stats` : '/subscription/payment')
+                        }
                       >
-                        <BarChart3 aria-hidden='true' />
+                        {hasProMembership ? <BarChart3 aria-hidden='true' /> : <Lock aria-hidden='true' />}
                       </button>
                       <button
                         className='sessions-details-button'

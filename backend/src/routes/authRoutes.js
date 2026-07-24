@@ -10,6 +10,7 @@ import {
   resetPassword,
   validateEmail,
   updatePreferences,
+  updateBankroll,
   uploadAvatar,
   deleteAvatar,
 } from '../controllers/authController.js';
@@ -29,6 +30,7 @@ router.post('/reset-password/:id/:token', resetPassword);
 router.get('/verify-email/:token', validateEmail);
 router.post('/preferences', protect, updatePreferences);
 router.patch('/preferences', protect, updatePreferences);
+router.patch('/bankroll', protect, updateBankroll);
 router.post('/avatar', protect, avatarUpload.single('avatar'), uploadAvatar);
 router.delete('/avatar', protect, deleteAvatar);
 
