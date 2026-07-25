@@ -128,13 +128,6 @@ const UserAuthPage = () => {
       {showSuccessLoader && <LoadingScreen />}
       <div className='user-auth-layout'>
         <section className='auth-showcase'>
-          <Link className='auth-brand' to='/'>
-            <img src='/logo.png' alt='' />
-            <span>
-              River<span>IQ</span>
-            </span>
-          </Link>
-
           <div className='auth-showcase-copy'>
             <h1>
               Track your game.

@@ -81,7 +81,7 @@ const PricingPage = () => {
               <span></span>
             </button>
             <span className={isYearly ? 'active' : ''}>
-              Pay Yearly <small>(Save $29.89)</small>
+              Pay Yearly <small>(Save $29.99)</small>
             </span>
           </div>
         </header>

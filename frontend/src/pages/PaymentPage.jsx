@@ -66,7 +66,7 @@ const billingPlans = {
     renewal: 'Renews yearly',
     summary: '$149.99 USD / year',
     note: "You'll be charged $149.99 USD per year.",
-    badge: 'Save $29.89',
+    badge: 'Save $29.99',
   },
 };
 
