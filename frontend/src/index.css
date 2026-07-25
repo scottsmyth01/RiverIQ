@@ -331,11 +331,13 @@
   --mobile: 768px;
   --tablet: 1024px;
   --desktop: 1280px;
+  --app-shell-max: 1600px;
+  --website-shell-max: 1440px;
 }
 
 .page-container {
-  width: 1280px;
-  margin: auto 0;
+  width: min(100%, var(--website-shell-max));
+  margin-inline: auto;
 }
 
 html {

@@ -6,6 +6,14 @@
     var(--bg-main);
 }
 
+@media (min-width: 769px) and (min-height: 900px) {
+  .pricing-page {
+    display: flex;
+    align-items: center;
+    padding-block: clamp(2rem, 6vh, 5rem);
+  }
+}
+
 .pricing-container {
   position: relative;
   width: 100%;

@@ -19,6 +19,13 @@
   gap: clamp(3rem, 7vw, 7rem);
 }
 
+@media (min-width: 1001px) and (min-height: 900px) {
+  .user-auth-layout {
+    align-items: center;
+    padding-block: clamp(2rem, 5vh, 4.5rem);
+  }
+}
+
 .auth-showcase {
   min-width: 0;
 }

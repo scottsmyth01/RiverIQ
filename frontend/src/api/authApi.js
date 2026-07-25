@@ -10,11 +10,19 @@ async function request(endpoint, options = {}) {
     headers['Content-Type'] = 'application/json';
   }
 
-  const res = await fetch(`${API_URL}${endpoint}`, {
-    credentials: 'include',
-    ...options,
-    headers,
-  });
+  let res;
+
+  try {
+    res = await fetch(`${API_URL}${endpoint}`, {
+      credentials: 'include',
+      ...options,
+      headers,
+    });
+  } catch {
+    const error = new Error('Unable to connect. Please check your connection and try again.');
+    error.status = 0;
+    throw error;
+  }
 
   const data = await res.json().catch(() => ({}));
 

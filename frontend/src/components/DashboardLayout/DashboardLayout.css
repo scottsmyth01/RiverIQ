@@ -1,6 +1,6 @@
 .main-container {
   width: 100%;
-  max-width: 1280px;
+  max-width: var(--app-shell-max);
   height: 100vh;
   margin: 0 auto;
   overflow: hidden;
@@ -43,5 +43,22 @@
 @media (max-width: 760px) {
   .dashboard-layout {
     grid-template-columns: 64px minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1440px) {
+  .dashboard-layout {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+
+  .dashboard-section-page {
+    padding: clamp(1.5rem, 2vw, 2.25rem);
+  }
+}
+
+@media (min-width: 1800px) {
+  .main-container {
+    border-inline: 1px solid var(--border);
+    box-shadow: 0 0 72px color-mix(in srgb, var(--shadow-strong) 45%, transparent);
   }
 }

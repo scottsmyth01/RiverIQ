@@ -4,7 +4,7 @@ import User from '../models/User.js';
 import crypto from 'crypto';
 import { readFileSync } from 'node:fs';
 import generateToken, { getCookieOptions } from '../utils/generateToken.js';
-import Cloudflare from 'cloudflare';
+import Cloudflare from 'cloudflare/index.js';
 import { deleteFromR2, uploadAvatarToR2 } from '../middleware/uploadToR2Middleware.js';
 
 // @desc    Register a new user
