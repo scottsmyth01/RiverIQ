@@ -11,6 +11,7 @@ import {
   Edit3,
   FileSearch,
   Grid2X2,
+  MoreVertical,
   Play,
   Plus,
   SlidersHorizontal,
@@ -297,9 +298,11 @@ function ReportSelect({ label, value, options, onChange, icon: Icon }) {
   );
 }
 
-function ReportActionButton({ children, variant = 'secondary', icon: Icon, onClick, disabled = false }) {
+function ReportActionButton({ children, variant = 'secondary', icon: Icon, onClick, disabled = false, className = '' }) {
+  const classes = `reports-action reports-action--${variant}${className ? ` ${className}` : ''}`;
+
   return (
-    <button className={`reports-action reports-action--${variant}`} type='button' onClick={onClick} disabled={disabled}>
+    <button className={classes} type='button' onClick={onClick} disabled={disabled}>
       {Icon && <Icon aria-hidden='true' />}
       <span>{children}</span>
     </button>
@@ -312,6 +315,7 @@ const ReportsPage = () => {
   const updateSavedReportMutation = useUpdateSavedReport();
   const rows = useMemo(() => getSessionRows(sessions), [sessions]);
   const columnsMenuRef = useRef(null);
+  const mobileActionsRef = useRef(null);
   const runReportTimeoutRef = useRef(null);
   const [filters, setFilters] = useState(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState(defaultFilters);
@@ -331,6 +335,7 @@ const ReportsPage = () => {
   const [draftReportTitle, setDraftReportTitle] = useState('Untitled Report');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [savedReportId, setSavedReportId] = useState(null);
+  const [isMobileActionsOpen, setIsMobileActionsOpen] = useState(false);
   const isSavingReport = createSavedReportMutation.isPending || updateSavedReportMutation.isPending;
 
   const tableSizeOptions = useMemo(() => {
@@ -390,17 +395,21 @@ const ReportsPage = () => {
     : [];
 
   useEffect(() => {
-    if (!showColumns) return undefined;
+    if (!showColumns && !isMobileActionsOpen) return undefined;
 
-    function closeColumnsOnOutsideClick(event) {
-      if (!columnsMenuRef.current?.contains(event.target)) {
+    function closeMenusOnOutsideClick(event) {
+      if (showColumns && !columnsMenuRef.current?.contains(event.target)) {
         setShowColumns(false);
+      }
+
+      if (isMobileActionsOpen && !mobileActionsRef.current?.contains(event.target)) {
+        setIsMobileActionsOpen(false);
       }
     }
 
-    document.addEventListener('pointerdown', closeColumnsOnOutsideClick);
-    return () => document.removeEventListener('pointerdown', closeColumnsOnOutsideClick);
-  }, [showColumns]);
+    document.addEventListener('pointerdown', closeMenusOnOutsideClick);
+    return () => document.removeEventListener('pointerdown', closeMenusOnOutsideClick);
+  }, [showColumns, isMobileActionsOpen]);
 
   useEffect(() => {
     return () => window.clearTimeout(runReportTimeoutRef.current);
@@ -581,12 +590,54 @@ const ReportsPage = () => {
           <Link className='reports-action reports-action--secondary' to='/dashboard/reports'>
             Saved Reports
           </Link>
-          <ReportActionButton onClick={() => saveCurrentReport()} disabled={isSavingReport}>
+          <ReportActionButton
+            className='reports-action--desktop-only'
+            onClick={() => saveCurrentReport()}
+            disabled={isSavingReport}
+          >
             {isSavingReport ? 'Saving...' : 'Save Report'}
           </ReportActionButton>
           <ReportActionButton variant='primary' icon={Play} onClick={runReport} disabled={isRunningReport}>
             {isRunningReport ? 'Running...' : 'Run Report'}
           </ReportActionButton>
+          <div className='reports-mobile-actions' ref={mobileActionsRef}>
+            <button
+              className='reports-mobile-actions-button'
+              type='button'
+              aria-label='More report actions'
+              aria-expanded={isMobileActionsOpen}
+              onClick={() => setIsMobileActionsOpen((isOpen) => !isOpen)}
+            >
+              <MoreVertical aria-hidden='true' />
+            </button>
+            {isMobileActionsOpen && (
+              <div className='reports-mobile-actions-menu' role='menu'>
+                <button
+                  type='button'
+                  role='menuitem'
+                  disabled={isSavingReport}
+                  onClick={() => {
+                    setIsMobileActionsOpen(false);
+                    saveCurrentReport();
+                  }}
+                >
+                  <Check aria-hidden='true' />
+                  <span>{isSavingReport ? 'Saving...' : 'Save Report'}</span>
+                </button>
+                <button
+                  type='button'
+                  role='menuitem'
+                  onClick={() => {
+                    setIsMobileActionsOpen(false);
+                    downloadCsv(`${reportTitle}.csv`, sortedRows, visibleColumns);
+                  }}
+                >
+                  <Download aria-hidden='true' />
+                  <span>Export CSV</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -785,6 +836,7 @@ const ReportsPage = () => {
               </span>
               <div>
                 <ReportActionButton
+                  className='reports-export-button'
                   icon={Download}
                   onClick={() => downloadCsv(`${reportTitle}.csv`, sortedRows, visibleColumns)}
                 >

@@ -27,6 +27,7 @@ Required in production:
 - `GOOGLE_CLIENT_ID`
 - `STRIPE_SECRET_KEY`
 - `STRIPE_PRICE_ID`
+- `STRIPE_YEARLY_PRICE_ID`
 - `CLOUDFLARE_KEY`
 - `R2_ACCOUNT_ID`
 - `R2_ACCESS_KEY_ID`
@@ -48,7 +49,8 @@ Required in production:
 ## Stripe
 
 - Use live Stripe keys only in production.
-- Set `STRIPE_PRICE_ID` to the live RiverIQ Pro recurring price.
+- Set `STRIPE_PRICE_ID` to the live RiverIQ Pro monthly recurring price.
+- Set `STRIPE_YEARLY_PRICE_ID` to the live RiverIQ Pro yearly recurring price.
 - Set `VITE_STRIPE_PUBLISHABLE_KEY` to the matching live publishable key.
 - Confirm the payment page can create a subscription and upgrade the user to `pro`.
 - Confirm canceling a subscription downgrades the user to `free`.

@@ -45,7 +45,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [dateRange, numTables, sortBy, finish]);
+  }, [dateRange, numTables, sortBy, finish, sessionsPerPage]);
 
   useEffect(() => {
     setDateRange(defaultDateRange);

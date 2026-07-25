@@ -10,7 +10,7 @@ const lockedItemTitles = new Set(['Analytics', 'Reports', 'Goals', 'Hand Charts'
 const Sidebar = () => {
   const { data: sessions = [] } = useSessions();
   const { user } = useAuth();
-  const hasUnlockedInsights = user?.subscription === 'pro' || sessions.length >= 5;
+  const hasUnlockedInsights = user?.subscription === 'pro';
   const navigationItems = SidebarData.filter((item) => item.title !== 'Settings');
   const settingsItem = SidebarData.find((item) => item.title === 'Settings');
 

@@ -22,6 +22,7 @@ const { default: app } = await import('../../app.js');
 const { default: User } = await import('../../models/User.js');
 
 const originalStripePriceId = process.env.STRIPE_PRICE_ID;
+const originalStripeYearlyPriceId = process.env.STRIPE_YEARLY_PRICE_ID;
 const validUser = {
   username: 'payhero',
   email: 'payhero@riveriq.test',
@@ -46,16 +47,22 @@ async function createLoggedInAgent(overrides = {}) {
 
 beforeEach(() => {
   process.env.STRIPE_PRICE_ID = 'price_riveriq_pro_test';
+  process.env.STRIPE_YEARLY_PRICE_ID = 'price_riveriq_pro_yearly_test';
   jest.clearAllMocks();
 });
 
 afterAll(() => {
   if (originalStripePriceId === undefined) {
     delete process.env.STRIPE_PRICE_ID;
-    return;
+  } else {
+    process.env.STRIPE_PRICE_ID = originalStripePriceId;
   }
 
-  process.env.STRIPE_PRICE_ID = originalStripePriceId;
+  if (originalStripeYearlyPriceId === undefined) {
+    delete process.env.STRIPE_YEARLY_PRICE_ID;
+  } else {
+    process.env.STRIPE_YEARLY_PRICE_ID = originalStripeYearlyPriceId;
+  }
 });
 
 describe('payment API integration', () => {
@@ -86,6 +93,7 @@ describe('payment API integration', () => {
     expect(response.body).toEqual({
       subscriptionId: 'sub_test_123',
       clientSecret: 'pi_secret_test',
+      billingInterval: 'monthly',
     });
     expect(mockStripe.customers.create).toHaveBeenCalledWith({
       email: validUser.email,
@@ -103,6 +111,37 @@ describe('payment API integration', () => {
 
     const savedUser = await User.findOne({ email: validUser.email });
     expect(savedUser.stripeCustomerId).toBe('cus_test_123');
+  });
+
+  test('creates a yearly Stripe subscription when yearly billing is selected', async () => {
+    const agent = await createLoggedInAgent();
+
+    mockStripe.customers.create.mockResolvedValue({ id: 'cus_yearly_123' });
+    mockStripe.subscriptions.create.mockResolvedValue({
+      id: 'sub_yearly_123',
+      latest_invoice: {
+        confirmation_secret: {
+          client_secret: 'pi_yearly_secret',
+        },
+      },
+    });
+
+    const response = await agent
+      .post('/api/payments/subscribe')
+      .send({ fullName: 'Pay Hero', billingInterval: 'yearly' })
+      .expect(200);
+
+    expect(response.body).toEqual({
+      subscriptionId: 'sub_yearly_123',
+      clientSecret: 'pi_yearly_secret',
+      billingInterval: 'yearly',
+    });
+    expect(mockStripe.subscriptions.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customer: 'cus_yearly_123',
+        items: [{ price: 'price_riveriq_pro_yearly_test' }],
+      }),
+    );
   });
 
   test('reuses an existing Stripe customer when creating a subscription', async () => {
@@ -138,6 +177,22 @@ describe('payment API integration', () => {
     expect(mockStripe.subscriptions.create).not.toHaveBeenCalled();
 
     process.env.STRIPE_PRICE_ID = 'price_riveriq_pro_test';
+    delete process.env.STRIPE_YEARLY_PRICE_ID;
+    const missingYearlyPriceResponse = await agent
+      .post('/api/payments/subscribe')
+      .send({ billingInterval: 'yearly' })
+      .expect(500);
+    expect(missingYearlyPriceResponse.body.message).toBe('Missing STRIPE_YEARLY_PRICE_ID');
+    expect(mockStripe.subscriptions.create).not.toHaveBeenCalled();
+
+    process.env.STRIPE_YEARLY_PRICE_ID = 'price_riveriq_pro_yearly_test';
+    const invalidBillingResponse = await agent
+      .post('/api/payments/subscribe')
+      .send({ billingInterval: 'weekly' })
+      .expect(400);
+    expect(invalidBillingResponse.body.message).toBe('Invalid billingInterval');
+    expect(mockStripe.subscriptions.create).not.toHaveBeenCalled();
+
     mockStripe.customers.create.mockResolvedValue({ id: 'cus_no_secret' });
     mockStripe.subscriptions.create.mockResolvedValue({
       id: 'sub_no_secret',

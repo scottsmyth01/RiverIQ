@@ -30,6 +30,7 @@ describe('environment validation', () => {
       GOOGLE_CLIENT_ID: 'google-client-id',
       STRIPE_SECRET_KEY: 'sk_live_test',
       STRIPE_PRICE_ID: 'price_live_test',
+      STRIPE_YEARLY_PRICE_ID: 'price_yearly_live_test',
       CLOUDFLARE_KEY: 'cloudflare-token',
       R2_ACCOUNT_ID: 'r2-account',
       R2_ACCESS_KEY_ID: 'r2-access-key',

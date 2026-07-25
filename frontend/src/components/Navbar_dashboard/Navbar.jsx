@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { CircleHelp, ChevronDown, LogOut, Minus, Plus, Settings, Wallet } from 'lucide-react';
+import { CircleHelp, ChevronDown, Lock, LogOut, Minus, Plus, Settings, Wallet } from 'lucide-react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { useAuth } from '../../hooks/useAuth';
+import { useSessions } from '../../hooks/useSessions';
 import './Navbar.css';
 import logo from './logo.png';
 
+const FREE_SESSION_LIMIT = 20;
+
 const Navbar = () => {
   const { user, logout, updateBankroll, updateBankrollLoading } = useAuth();
+  const { data: sessions = [] } = useSessions();
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isBankrollOpen, setIsBankrollOpen] = useState(false);
   const [bankrollAction, setBankrollAction] = useState('deposit');
@@ -16,6 +20,7 @@ const Navbar = () => {
   const bankrollMenuRef = useRef(null);
 
   const displayName = user?.username || 'riq_user';
+  const hasReachedFreeSessionLimit = user?.subscription !== 'pro' && sessions.length >= FREE_SESSION_LIMIT;
   const bankroll = Number(user?.bankroll) || 0;
   const currency = user?.preferences?.currency || 'USD';
   const formattedBankroll = bankroll.toLocaleString('en-US', {
@@ -82,8 +87,17 @@ const Navbar = () => {
       </Link>
 
       <div className='dashboard-navbar__actions'>
-        <Link className='dashboard-navbar__new-session' to='/dashboard/sessions/new'>
-          <Plus aria-hidden='true' />
+        <Link
+          className={`dashboard-navbar__new-session${hasReachedFreeSessionLimit ? ' dashboard-navbar__new-session--locked' : ''}`}
+          to={hasReachedFreeSessionLimit ? '/subscription/payment' : '/dashboard/sessions/new'}
+          aria-label={
+            hasReachedFreeSessionLimit
+              ? 'New sessions are locked. Upgrade to Pro to add more sessions.'
+              : 'Add new session'
+          }
+          title={hasReachedFreeSessionLimit ? 'Upgrade to Pro to add more sessions' : undefined}
+        >
+          {hasReachedFreeSessionLimit ? <Lock aria-hidden='true' /> : <Plus aria-hidden='true' />}
           <span>New Session</span>
         </Link>
 

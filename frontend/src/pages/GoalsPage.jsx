@@ -21,16 +21,16 @@ import {
 } from 'lucide-react';
 import { useCreateGoal, useDeleteGoal, useGoals, useUpdateGoal } from '../hooks/useGoals';
 
-const tabs = ['All Goals', 'On Track', 'In Progress', 'At Risk', 'Completed'];
+const tabs = ['All Goals', 'Not Started', 'Active', 'Needs Attention', 'Paused', 'Completed'];
 const categoryOptions = ['All Categories', 'Preflop', 'Postflop', 'Results', 'Volume', 'Bankroll', 'Study'];
 const sortOptions = ['All', 'Recently Created', 'Progress: High to Low', 'Progress: Low to High', 'Due Date'];
 
 const statusToneByStatus = {
-  'On Track': 'green',
-  'In Progress': 'blue',
-  'At Risk': 'orange',
-  Completed: 'green',
   'Not Started': 'gray',
+  Active: 'blue',
+  'Needs Attention': 'orange',
+  Paused: 'gray',
+  Completed: 'green',
 };
 
 const iconByCategory = {
@@ -52,11 +52,11 @@ const iconToneByCategory = {
 };
 
 const barToneByStatus = {
-  'On Track': 'green',
-  'In Progress': 'blue',
-  'At Risk': 'orange',
-  Completed: 'green',
   'Not Started': 'gray',
+  Active: 'blue',
+  'Needs Attention': 'orange',
+  Paused: 'gray',
+  Completed: 'green',
 };
 
 const emptyDraft = {
@@ -66,7 +66,7 @@ const emptyDraft = {
   target: '',
   current: '',
   progress: 50,
-  status: 'In Progress',
+  status: 'Active',
   dueDate: '',
 };
 
@@ -216,35 +216,35 @@ const GoalsPage = () => {
 
   const summaryCards = useMemo(() => {
     const total = goals.length;
-    const onTrack = goals.filter((goal) => goal.status === 'On Track').length;
-    const inProgress = goals.filter((goal) => goal.status === 'In Progress').length;
-    const atRisk = goals.filter((goal) => goal.status === 'At Risk').length;
+    const active = goals.filter((goal) => goal.status === 'Active').length;
+    const needsAttention = goals.filter((goal) => goal.status === 'Needs Attention').length;
+    const paused = goals.filter((goal) => goal.status === 'Paused').length;
     const completed = goals.filter((goal) => goal.status === 'Completed').length;
 
     return [
       { label: 'Total Goals', value: total, meta: '+2 vs last 30 days', icon: Target, tone: 'muted' },
       {
-        label: 'On Track',
-        value: onTrack,
-        meta: `${Math.round((onTrack / total) * 100) || 0}% of goals`,
+        label: 'Active',
+        value: active,
+        meta: `${Math.round((active / total) * 100) || 0}% of goals`,
         icon: TrendingUp,
-        tone: 'green',
+        tone: 'blue',
       },
       {
-        label: 'In Progress',
-        value: inProgress,
-        meta: `${Math.round((inProgress / total) * 100) || 0}% of goals`,
-        icon: CircleDot,
-        tone: 'yellow',
-      },
-      {
-        label: 'At Risk',
-        value: atRisk,
-        meta: `${Math.round((atRisk / total) * 100) || 0}% of goals`,
+        label: 'Needs Attention',
+        value: needsAttention,
+        meta: `${Math.round((needsAttention / total) * 100) || 0}% of goals`,
         icon: CircleAlert,
         tone: 'orange',
       },
-      { label: 'Completed', value: completed, meta: 'This month', icon: CircleCheck, tone: 'purple' },
+      {
+        label: 'Paused',
+        value: paused,
+        meta: `${Math.round((paused / total) * 100) || 0}% of goals`,
+        icon: CircleDot,
+        tone: 'muted',
+      },
+      { label: 'Completed', value: completed, meta: 'Finished goals', icon: CircleCheck, tone: 'green' },
     ];
   }, [goals]);
 
@@ -349,10 +349,12 @@ const GoalsPage = () => {
           <h1>Goals</h1>
           <p>Set goals, track your progress, and become a better player.</p>
         </div>
-        <button className='goals-new-button' type='button' onClick={openNewGoalModal}>
-          <Plus aria-hidden='true' />
-          <span>New Goal</span>
-        </button>
+        {goals.length > 0 && (
+          <button className='goals-new-button' type='button' onClick={openNewGoalModal}>
+            <Plus aria-hidden='true' />
+            <span>New Goal</span>
+          </button>
+        )}
       </header>
 
       <section className='goals-summary-grid' aria-label='Goal summary'>
@@ -453,7 +455,19 @@ const GoalsPage = () => {
               ))}
             </tbody>
           </table>
-          {visibleGoals.length === 0 && <div className='goals-empty-state'>No goals match those filters.</div>}
+          {visibleGoals.length === 0 && (
+            <div className='goals-empty-state'>
+              <span className='goals-empty-state__icon'>
+                <Target aria-hidden='true' />
+              </span>
+              <h2>No goals at the moment</h2>
+              <p>Start with one clear target and track it from your dashboard.</p>
+              <button className='goals-empty-state__button' type='button' onClick={openNewGoalModal}>
+                <Plus aria-hidden='true' />
+                <span>Add First Goal</span>
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -530,7 +544,6 @@ const GoalsPage = () => {
                   {tabs.slice(1).map((option) => (
                     <option key={option}>{option}</option>
                   ))}
-                  <option>Not Started</option>
                 </select>
               </label>
               <label className='goal-modal-wide'>

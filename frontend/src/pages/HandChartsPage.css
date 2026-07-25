@@ -836,9 +836,10 @@
 
 @media (max-width: 1180px) {
   .hand-chart-page {
-    height: auto;
-    min-height: 100%;
+    height: 100%;
+    min-height: 0;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .hand-chart-matrix-section {
@@ -893,7 +894,6 @@
 
 @media (max-width: 680px) {
   .hand-chart-page {
-    min-height: 100dvh;
     padding: 10px;
   }
 

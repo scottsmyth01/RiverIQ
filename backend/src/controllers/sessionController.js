@@ -5,6 +5,8 @@ import { parsePokerStars } from '../utils/parsers/pokerstars/wrapper.js';
 import { parseGGPoker } from '../utils/parsers/ggpoker/wrapper.js';
 import { calculateStats } from '../utils/parsers/stats/calculateStats.js';
 
+const FREE_SESSION_LIMIT = 20;
+
 const serializeUser = (user) => ({
   _id: user._id,
   name: user.name,
@@ -100,6 +102,26 @@ function formatStakes(table = {}) {
 
   return `${currencySymbol}${smallBlind}/${currencySymbol}${bigBlind}`;
 }
+
+export const enforceFreeSessionLimit = async (req, res, next) => {
+  try {
+    if (req.user.subscription === 'pro') {
+      return next();
+    }
+
+    const sessionCount = await Session.countDocuments({ user: req.user._id });
+
+    if (sessionCount >= FREE_SESSION_LIMIT) {
+      return res.status(403).json({
+        message: `Free accounts can upload up to ${FREE_SESSION_LIMIT} sessions. Upgrade to Pro to add more sessions.`,
+      });
+    }
+
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+};
 
 export const getSessions = async (req, res) => {
   const { period } = req.query;

@@ -16,13 +16,29 @@ const { default: User } = await import('../models/User.js');
 
 const PORT = Number(process.env.PORT) || 5001;
 
-const mongoServer = await MongoMemoryServer.create({
-  instance: {
-    ip: '127.0.0.1',
-  },
-});
+let mongoServer;
 
-await mongoose.connect(mongoServer.getUri());
+function assertTestDatabase(uri) {
+  const { pathname } = new URL(uri);
+  const dbName = pathname.replace(/^\//, '').split('?')[0];
+
+  if (!/(test|e2e)/i.test(dbName)) {
+    throw new Error(`Refusing to run E2E tests against non-test Mongo database: ${dbName || '(missing database name)'}`);
+  }
+}
+
+if (process.env.TEST_MONGO_URI) {
+  assertTestDatabase(process.env.TEST_MONGO_URI);
+  await mongoose.connect(process.env.TEST_MONGO_URI);
+} else {
+  mongoServer = await MongoMemoryServer.create({
+    instance: {
+      ip: '127.0.0.1',
+    },
+  });
+
+  await mongoose.connect(mongoServer.getUri());
+}
 
 await User.create({
   username: 'e2ehero',
@@ -46,7 +62,7 @@ const server = app.listen(PORT, '127.0.0.1', () => {
 async function shutdown() {
   server.close(async () => {
     await mongoose.disconnect();
-    await mongoServer.stop();
+    await mongoServer?.stop();
     process.exit(0);
   });
 }

@@ -10,7 +10,7 @@ import {
 } from 'chart.js';
 import { Maximize2, X } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './ProfitChart.css';
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler, Legend);
@@ -91,7 +91,7 @@ export default function ProfitChart({
   onPeriodChange,
   isLoading = false,
 }) {
-  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'light');
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedMetrics, setSelectedMetrics] = useState({
     allInEV: false,
@@ -99,7 +99,10 @@ export default function ProfitChart({
     bb100: false,
     hourlyProfit: true,
   });
-  const activePeriod = periods.find((period) => period.id === selectedPeriod) || periods[0];
+  const activePeriod = useMemo(
+    () => periods.find((period) => period.id === selectedPeriod) || periods[0],
+    [periods, selectedPeriod],
+  );
   const isLightTheme = theme === 'light';
   const chartTextColor = isLightTheme ? '#111827' : '#cbd5e1';
   const chartGridColor = isLightTheme ? 'rgba(17, 24, 39, 0.14)' : 'rgba(148, 163, 184, 0.15)';
@@ -108,7 +111,7 @@ export default function ProfitChart({
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      setTheme(document.documentElement.dataset.theme || 'light');
+      setTheme(document.documentElement.dataset.theme || 'dark');
     });
 
     observer.observe(document.documentElement, {
@@ -139,140 +142,158 @@ export default function ProfitChart({
     };
   }, [isFullScreen]);
 
-  const visibleSessions = [...sessions].sort(
-    (firstSession, secondSession) => new Date(firstSession.date) - new Date(secondSession.date),
-  );
+  const { chartData, runningHands, runningProfit, visibleSessionCount } = useMemo(() => {
+    const visibleSessions = [...sessions].sort(
+      (firstSession, secondSession) => new Date(firstSession.date) - new Date(secondSession.date),
+    );
 
-  let runningProfit = 0;
-  let runningAllInEV = 0;
-  let runningBbWon = 0;
-  let runningHands = 0;
-  let runningMinutes = 0;
+    let nextRunningProfit = 0;
+    let runningAllInEV = 0;
+    let runningBbWon = 0;
+    let nextRunningHands = 0;
+    let runningMinutes = 0;
 
-  const sessionChartData = visibleSessions.map((session, index) => {
-    const sessionDate = new Date(session.date);
-    const formattedDate = formatChartDate(sessionDate);
-    const sessionBbWon = getSessionBbWon(session);
-    const sessionHands = Number(session.hands) || 0;
-    const sessionDuration = Number(session.duration);
-    const sessionAllInEV = Number(session.allInEV ?? session.stats?.allInEV ?? session.profit);
-    const sessionProfit = Number(session.profit) || 0;
+    const nextChartData = visibleSessions.map((session, index) => {
+      const sessionDate = new Date(session.date);
+      const formattedDate = formatChartDate(sessionDate);
+      const sessionBbWon = getSessionBbWon(session);
+      const sessionHands = Number(session.hands) || 0;
+      const sessionDuration = Number(session.duration);
+      const sessionAllInEV = Number(session.allInEV ?? session.stats?.allInEV ?? session.profit);
+      const sessionProfit = Number(session.profit) || 0;
 
-    runningProfit += sessionProfit;
-    runningAllInEV += Number.isFinite(sessionAllInEV) ? sessionAllInEV : sessionProfit;
-    runningBbWon += Number.isFinite(sessionBbWon) ? sessionBbWon : 0;
-    runningHands += sessionHands;
-    runningMinutes += Number.isFinite(sessionDuration) ? sessionDuration : 0;
-    const runningHours = runningMinutes / 60;
+      nextRunningProfit += sessionProfit;
+      runningAllInEV += Number.isFinite(sessionAllInEV) ? sessionAllInEV : sessionProfit;
+      runningBbWon += Number.isFinite(sessionBbWon) ? sessionBbWon : 0;
+      nextRunningHands += sessionHands;
+      runningMinutes += Number.isFinite(sessionDuration) ? sessionDuration : 0;
+      const runningHours = runningMinutes / 60;
+
+      return {
+        date: formattedDate,
+        xLabel: `Session ${index + 1}`,
+        timestamp: sessionDate.getTime(),
+        profit: Number(nextRunningProfit.toFixed(2)),
+        allInEV: Number(runningAllInEV.toFixed(2)),
+        bbWon: Number(runningBbWon.toFixed(1)),
+        bb100: nextRunningHands > 0 ? Number(((runningBbWon / nextRunningHands) * 100).toFixed(2)) : null,
+        handsPlayed: nextRunningHands,
+        hourlyProfit: runningHours > 0 ? Number((nextRunningProfit / runningHours).toFixed(2)) : null,
+      };
+    });
 
     return {
-      date: formattedDate,
-      xLabel: `Session ${index + 1}`,
-      timestamp: sessionDate.getTime(),
-      profit: Number(runningProfit.toFixed(2)),
-      allInEV: Number(runningAllInEV.toFixed(2)),
-      bbWon: Number(runningBbWon.toFixed(1)),
-      bb100: runningHands > 0 ? Number(((runningBbWon / runningHands) * 100).toFixed(2)) : null,
-      handsPlayed: runningHands,
-      hourlyProfit: runningHours > 0 ? Number((runningProfit / runningHours).toFixed(2)) : null,
+      chartData: nextChartData,
+      runningHands: nextRunningHands,
+      runningProfit: nextRunningProfit,
+      visibleSessionCount: visibleSessions.length,
     };
-  });
+  }, [sessions]);
 
-  const chartData = sessionChartData;
+  const metricBounds = useMemo(() => {
+    function getMetricBounds(key, paddingRatio = 0.28) {
+      const values = chartData.map((item) => Number(item[key])).filter((value) => Number.isFinite(value));
 
-  function getMetricBounds(key, paddingRatio = 0.28) {
-    const values = chartData.map((item) => Number(item[key])).filter((value) => Number.isFinite(value));
+      if (!values.length) {
+        return {};
+      }
 
-    if (!values.length) {
-      return {};
+      const min = Math.min(0, ...values);
+      const max = Math.max(0, ...values);
+      const span = Math.max(max - min, Math.abs(max), Math.abs(min), 1);
+      const padding = span * paddingRatio;
+
+      return {
+        suggestedMin: min < 0 ? min - padding : 0,
+        suggestedMax: max > 0 ? max + padding : 0,
+      };
     }
 
-    const min = Math.min(0, ...values);
-    const max = Math.max(0, ...values);
-    const span = Math.max(max - min, Math.abs(max), Math.abs(min), 1);
-    const padding = span * paddingRatio;
-
     return {
-      suggestedMin: min < 0 ? min - padding : 0,
-      suggestedMax: max > 0 ? max + padding : 0,
+      profit: getMetricBounds('profit'),
+      allInEV: getMetricBounds('allInEV'),
+      bbWon: getMetricBounds('bbWon'),
+      bb100: getMetricBounds('bb100'),
     };
-  }
+  }, [chartData]);
 
-  const metricBounds = {
-    profit: getMetricBounds('profit'),
-    allInEV: getMetricBounds('allInEV'),
-    bbWon: getMetricBounds('bbWon'),
-    bb100: getMetricBounds('bb100'),
-  };
+  const datasets = useMemo(
+    () => [
+      {
+        label: 'Total Profit',
+        data: getMetricSeries(chartData, 'profit'),
+        yAxisID: 'money',
+        borderColor: '#39ff64',
+        backgroundColor: (context) => {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
 
-  const datasets = [
-    {
-      label: 'Total Profit',
-      data: getMetricSeries(chartData, 'profit'),
-      yAxisID: 'money',
-      borderColor: '#39ff64',
-      backgroundColor: (context) => {
-        const chart = context.chart;
-        const { ctx, chartArea } = chart;
+          if (!chartArea) return null;
 
-        if (!chartArea) return null;
+          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
 
-        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          gradient.addColorStop(0, 'rgba(57, 255, 100, 0.35)');
+          gradient.addColorStop(1, 'rgba(57, 255, 100, 0)');
 
-        gradient.addColorStop(0, 'rgba(57, 255, 100, 0.35)');
-        gradient.addColorStop(1, 'rgba(57, 255, 100, 0)');
-
-        return gradient;
-      },
-      fill: true,
-      tension: 0,
-      pointRadius: 0,
-      pointHoverRadius: 5,
-      pointHitRadius: 16,
-      pointHoverBackgroundColor: '#39ff64',
-      pointHoverBorderColor: '#ffffff',
-      pointHoverBorderWidth: 2,
-      borderWidth: 2,
-      metricKey: 'profit',
-    },
-    ...optionalMetrics
-      .filter((metric) => selectedMetrics[metric.key])
-      .map((metric) => ({
-        label: metric.label,
-        data: getMetricSeries(chartData, metric.key),
-        yAxisID: metric.axis,
-        borderColor: metric.color,
-        backgroundColor: `${metric.color}26`,
-        fill: false,
+          return gradient;
+        },
+        fill: true,
         tension: 0,
         pointRadius: 0,
         pointHoverRadius: 5,
         pointHitRadius: 16,
-        pointHoverBackgroundColor: metric.color,
+        pointHoverBackgroundColor: '#39ff64',
         pointHoverBorderColor: '#ffffff',
         pointHoverBorderWidth: 2,
         borderWidth: 2,
-        spanGaps: false,
-        metricKey: metric.key,
+        metricKey: 'profit',
+      },
+      ...optionalMetrics
+        .filter((metric) => selectedMetrics[metric.key])
+        .map((metric) => ({
+          label: metric.label,
+          data: getMetricSeries(chartData, metric.key),
+          yAxisID: metric.axis,
+          borderColor: metric.color,
+          backgroundColor: `${metric.color}26`,
+          fill: false,
+          tension: 0,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHitRadius: 16,
+          pointHoverBackgroundColor: metric.color,
+          pointHoverBorderColor: '#ffffff',
+          pointHoverBorderWidth: 2,
+          borderWidth: 2,
+          spanGaps: false,
+          metricKey: metric.key,
+        })),
+    ],
+    [chartData, selectedMetrics],
+  );
+
+  const data = useMemo(
+    () => ({
+      labels: chartData.map((item) => item.xLabel),
+      datasets,
+    }),
+    [chartData, datasets],
+  );
+
+  const fullScreenData = useMemo(
+    () => ({
+      labels: data.labels,
+      datasets: datasets.map((dataset) => ({
+        ...dataset,
+        backgroundColor: 'transparent',
+        fill: false,
+        borderWidth: dataset.metricKey === 'profit' ? 2.5 : 2,
+        pointRadius: 0,
+        pointHoverRadius: 4,
       })),
-  ];
-
-  const data = {
-    labels: chartData.map((item) => item.xLabel),
-    datasets,
-  };
-
-  const fullScreenData = {
-    labels: data.labels,
-    datasets: datasets.map((dataset) => ({
-      ...dataset,
-      backgroundColor: 'transparent',
-      fill: false,
-      borderWidth: dataset.metricKey === 'profit' ? 2.5 : 2,
-      pointRadius: 0,
-      pointHoverRadius: 4,
-    })),
-  };
+    }),
+    [data.labels, datasets],
+  );
 
   function getChartOptions({ fullScreen = false } = {}) {
     const textColor = fullScreen ? fullScreenTextColor : chartTextColor;
@@ -455,8 +476,14 @@ export default function ProfitChart({
     };
   }
 
-  const options = getChartOptions();
-  const fullScreenOptions = getChartOptions({ fullScreen: true });
+  const options = useMemo(
+    () => getChartOptions(),
+    [chartData, chartGridColor, chartTextColor, datasets.length, metricBounds, selectedMetrics],
+  );
+  const fullScreenOptions = useMemo(
+    () => getChartOptions({ fullScreen: true }),
+    [chartData, datasets.length, fullScreenGridColor, fullScreenTextColor, metricBounds, selectedMetrics],
+  );
 
   return (
     <div className='profit-card'>
@@ -526,7 +553,7 @@ export default function ProfitChart({
               <div>
                 <h2 id='profit-fullscreen-title'>Results Graph</h2>
                 <p>
-                  {activePeriod?.label || 'All Time'} · {visibleSessions.length.toLocaleString('en-US')} sessions
+                  {activePeriod?.label || 'All Time'} · {visibleSessionCount.toLocaleString('en-US')} sessions
                 </p>
               </div>
               <button type='button' aria-label='Close full page graph' onClick={() => setIsFullScreen(false)}>

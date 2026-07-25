@@ -46,7 +46,9 @@ const trustItems = [
 const PricingPage = () => {
   const [isYearly, setIsYearly] = useState(false);
   const { user } = useAuth();
-  const proPrice = isYearly ? '15.99' : '19.99';
+  const proPrice = isYearly ? '149.99' : '14.99';
+  const proCadence = isYearly ? 'per year' : 'per month';
+  const subscriptionPath = `/subscription/payment${isYearly ? '?billing=yearly' : ''}`;
   const isCurrentFreeTier = user?.subscription === 'free';
 
   return (
@@ -79,7 +81,7 @@ const PricingPage = () => {
               <span></span>
             </button>
             <span className={isYearly ? 'active' : ''}>
-              Pay Yearly <small>(Save 20%)</small>
+              Pay Yearly <small>(Save $29.89)</small>
             </span>
           </div>
         </header>
@@ -137,7 +139,7 @@ const PricingPage = () => {
               </div>
               <div className='pricing-amount'>
                 <strong>${proPrice}</strong>
-                <span>per month</span>
+                <span>{proCadence}</span>
               </div>
             </div>
 
@@ -153,7 +155,7 @@ const PricingPage = () => {
               ))}
             </ul>
 
-            <Link className='start-trial-button' to={user ? '/subscription/payment' : '/login'}>
+            <Link className='start-trial-button' to={user ? subscriptionPath : '/login'}>
               Start Pro Subscription
             </Link>
             <p className='pricing-cancel-note'>

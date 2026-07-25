@@ -17,3 +17,12 @@
   font-size: clamp(0.82rem, 1.4vw, 0.95rem);
   line-height: 1.45;
 }
+
+@media (max-width: 760px) {
+  .sessions-page {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

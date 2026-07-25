@@ -3,7 +3,6 @@ import {
   BarChart3,
   Clock,
   CloudUpload,
-  Eye,
   LoaderCircle,
   Lock,
   Mail,
@@ -351,9 +350,6 @@ const UserAuthPage = () => {
                       )}
                       autoComplete={authMode === 'login' ? 'current-password' : 'new-password'}
                     />
-                    <button className='password-toggle' type='button' aria-label='Show password'>
-                      <Eye aria-hidden='true' />
-                    </button>
                   </div>
                   {fieldErrors.password?.message && (
                     <small className='auth-field-error' role='alert'>

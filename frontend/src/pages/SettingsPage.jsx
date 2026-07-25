@@ -53,7 +53,7 @@ const SettingsPage = () => {
     forgotPasswordLoading,
     updatePreferencesLoading,
   } = useAuth();
-  const [theme, setTheme] = useState(() => user?.preferences?.theme || localStorage.getItem('theme') || 'light');
+  const [theme, setTheme] = useState(() => user?.preferences?.theme || localStorage.getItem('theme') || 'dark');
   const [dateRange, setDateRange] = useState(user?.preferences?.defaultTimeFilter || '30d');
   const [tableSize, setTableSize] = useState(user?.preferences?.defaultTableSize || '9max');
   const [currency, setCurrency] = useState(user?.preferences?.currency || 'USD');
@@ -67,6 +67,7 @@ const SettingsPage = () => {
   const [passwordNotice, setPasswordNotice] = useState('');
   const [settingsNotice, setSettingsNotice] = useState('');
   const [subscriptionNotice, setSubscriptionNotice] = useState('');
+  const [showCancelSubscriptionModal, setShowCancelSubscriptionModal] = useState(false);
   const avatarInputRef = useRef(null);
   const menuRef = useRef(null);
 
@@ -77,7 +78,7 @@ const SettingsPage = () => {
   const savedPreferences = user?.preferences || {};
   const isSavingSettings = updatePreferencesLoading || savingControl === 'settings';
   const hasSettingsChanges =
-    theme !== (savedPreferences.theme || 'light') ||
+    theme !== (savedPreferences.theme || 'dark') ||
     dateRange !== (savedPreferences.defaultTimeFilter || '30d') ||
     tableSize !== (savedPreferences.defaultTableSize || '9max') ||
     currency !== (savedPreferences.currency || 'USD');
@@ -134,19 +135,26 @@ const SettingsPage = () => {
     }
   }
 
-  async function handleCancelSubscription() {
-    const shouldCancel = window.confirm('Cancel your RiverIQ Pro subscription?');
-
-    if (!shouldCancel) return;
-
+  async function confirmCancelSubscription() {
     setSubscriptionNotice('');
 
     try {
       await cancelSubscription();
       setSubscriptionNotice('Subscription canceled. Your account is now on the Free plan.');
+      setShowCancelSubscriptionModal(false);
     } catch (error) {
       setSubscriptionNotice(error.message || 'Could not cancel subscription.');
     }
+  }
+
+  function openCancelSubscriptionModal() {
+    setSubscriptionNotice('');
+    setShowCancelSubscriptionModal(true);
+  }
+
+  function closeCancelSubscriptionModal() {
+    if (cancelSubscriptionLoading) return;
+    setShowCancelSubscriptionModal(false);
   }
 
   async function handleSendPasswordReset() {
@@ -230,7 +238,7 @@ const SettingsPage = () => {
     const preferences = user?.preferences;
     if (!preferences) return;
 
-    setTheme(preferences.theme || 'light');
+    setTheme(preferences.theme || 'dark');
     setDateRange(preferences.defaultTimeFilter || '30d');
     setTableSize(preferences.defaultTableSize || '9max');
     setCurrency(preferences.currency || 'USD');
@@ -254,6 +262,19 @@ const SettingsPage = () => {
       }
     };
   }, [avatarPreview]);
+
+  useEffect(() => {
+    if (!showCancelSubscriptionModal) return undefined;
+
+    function closeOnEscape(event) {
+      if (event.key === 'Escape') {
+        closeCancelSubscriptionModal();
+      }
+    }
+
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [showCancelSubscriptionModal, cancelSubscriptionLoading]);
 
   return (
     <section className='settings-page'>
@@ -584,7 +605,7 @@ const SettingsPage = () => {
                   className='subscription-action subscription-action--secondary'
                   type='button'
                   disabled={cancelSubscriptionLoading}
-                  onClick={handleCancelSubscription}
+                  onClick={openCancelSubscriptionModal}
                 >
                   {cancelSubscriptionLoading ? 'Canceling...' : 'Cancel Subscription'}
                 </button>
@@ -639,6 +660,41 @@ const SettingsPage = () => {
       <footer className='settings-support'>
         Need help? Contact us at <a href='mailto:support@riveriq.com'>support@riveriq.com</a>
       </footer>
+
+      {showCancelSubscriptionModal && (
+        <div
+          className='settings-modal-backdrop'
+          role='presentation'
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeCancelSubscriptionModal();
+            }
+          }}
+        >
+          <div
+            className='settings-confirm-modal'
+            role='dialog'
+            aria-modal='true'
+            aria-labelledby='cancel-subscription-title'
+          >
+            <div className='settings-confirm-modal__icon' aria-hidden='true'>
+              <CreditCard />
+            </div>
+            <div>
+              <h2 id='cancel-subscription-title'>Cancel your RiverIQ Pro subscription?</h2>
+              <p>You will lose access to Pro features and your account will move to the Free plan.</p>
+            </div>
+            <div className='settings-confirm-modal__actions'>
+              <button type='button' onClick={closeCancelSubscriptionModal} disabled={cancelSubscriptionLoading}>
+                Keep Pro
+              </button>
+              <button type='button' onClick={confirmCancelSubscription} disabled={cancelSubscriptionLoading}>
+                {cancelSubscriptionLoading ? 'Canceling...' : 'Cancel Subscription'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

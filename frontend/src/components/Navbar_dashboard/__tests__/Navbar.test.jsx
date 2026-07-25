@@ -22,6 +22,12 @@ vi.mock('../../../hooks/useAuth', () => ({
   }),
 }));
 
+vi.mock('../../../hooks/useSessions', () => ({
+  useSessions: () => ({
+    data: [],
+  }),
+}));
+
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),

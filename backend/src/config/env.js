@@ -9,6 +9,7 @@ const requiredProductionEnvVars = [
   'GOOGLE_CLIENT_ID',
   'STRIPE_SECRET_KEY',
   'STRIPE_PRICE_ID',
+  'STRIPE_YEARLY_PRICE_ID',
   'CLOUDFLARE_KEY',
   'R2_ACCOUNT_ID',
   'R2_ACCESS_KEY_ID',

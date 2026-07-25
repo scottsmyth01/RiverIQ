@@ -24,7 +24,7 @@ const validGoal = {
   target: '8%',
   current: '5%',
   progress: 35,
-  status: 'In Progress',
+  status: 'Active',
   dueDate: '2026-08-15T00:00:00.000Z',
 };
 

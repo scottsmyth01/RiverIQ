@@ -45,8 +45,8 @@ const goalSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['On Track', 'In Progress', 'At Risk', 'Completed', 'Not Started'],
-      default: 'In Progress',
+      enum: ['Not Started', 'Active', 'Needs Attention', 'Paused', 'Completed'],
+      default: 'Active',
     },
     dueDate: {
       type: Date,

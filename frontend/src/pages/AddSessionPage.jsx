@@ -1,9 +1,12 @@
 import { useRef, useState } from 'react';
 import { ArrowLeft, ChevronRight, CloudUpload, FileText, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { Link, Navigate, useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { useAddSession } from '../hooks/useSessions';
+import { useAddSession, useSessions } from '../hooks/useSessions';
+import { useAuth } from '../hooks/useAuth';
 import './AddSessionPage.css';
+
+const FREE_SESSION_LIMIT = 20;
 
 const pokerSites = [
   { label: 'PokerStars', value: 'pokerstars' },
@@ -22,7 +25,10 @@ const AddSessionPage = () => {
   const [handHistoryFile, setHandHistoryFile] = useState(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: sessions = [] } = useSessions();
   const { mutateAsync: addSession, isPending } = useAddSession();
+  const hasReachedFreeSessionLimit = user?.subscription !== 'pro' && sessions.length >= FREE_SESSION_LIMIT;
 
   function handleDetailsChange(event) {
     const { name, value } = event.target;
@@ -58,6 +64,11 @@ const AddSessionPage = () => {
   async function handleSubmit(event) {
     event.preventDefault();
 
+    if (hasReachedFreeSessionLimit) {
+      navigate('/subscription/payment');
+      return;
+    }
+
     if (!handHistoryFile) {
       toast.error('Please choose a hand history file');
       return;
@@ -78,6 +89,10 @@ const AddSessionPage = () => {
     } catch (error) {
       toast.error(error.message || 'Could not upload session');
     }
+  }
+
+  if (hasReachedFreeSessionLimit) {
+    return <Navigate to='/subscription/payment' replace />;
   }
 
   return (

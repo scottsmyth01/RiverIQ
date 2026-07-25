@@ -64,6 +64,17 @@
   transform: translateY(-1px);
 }
 
+.dashboard-navbar__new-session--locked {
+  color: var(--text-muted-light);
+  background: var(--surface-control-deep);
+  border-color: var(--theme-nav-border);
+}
+
+.dashboard-navbar__new-session--locked:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-green-border-strong);
+}
+
 .dashboard-navbar__new-session svg {
   width: 15px;
   height: 15px;

@@ -194,4 +194,5 @@ Built using the MERN stack, RiverIQ separates the frontend, backend, database, a
 - STRIPE_PUBLISHABLE_KEY=
 - STRIPE_SECRET_KEY=
 - STRIPE_PRICE_ID=
+- STRIPE_YEARLY_PRICE_ID=
 - GOOGLE_CLIENT_ID=

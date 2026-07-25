@@ -47,10 +47,34 @@ async function findCurrentSubscription(user) {
   );
 }
 
+function getSubscriptionPriceId(billingInterval = 'monthly') {
+  if (billingInterval === 'yearly') {
+    return {
+      envKey: 'STRIPE_YEARLY_PRICE_ID',
+      priceId: process.env.STRIPE_YEARLY_PRICE_ID,
+      billingInterval,
+    };
+  }
+
+  return {
+    envKey: 'STRIPE_PRICE_ID',
+    priceId: process.env.STRIPE_PRICE_ID,
+    billingInterval: 'monthly',
+  };
+}
+
 export const createSubscription = async (req, res) => {
   try {
-    if (!process.env.STRIPE_PRICE_ID) {
-      return res.status(500).json({ message: 'Missing STRIPE_PRICE_ID' });
+    const requestedBillingInterval = req.body.billingInterval || 'monthly';
+
+    if (!['monthly', 'yearly'].includes(requestedBillingInterval)) {
+      return res.status(400).json({ message: 'Invalid billingInterval' });
+    }
+
+    const { envKey, priceId, billingInterval } = getSubscriptionPriceId(requestedBillingInterval);
+
+    if (!priceId) {
+      return res.status(500).json({ message: `Missing ${envKey}` });
     }
 
     let stripeCustomerId = req.user.stripeCustomerId;
@@ -70,7 +94,7 @@ export const createSubscription = async (req, res) => {
       customer: stripeCustomerId,
       items: [
         {
-          price: process.env.STRIPE_PRICE_ID,
+          price: priceId,
         },
       ],
       payment_behavior: 'default_incomplete',
@@ -91,6 +115,7 @@ export const createSubscription = async (req, res) => {
     return res.json({
       subscriptionId: subscription.id,
       clientSecret,
+      billingInterval,
     });
   } catch (error) {
     return res.status(500).json({

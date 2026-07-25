@@ -437,11 +437,6 @@
   transition: background-color 9999s ease-out;
 }
 
-.password-toggle {
-  display: grid;
-  place-items: center;
-}
-
 .auth-options {
   margin-top: 1.2rem;
   display: flex;

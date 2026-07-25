@@ -1,7 +1,11 @@
 process.env.NODE_ENV = 'test';
+delete process.env.MONGO_URI;
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';
 process.env.FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 process.env.COOKIE_SAME_SITE = process.env.COOKIE_SAME_SITE || 'lax';
 process.env.R2_BUCKET_NAME_HH = process.env.R2_BUCKET_NAME_HH || 'test-hand-histories';
 process.env.R2_BUCKET_NAME_AVATAR = process.env.R2_BUCKET_NAME_AVATAR || 'test-avatars';
 process.env.R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || 'https://assets.test';
+process.env.STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || 'sk_test_riveriq';
+process.env.STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || 'price_riveriq_pro_test';
+process.env.STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID || 'price_riveriq_pro_yearly_test';

@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import Navbar from '../components/Navbar_dashboard/Navbar';
 import { useAuth } from '../hooks/useAuth';
 
@@ -41,39 +41,54 @@ const cardElementOptions = {
 };
 
 const includedFeatures = [
-  'Unlimited sessions',
-  'Advanced analytics & reports',
-  'Hand history upload & parsing',
-  'Preflop charts & ranges',
+  'Unlimited Sessions',
+  'Session Statistics',
+  'Advanced Analytics & Reports',
+  'Goal Tracking',
+  'Hand Charts',
   'Export data (CSV)',
-  'Priority support',
+  'Priority Support',
 ];
 
-const planPrices = {
-  CAD: {
-    monthly: '$29.99 CAD',
+const billingPlans = {
+  monthly: {
+    label: 'Monthly',
+    price: '$14.99 USD',
+    cadence: 'per month',
+    renewal: 'Renews monthly',
+    summary: '$14.99 USD / month',
+    note: "You'll be charged $14.99 USD per month.",
   },
-  USD: {
-    monthly: '$19.99 USD',
+  yearly: {
+    label: 'Yearly',
+    price: '$149.99 USD',
+    cadence: 'per year',
+    renewal: 'Renews yearly',
+    summary: '$149.99 USD / year',
+    note: "You'll be charged $149.99 USD per year.",
+    badge: 'Save $29.89',
   },
 };
 
 function getDisplayName(user) {
-  return user?.username || user?.fullName || user?.name || 'Scott Smyth';
+  return user?.username || user?.fullName || user?.name;
 }
 
 function getEmail(user) {
-  return user?.email || 'scott.smyth@email.com';
+  return user?.email;
 }
 
 const PaymentPage = () => {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+  const [billingInterval, setBillingInterval] = useState(() =>
+    searchParams.get('billing') === 'yearly' ? 'yearly' : 'monthly',
+  );
   const displayName = getDisplayName(user);
   const email = getEmail(user);
-  const preferredCurrency = user?.preferences?.currency || 'USD';
-  const planPrice = planPrices[preferredCurrency] || planPrices.USD;
+  const planPrice = billingPlans[billingInterval];
   const stripe = useStripe();
   const elements = useElements();
   const queryClient = useQueryClient();
@@ -105,7 +120,7 @@ const PaymentPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, billingInterval }),
       });
 
       const responseText = await res.text();
@@ -173,6 +188,16 @@ const PaymentPage = () => {
     });
   }, [displayName, email, reset]);
 
+  useEffect(() => {
+    const queryBilling = searchParams.get('billing') === 'yearly' ? 'yearly' : 'monthly';
+    setBillingInterval(queryBilling);
+  }, [searchParams]);
+
+  function selectBillingInterval(nextBillingInterval) {
+    setBillingInterval(nextBillingInterval);
+    setSearchParams(nextBillingInterval === 'yearly' ? { billing: 'yearly' } : {});
+  }
+
   return (
     <main className='payment-page'>
       <Navbar />
@@ -238,7 +263,34 @@ const PaymentPage = () => {
             </section>
 
             <section className='payment-form-card'>
-              <h2>2. Payment Information</h2>
+              <h2>2. Billing Cycle</h2>
+              <p>Choose how you want your RiverIQ Pro subscription to renew.</p>
+
+              <div className='payment-billing-options' role='radiogroup' aria-label='Billing cycle'>
+                {Object.entries(billingPlans).map(([interval, plan]) => (
+                  <button
+                    className={`payment-billing-option${billingInterval === interval ? ' active' : ''}`}
+                    type='button'
+                    role='radio'
+                    aria-checked={billingInterval === interval}
+                    key={interval}
+                    onClick={() => selectBillingInterval(interval)}
+                  >
+                    <span>
+                      <strong>{plan.label}</strong>
+                      {plan.badge && <em>{plan.badge}</em>}
+                    </span>
+                    <span>
+                      <strong>{plan.price}</strong>
+                      <small>{plan.cadence}</small>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className='payment-form-card'>
+              <h2>3. Payment Information</h2>
               <p className='payment-lock-note'>
                 <Lock aria-hidden='true' />
                 Your card will be charged when you subscribe.
@@ -309,7 +361,7 @@ const PaymentPage = () => {
               )}
 
               <p className='payment-after-note'>
-                You&apos;ll be charged {planPrice.monthly} per month.
+                {planPrice.note}
                 <br />
                 You can cancel anytime from your account settings.
               </p>
@@ -329,16 +381,16 @@ const PaymentPage = () => {
               <Crown aria-hidden='true' />
             </div>
             <strong>Pro Plan</strong>
-            <span>Monthly Subscription</span>
+            <span>{planPrice.label} Subscription</span>
 
             <div className='payment-price-lines'>
               <p>
                 <span>Due today</span>
-                <strong>{planPrice.monthly}</strong>
+                <strong>{planPrice.price}</strong>
               </p>
               <p>
-                <span>Renews monthly</span>
-                <em>{planPrice.monthly} / month</em>
+                <span>{planPrice.renewal}</span>
+                <em>{planPrice.summary}</em>
               </p>
             </div>
 
@@ -385,7 +437,12 @@ const PaymentPage = () => {
 
       {showSuccessModal && (
         <div className='payment-success-overlay' role='presentation'>
-          <section className='payment-success-modal' role='dialog' aria-modal='true' aria-labelledby='payment-success-title'>
+          <section
+            className='payment-success-modal'
+            role='dialog'
+            aria-modal='true'
+            aria-labelledby='payment-success-title'
+          >
             <div className='payment-success-icon'>
               <Check aria-hidden='true' />
             </div>
@@ -395,9 +452,6 @@ const PaymentPage = () => {
               <Link className='payment-success-primary' to='/dashboard'>
                 Go to Dashboard
               </Link>
-              <button type='button' className='payment-success-secondary' onClick={() => setShowSuccessModal(false)}>
-                Stay here
-              </button>
             </div>
           </section>
         </div>

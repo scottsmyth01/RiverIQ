@@ -8,6 +8,7 @@ import SessionsTable from '../components/SessionsTable/SessionsTable';
 import { NewUserPage } from './NewUserPage';
 import { useAuth } from '../hooks/useAuth';
 import { getPeriodFromDefaultTimeFilter } from '../utils/dateRangePreferences';
+import { filterSessions } from '../utils/filterSessions';
 
 const dashboardPeriods = [
   { id: 'all-time', label: 'All Time', chartLabel: 'Total Profit' },
@@ -21,7 +22,6 @@ const DashboardPage = () => {
   const defaultPeriod = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
   const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod);
   const { data: allSessions = [], isLoading: isAllSessionsLoading } = useSessions();
-  const { data: sessions = [], isFetching: isChartFetching } = useSessions({ period: selectedPeriod });
   const username = user?.username || user?.name || 'there';
 
   useEffect(() => {
@@ -72,6 +72,7 @@ const DashboardPage = () => {
       ),
     [periodsWithAvailability],
   );
+  const sessions = useMemo(() => filterSessions(allSessions, selectedPeriod), [allSessions, selectedPeriod]);
 
   if (isAllSessionsLoading) {
     return null;
@@ -100,7 +101,6 @@ const DashboardPage = () => {
           periods={chartPeriodsWithAvailability}
           selectedPeriod={selectedPeriod}
           onPeriodChange={setSelectedPeriod}
-          isLoading={isChartFetching}
         />
         <SessionsTable sessions={sessions} sessionsPerPage={5} variant='home-page' />
       </section>
