@@ -29,6 +29,8 @@ export function useAuth() {
     queryKey: ['authUser'],
     queryFn: getMe,
     retry: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   const user = data?.user || null;

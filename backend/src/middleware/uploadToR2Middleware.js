@@ -39,6 +39,18 @@ export async function uploadHandHistoryToR2(req, res, next) {
     if (!req.file) {
       return res.status(400).json({ message: 'Please upload a hand history file' });
     }
+
+    if (process.env.NODE_ENV === 'test') {
+      req.handHistory = {
+        originalFileName: req.file.originalname,
+        r2Key: `test-hand-histories/${req.user._id}/${req.file.originalname}`,
+        fileSize: req.file.size,
+        contentType: req.file.mimetype,
+        uploadedAt: new Date(),
+      };
+      return next();
+    }
+
     const r2Key = await uploadToR2(req.file, req.user._id);
 
     req.handHistory = {

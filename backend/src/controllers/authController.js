@@ -290,6 +290,10 @@ export const logoutUser = async (req, res, next) => {
 };
 
 const sendPasswordResetEmail = async (email, resetLink) => {
+  if (process.env.NODE_ENV === 'test') {
+    return;
+  }
+
   const apiToken = process.env.CLOUDFLARE_KEY;
   if (!apiToken) {
     throw new Error('Cloudflare API token is not configured');
@@ -311,6 +315,10 @@ const sendPasswordResetEmail = async (email, resetLink) => {
 };
 
 const sendVerifyEmail = async (username, email, verifyLink) => {
+  if (process.env.NODE_ENV === 'test') {
+    return;
+  }
+
   const apiToken = process.env.CLOUDFLARE_KEY;
 
   if (!apiToken) {

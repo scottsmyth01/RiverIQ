@@ -30,8 +30,16 @@ async function request(endpoint, options = {}) {
   return data;
 }
 
-export function getMe() {
-  return request('/api/auth/me');
+export async function getMe() {
+  try {
+    return await request('/api/auth/me');
+  } catch (error) {
+    if (error.status === 401) {
+      return { user: null };
+    }
+
+    throw error;
+  }
 }
 
 export function registerUser(formData) {

@@ -18,7 +18,7 @@ createRoot(rootElement).render(
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'missing-google-client-id'}>
       <App />
     </GoogleOAuthProvider>
-    <ReactQueryDevtools initialIsOpen={true} />
+    <ReactQueryDevtools initialIsOpen={false} />
     <Toaster position='top-center' richColors closeButton />
   </QueryClientProvider>,
 );
