@@ -1,0 +1,17 @@
+export const REGEX = {
+  handStart: /(?=^(?:Bovada|Ignition|Bodog) Hand #)/m,
+  handNumber: /(?:Bovada|Ignition|Bodog) Hand #(\d+)/,
+  headerLine: /^(?:Bovada|Ignition|Bodog) Hand #\d+:\s*(.+)$/m,
+  blinds: /\((?:[$€£]?)([\d,.]+)\/(?:[$€£]?)([\d,.]+)(?:\s+([A-Z]+))?\)/,
+  table: /Table '.+?' (\d+)-max/,
+  players: /^Seat (\d+): (.+?) \((?:[$€£]?)([\d,.]+) in chips\)$/gm,
+  hero: /^Dealt to (.+?) \[([^\]]+)\]$/,
+  buttonSeat: /Seat #(\d+) is the button/,
+  date: /- (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})/,
+  preflop: /\*\*\* HOLE CARDS \*\*\*\r?\n([\s\S]*?)(?=\*\*\* FLOP \*\*\*|\*\*\* SUMMARY \*\*\*|\*\*\* SHOW DOWN \*\*\*)/,
+  flop: /\*\*\* FLOP \*\*\* \[([^\]]+)\]\r?\n([\s\S]*?)(?=\*\*\* TURN \*\*\*|\*\*\* SHOW DOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  turn: /\*\*\* TURN \*\*\* \[[^\]]+\] \[([^\]]+)\]\r?\n([\s\S]*?)(?=\*\*\* RIVER \*\*\*|\*\*\* SHOW DOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  river: /\*\*\* RIVER \*\*\* \[[^\]]+\] \[([^\]]+)\]\r?\n([\s\S]*?)(?=\*\*\* SHOW DOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  showdown: /\*\*\* SHOW DOWN \*\*\*([\s\S]*?)(?=\*\*\* SUMMARY \*\*\*|$)/,
+  summary: /\*\*\* SUMMARY \*\*\*([\s\S]*)$/,
+};

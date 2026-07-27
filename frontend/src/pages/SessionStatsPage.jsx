@@ -6,13 +6,14 @@ import { ArrowLeft, BadgeDollarSign, Clock3, FileText, Gauge, Layers3, Pencil } 
 import { Link, useParams } from 'react-router';
 import { useSessions } from '../hooks/useSessions';
 import { getByPosition, toNumber } from '../utils/analytics/helpers';
+import { getSessionAllInEvBb } from '../utils/sessionUnits';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip);
 
 const overviewStats = [
   { key: 'handsPlayed', label: 'Hands', format: 'integer' },
   { key: 'profit', label: 'Profit', format: 'currency' },
-  { key: 'allInEV', label: 'All-In EV', format: 'currency' },
+  { key: 'allInEV', label: 'All-In EV', format: 'bigBlinds' },
   { key: 'bb100', label: 'BB/100', format: 'decimal' },
   { key: 'vpip', label: 'VPIP', format: 'percent' },
   { key: 'pfr', label: 'PFR', format: 'percent' },
@@ -67,6 +68,7 @@ function formatValue(value, format = 'decimal') {
   if (!Number.isFinite(number)) return 'N/A';
   if (format === 'integer') return number.toLocaleString('en-US');
   if (format === 'currency') return `${number < 0 ? '-' : ''}$${Math.abs(number).toFixed(2)}`;
+  if (format === 'bigBlinds') return `${number > 0 ? '+' : ''}${number.toFixed(1)} BB`;
   if (format === 'percent') return `${number.toFixed(1)}%`;
 
   return number.toFixed(2);
@@ -307,6 +309,10 @@ const SessionStatsPage = () => {
       },
     ],
   };
+  const overviewValues = {
+    ...stats,
+    allInEV: getSessionAllInEvBb(session),
+  };
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -422,7 +428,7 @@ const SessionStatsPage = () => {
             {overviewStats.map((stat) => (
               <div key={stat.key}>
                 <span>{stat.label}</span>
-                <strong>{formatValue(stats[stat.key], stat.format)}</strong>
+                <strong>{formatValue(overviewValues[stat.key], stat.format)}</strong>
               </div>
             ))}
           </div>

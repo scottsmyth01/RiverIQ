@@ -43,11 +43,12 @@ const helpTopics = [
     icon: FileUp,
     title: 'Hand History Uploads',
     description:
-      'Help for importing PokerStars, GGPoker, CoinPoker, 888poker, or partypoker hand histories and resolving upload issues.',
+      'Help for importing PokerStars, GGPoker, CoinPoker, Bovada, 888poker, or partypoker hand histories and resolving upload issues.',
     subtopics: [
       { id: 'pokerstars', label: 'PokerStars', title: 'PokerStars Hand History Uploads' },
       { id: 'ggpoker', label: 'GGPoker', title: 'GGPoker Hand History Uploads' },
       { id: 'coinpoker', label: 'CoinPoker', title: 'CoinPoker Hand History Uploads' },
+      { id: 'bovada', label: 'Bovada', title: 'Bovada Hand History Uploads' },
       { id: '888poker', label: '888poker', title: '888poker Hand History Uploads' },
       { id: 'partypoker', label: 'partypoker', title: 'partypoker Hand History Uploads' },
     ],
@@ -56,7 +57,7 @@ const helpTopics = [
         id: 'supported-uploads',
         heading: 'Supported uploads',
         items: [
-          'RiverIQ currently supports PokerStars, GGPoker, CoinPoker, 888poker, and partypoker hand history files.',
+          'RiverIQ currently supports PokerStars, GGPoker, CoinPoker, Bovada, 888poker, and partypoker hand history files.',
           'Upload original hand history text files when possible instead of edited or reformatted copies.',
           'Files should contain complete hand histories, including table details, actions, showdown, and summary lines.',
         ],
@@ -109,7 +110,20 @@ const helpTopics = [
       {
         id: 'coinpoker',
         heading: 'CoinPoker',
-        items: [],
+        items: [
+          'Email CoinPoker Support and ask for your hand history file. Once received, upload the file and RiverIQ will automatically split separate sessions by time gaps.',
+        ],
+      },
+      {
+        id: 'bovada',
+        heading: 'Bovada',
+        items: [
+          <>
+            In the Bovada client, open <strong>Account</strong> and then <strong>Hand History</strong>.
+          </>,
+          'Download the available hand history text files for the game type and date range you want to import.',
+          'Select Bovada on the upload page. RiverIQ will automatically split separate sessions when your downloaded file contains hands from different playing sessions.',
+        ],
       },
       {
         id: '888poker',

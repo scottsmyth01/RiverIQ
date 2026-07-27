@@ -1,6 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import { readFileSync } from 'node:fs';
 import { parse888Poker } from '../888poker/wrapper.js';
+import { parseBovada } from '../bovada/wrapper.js';
 import { parseCoinPoker } from '../coinpoker/wrapper.js';
 import { parseGGPoker } from '../ggpoker/wrapper.js';
 import { parsePartyPoker } from '../partypoker/wrapper.js';
@@ -25,6 +26,13 @@ const fixtureCases = [
     files: ['src/utils/parsers/fixtures/coinpoker/coinpoker_single_hand.txt'],
     handCount: 1,
     positions: ['BTN'],
+  },
+  {
+    site: 'Bovada',
+    parse: parseBovada,
+    files: ['src/utils/parsers/fixtures/bovada/bovada_single_hand.txt'],
+    handCount: 1,
+    positions: ['UTG+1'],
   },
   {
     site: 'GGPoker',

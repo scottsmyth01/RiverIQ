@@ -9,6 +9,60 @@ import { applySorting, applyDateFilter, numTables as tables, finish as applyFini
 import { useAuth } from '../../hooks/useAuth';
 import { useDeleteSession } from '../../hooks/useSessions';
 import { getPeriodFromDefaultTimeFilter } from '../../utils/dateRangePreferences';
+import pokerStarsLogo from '../../assets/pokerstars-logo.svg';
+import ggPokerLogo from '../../assets/gg-poker-logo.svg';
+import coinPokerLogo from '../../assets/coinpoker-logo.svg';
+import poker888Logo from '../../assets/888-poker-logo.svg';
+
+const pokerSiteDetails = {
+  pokerstars: {
+    label: 'PokerStars',
+    logo: pokerStarsLogo,
+    fallback: 'PS',
+  },
+  ggpoker: {
+    label: 'GGPoker',
+    logo: ggPokerLogo,
+    fallback: 'GG',
+  },
+  coinpoker: {
+    label: 'CoinPoker',
+    logo: coinPokerLogo,
+    fallback: 'CP',
+  },
+  '888poker': {
+    label: '888poker',
+    logo: poker888Logo,
+    fallback: '888',
+  },
+  partypoker: {
+    label: 'partypoker',
+    logo: null,
+    fallback: 'PP',
+  },
+  bovada: {
+    label: 'Bovada',
+    logo: null,
+    fallback: 'BV',
+  },
+};
+
+function getPokerSiteDetail(session) {
+  const siteKey = String(session.pokerSite || session.site || session.game || '').toLowerCase();
+
+  if (siteKey.includes('pokerstars')) return pokerSiteDetails.pokerstars;
+  if (siteKey.includes('ggpoker') || siteKey.includes('gg poker')) return pokerSiteDetails.ggpoker;
+  if (siteKey.includes('coinpoker') || siteKey.includes('coin poker')) return pokerSiteDetails.coinpoker;
+  if (siteKey.includes('888')) return pokerSiteDetails['888poker'];
+  if (siteKey.includes('party')) return pokerSiteDetails.partypoker;
+  if (siteKey.includes('bovada') || siteKey.includes('ignition') || siteKey.includes('bodog')) return pokerSiteDetails.bovada;
+
+  return {
+    label: session.pokerSite || session.site || 'Unknown site',
+    logo: null,
+    fallback: '?',
+  };
+}
 
 const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
   const navigate = useNavigate();
@@ -176,6 +230,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
               const profitIsPositive = profit >= 0;
               const winRateIsPositive = winRate >= 0;
               const sessionId = session._id || session.id;
+              const pokerSite = getPokerSiteDetail(session);
 
               return (
                 <tr className='sessions-table__row' key={sessionId}>
@@ -183,7 +238,14 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                     <span className='session-date-desktop'>{formattedDate}</span>
                     <span className='session-date-mobile'>{mobileFormattedDate}</span>
                   </td>
-                  <td>{session.game}</td>
+                  <td>
+                    <div className='sessions-site-cell'>
+                      <span className='sessions-site-logo' aria-label={pokerSite.label} title={pokerSite.label}>
+                        {pokerSite.logo ? <img src={pokerSite.logo} alt='' /> : pokerSite.fallback}
+                      </span>
+                      <span className='sessions-game-name'>{session.game}</span>
+                    </div>
+                  </td>
                   <td>{session.stakes}</td>
                   <td
                     className={`session-result ${profitIsPositive ? 'session-result--positive' : 'session-result--negative'}`}

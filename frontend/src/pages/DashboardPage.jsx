@@ -54,25 +54,21 @@ const DashboardPage = () => {
 
       return {
         ...period,
-        available: sessionCount > 0,
+        available: period.id === 'past-7' ? sessionCount > 1 : sessionCount > 0,
         sessionCount,
       };
     });
   }, [allSessions]);
 
-  const chartPeriodsWithAvailability = useMemo(
-    () =>
-      periodsWithAvailability.map((period) =>
-        period.id === 'past-7'
-          ? {
-              ...period,
-              available: period.sessionCount > 1,
-            }
-          : period,
-      ),
-    [periodsWithAvailability],
-  );
   const sessions = useMemo(() => filterSessions(allSessions, selectedPeriod), [allSessions, selectedPeriod]);
+
+  useEffect(() => {
+    const activePeriod = periodsWithAvailability.find((period) => period.id === selectedPeriod);
+
+    if (activePeriod && !activePeriod.available) {
+      setSelectedPeriod('all-time');
+    }
+  }, [periodsWithAvailability, selectedPeriod]);
 
   if (isAllSessionsLoading) {
     return null;
@@ -98,7 +94,7 @@ const DashboardPage = () => {
         />
         <ProfitChart
           sessions={sessions}
-          periods={chartPeriodsWithAvailability}
+          periods={periodsWithAvailability}
           selectedPeriod={selectedPeriod}
           onPeriodChange={setSelectedPeriod}
         />

@@ -1,0 +1,62 @@
+Bovada Hand #3254175881: HOLDEM Tournament #10213250 TBL#15, No Limit- Level 1 (10/20) - 2015-08-30 16:01:09
+Seat 1: UTG+1 [ME] (5,000 in chips)
+Seat 2: UTG+2 (5,000 in chips)
+Seat 4: UTG+3 (5,000 in chips)
+Seat 5: UTG+4 (5,000 in chips)
+Seat 6: Dealer (5,000 in chips)
+Seat 7: Small Blind (5,000 in chips)
+Seat 8: Big Blind (5,000 in chips)
+Seat 9: UTG (5,000 in chips)
+UTG+1 [ME] : Table enter user
+UTG+2 : Table enter user
+UTG+4 : Table enter user
+Dealer : Table enter user
+UTG+3 : Table enter user
+Small Blind : Table enter user
+Big Blind : Table enter user
+UTG : Table enter user
+UTG+1 [ME] : Draw for dealer [5d]
+UTG+2 : Draw for dealer [6s]
+UTG+3 : Draw for dealer [Kh]
+UTG+4 : Draw for dealer [8d]
+Dealer : Draw for dealer [Ks]
+Small Blind : Draw for dealer [6h]
+Big Blind : Draw for dealer [9s]
+UTG : Draw for dealer [7s]
+Dealer : Set dealer/Bring in spot [6]
+Small Blind : Ante/Small blind 10
+Big Blind : Big blind/Bring in 20
+*** HOLE CARDS ***
+UTG+1 [ME] : Card dealt to a spot [Js 7c]
+UTG+2 : Card dealt to a spot [Qh Th]
+UTG+3 : Card dealt to a spot [Tc 8h]
+UTG+4 : Card dealt to a spot [5h 7h]
+Dealer : Card dealt to a spot [Td Ad]
+Small Blind : Card dealt to a spot [3d 5d]
+Big Blind : Card dealt to a spot [2c 2s]
+UTG : Card dealt to a spot [Ks Kh]
+UTG : Raises 60 to 60
+UTG+1 [ME] : Folds
+UTG+2 : Raises 100 to 100
+UTG+3 : Folds
+UTG+4 : Call 100
+Dealer : Folds
+Small Blind : Folds
+Big Blind : Call 80
+UTG : All-in(raise) 4940 to 5000
+UTG+2 : Folds
+UTG+4 : Folds
+Big Blind : Folds
+UTG : Return uncalled portion of bet 4900
+UTG : Does not show [Ks Kh] (High Card)
+UTG : Hand Result 410
+*** SUMMARY ***
+Total Pot(410)
+Seat+1: UTG+1 Folded before the FLOP
+Seat+2: UTG+2 Folded before the FLOP
+Seat+4: UTG+3 Folded before the FLOP
+Seat+5: UTG+4 Folded before the FLOP
+Seat+6: Dealer Folded before the FLOP
+Seat+7: Small Blind Folded before the FLOP
+Seat+8: Big Blind Folded before the FLOP
+Seat+9: UTG 410 [Does not show]

@@ -22,6 +22,10 @@ const pokerSiteDetails = {
     label: 'CoinPoker',
     logo: coinPokerLogo,
   },
+  bovada: {
+    label: 'Bovada',
+    logo: null,
+  },
 };
 
 function formatDate(date) {
@@ -79,6 +83,10 @@ function getPokerSiteDetail(session) {
 
   if (siteKey.includes('coinpoker') || siteKey.includes('coin poker')) {
     return pokerSiteDetails.coinpoker;
+  }
+
+  if (siteKey.includes('bovada') || siteKey.includes('ignition') || siteKey.includes('bodog')) {
+    return pokerSiteDetails.bovada;
   }
 
   return {

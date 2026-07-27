@@ -1,4 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
+import { readFileSync } from 'node:fs';
 import request from 'supertest';
 import '../../test/setupDb.js';
 import app from '../../app.js';
@@ -128,5 +129,55 @@ describe('session API integration', () => {
     expect(session.tableSize).toBe(6);
     expect(session.stats.handsPlayed).toBe(1);
     expect(session.stats.profit).toBe(-29.06);
+  });
+
+  test('uploads a Bovada session and calculates stats', async () => {
+    const agent = await createLoggedInAgent();
+
+    const uploadResponse = await agent
+      .post('/api/sessions/add-session')
+      .field('pokerSite', 'bovada')
+      .field('sessionName', 'API Integration Bovada')
+      .attach('handHistory', 'src/utils/parsers/fixtures/bovada/bovada_single_hand.txt')
+      .expect(201);
+
+    const { session } = uploadResponse.body;
+    expect(session.sessionName).toBe('API Integration Bovada');
+    expect(session.pokerSite).toBe('bovada');
+    expect(session.gameType).toBe('NL Holdem');
+    expect(session.stakes).toBe('10/20');
+    expect(session.tableSize).toBe(9);
+    expect(session.stats.handsPlayed).toBe(1);
+    expect(session.stats.profit).toBe(0);
+  });
+
+  test('automatically splits a multi-session upload by time gaps', async () => {
+    const agent = await createLoggedInAgent();
+    const firstHand = readFileSync('src/utils/parsers/fixtures/coinpoker/coinpoker_single_hand.txt', 'utf8');
+    const secondHand = firstHand
+      .replaceAll('91559100065', '91559100066')
+      .replaceAll('2026/07/17 19:49:00 -04', '2026/07/17 22:10:00 -04')
+      .replaceAll('2026/07/17 19:50:41 -04', '2026/07/17 22:11:41 -04');
+    const multiSessionFile = Buffer.from(`${firstHand}\n\n${secondHand}`);
+
+    const uploadResponse = await agent
+      .post('/api/sessions/add-session')
+      .field('pokerSite', 'coinpoker')
+      .field('sessionName', 'CoinPoker Export')
+      .attach('handHistory', multiSessionFile, 'coinpoker_multi_session.txt')
+      .expect(201);
+
+    const { sessions, user: updatedUser } = uploadResponse.body;
+
+    expect(uploadResponse.body.createdSessions).toBe(2);
+    expect(sessions).toHaveLength(2);
+    expect(sessions.map((session) => session.sessionName)).toEqual([
+      'CoinPoker Export - Session 1',
+      'CoinPoker Export - Session 2',
+    ]);
+    expect(sessions.map((session) => session.stats.handsPlayed)).toEqual([1, 1]);
+    expect(sessions.map((session) => session.stats.profit)).toEqual([-29.06, -29.06]);
+    expect(updatedUser.bankroll).toBe(-58.12);
+    expect(await Session.countDocuments()).toBe(2);
   });
 });

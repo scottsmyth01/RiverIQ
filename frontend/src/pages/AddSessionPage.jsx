@@ -12,6 +12,7 @@ const pokerSites = [
   { label: 'PokerStars', value: 'pokerstars' },
   { label: 'GGPoker', value: 'ggpoker' },
   { label: 'CoinPoker', value: 'coinpoker' },
+  { label: 'Bovada', value: 'bovada' },
   { label: '888poker', value: '888poker' },
   { label: 'partypoker', value: 'partypoker' },
 ];
@@ -83,9 +84,9 @@ const AddSessionPage = () => {
     formData.set('handHistory', handHistoryFile);
 
     try {
-      console.log([...formData.entries()]);
-      await addSession(formData);
-      toast.success('Session uploaded');
+      const result = await addSession(formData);
+      const createdSessions = Number(result.createdSessions) || 1;
+      toast.success(createdSessions > 1 ? `${createdSessions} sessions uploaded` : 'Session uploaded');
       navigate('/dashboard/sessions');
     } catch (error) {
       toast.error(error.message || 'Could not upload session');
@@ -114,7 +115,7 @@ const AddSessionPage = () => {
       <header className='add-session-heading'>
         <div>
           <h1>Add New Session</h1>
-          <p>Upload your hand history and we’ll do the rest.</p>
+          <p>Upload a single hand history file with one or more sessions.</p>
         </div>
         <Link className='add-session-help-link' to='/dashboard/help#hand-history-uploads'>
           <CircleHelp aria-hidden='true' />

@@ -1,5 +1,6 @@
 import Session from '../models/Session.js';
 import { parse888Poker } from '../utils/parsers/888poker/wrapper.js';
+import { parseBovada } from '../utils/parsers/bovada/wrapper.js';
 import { parseCoinPoker } from '../utils/parsers/coinpoker/wrapper.js';
 import { parsePartyPoker } from '../utils/parsers/partypoker/wrapper.js';
 import { parsePokerStars } from '../utils/parsers/pokerstars/wrapper.js';
@@ -7,6 +8,7 @@ import { parseGGPoker } from '../utils/parsers/ggpoker/wrapper.js';
 import { calculateStats } from '../utils/parsers/stats/calculateStats.js';
 
 const FREE_SESSION_LIMIT = 20;
+const SESSION_SPLIT_GAP_MINUTES = 60;
 
 const serializeUser = (user) => ({
   _id: user._id,
@@ -41,6 +43,9 @@ function detectPokerSite(fileText) {
   if (fileText.includes('PokerStars')) return 'pokerstars';
   if (fileText.includes('GGPoker')) return 'ggpoker';
   if (fileText.includes('CoinPoker')) return 'coinpoker';
+  if (fileText.includes('Bovada Hand #') || fileText.includes('Ignition Hand #') || fileText.includes('Bodog Hand #')) {
+    return 'bovada';
+  }
   if (fileText.includes('888poker') || fileText.includes('888.pt Hand History') || fileText.includes('Pacific Poker')) {
     return '888poker';
   }
@@ -59,6 +64,86 @@ function getSessionDuration(hands) {
   if (handDates.length < 2) return null;
 
   return Math.max(0, Math.round((handDates.at(-1) - handDates[0]) / 60000));
+}
+
+function getSortedHands(hands) {
+  return [...hands].sort((a, b) => {
+    const aDate = new Date(a.date);
+    const bDate = new Date(b.date);
+
+    if (Number.isNaN(aDate.getTime()) || Number.isNaN(bDate.getTime())) {
+      return 0;
+    }
+
+    return aDate - bDate;
+  });
+}
+
+function splitHandsIntoSessions(hands, gapMinutes = SESSION_SPLIT_GAP_MINUTES) {
+  const sortedHands = getSortedHands(hands);
+  const groups = [];
+
+  for (const hand of sortedHands) {
+    const handDate = new Date(hand.date);
+    const previousGroup = groups.at(-1);
+    const previousHand = previousGroup?.at(-1);
+    const previousDate = previousHand ? new Date(previousHand.date) : null;
+    const gapMs =
+      previousDate && !Number.isNaN(previousDate.getTime()) && !Number.isNaN(handDate.getTime())
+        ? handDate - previousDate
+        : 0;
+
+    if (!previousGroup || gapMs > gapMinutes * 60000) {
+      groups.push([hand]);
+      continue;
+    }
+
+    previousGroup.push(hand);
+  }
+
+  return groups.length ? groups : [hands];
+}
+
+function getSessionName({ sessionName, originalFileName, sessionIndex, totalSessions }) {
+  const baseName = sessionName || originalFileName;
+
+  if (totalSessions <= 1) {
+    return baseName;
+  }
+
+  return `${baseName} - Session ${sessionIndex + 1}`;
+}
+
+function buildSessionPayload({ req, pokerSite, sessionName, notes, tags, hands, sessionIndex, totalSessions }) {
+  const parsedStats = calculateStats(hands);
+  const firstHand = hands[0];
+  const table = firstHand?.table || {};
+
+  return {
+    user: req.user._id,
+    sessionName: getSessionName({
+      sessionName,
+      originalFileName: req.file.originalname,
+      sessionIndex,
+      totalSessions,
+    }),
+    date: firstHand?.date || new Date(),
+    pokerSite,
+    gameType: formatGameType(table.game),
+    stakes: formatStakes(table),
+    currency: table.currency,
+    tableSize: table.maxPlayers,
+    duration: getSessionDuration(hands),
+    notes,
+    tags: normalizeTags(tags),
+    handHistory: req.handHistory || {
+      originalFileName: req.file.originalname,
+      fileSize: req.file.size,
+      contentType: req.file.mimetype,
+      uploadedAt: new Date(),
+    },
+    stats: parsedStats,
+  };
 }
 
 function formatGameType(gameType) {
@@ -206,6 +291,9 @@ export const addSession = async (req, res, next) => {
     if (detectedSite.toLocaleLowerCase() === 'coinpoker') {
       hands = parseCoinPoker(fileText);
     }
+    if (detectedSite.toLocaleLowerCase() === 'bovada') {
+      hands = parseBovada(fileText);
+    }
     if (detectedSite.toLocaleLowerCase() === '888poker') {
       hands = parse888Poker(fileText);
     }
@@ -217,35 +305,44 @@ export const addSession = async (req, res, next) => {
         message: 'No hands could be parsed from this file',
       });
     }
-    const parsedStats = calculateStats(hands);
-    const sessionProfit = Number(parsedStats.profit) || 0;
-    const firstHand = hands[0];
-    const table = firstHand?.table || {};
-    const session = await Session.create({
-      user: req.user._id,
-      sessionName: sessionName || req.file.originalname,
-      date: firstHand?.date || new Date(),
-      pokerSite,
-      gameType: formatGameType(table.game),
-      stakes: formatStakes(table),
-      currency: table.currency,
-      tableSize: table.maxPlayers,
-      duration: getSessionDuration(hands),
-      notes,
-      tags: normalizeTags(tags),
-      handHistory: req.handHistory || {
-        originalFileName: req.file.originalname,
-        fileSize: req.file.size,
-        contentType: req.file.mimetype,
-        uploadedAt: new Date(),
-      },
-      stats: parsedStats,
-    });
+
+    const handGroups = splitHandsIntoSessions(hands);
+
+    if (req.user.subscription !== 'pro') {
+      const sessionCount = await Session.countDocuments({ user: req.user._id });
+
+      if (sessionCount + handGroups.length > FREE_SESSION_LIMIT) {
+        return res.status(403).json({
+          message: `This upload would create ${handGroups.length} sessions and exceed the free limit of ${FREE_SESSION_LIMIT}. Upgrade to Pro to add more sessions.`,
+        });
+      }
+    }
+
+    const sessionPayloads = handGroups.map((handGroup, sessionIndex) =>
+      buildSessionPayload({
+        req,
+        pokerSite,
+        sessionName,
+        notes,
+        tags,
+        hands: handGroup,
+        sessionIndex,
+        totalSessions: handGroups.length,
+      }),
+    );
+    const sessions = await Session.create(sessionPayloads);
+    const sessionProfit = sessions.reduce((total, session) => total + (Number(session.stats?.profit) || 0), 0);
 
     req.user.bankroll = Number(((Number(req.user.bankroll) || 0) + sessionProfit).toFixed(2));
     await req.user.save();
 
-    return res.status(201).json({ status: 'success', session, user: serializeUser(req.user) });
+    return res.status(201).json({
+      status: 'success',
+      session: sessions[0],
+      sessions,
+      createdSessions: sessions.length,
+      user: serializeUser(req.user),
+    });
   } catch (error) {
     return next(error);
   }

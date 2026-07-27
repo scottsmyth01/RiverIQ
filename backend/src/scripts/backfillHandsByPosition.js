@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import mongoose from 'mongoose';
 import Session from '../models/Session.js';
+import { parseBovada } from '../utils/parsers/bovada/wrapper.js';
 import { parseCoinPoker } from '../utils/parsers/coinpoker/wrapper.js';
 import { parsePokerStars } from '../utils/parsers/pokerstars/wrapper.js';
 import { parseGGPoker } from '../utils/parsers/ggpoker/wrapper.js';
@@ -43,16 +44,22 @@ function parseHands(session, fileText) {
   if (pokerSite.includes('pokerstars')) return parsePokerStars(fileText);
   if (pokerSite.includes('ggpoker')) return parseGGPoker(fileText);
   if (pokerSite.includes('coinpoker')) return parseCoinPoker(fileText);
+  if (pokerSite.includes('bovada')) return parseBovada(fileText);
 
   if (fileText.includes('PokerStars')) return parsePokerStars(fileText);
   if (fileText.includes('GGPoker')) return parseGGPoker(fileText);
   if (fileText.includes('CoinPoker')) return parseCoinPoker(fileText);
+  if (fileText.includes('Bovada Hand #') || fileText.includes('Ignition Hand #') || fileText.includes('Bodog Hand #')) {
+    return parseBovada(fileText);
+  }
 
   return [];
 }
 
 async function backfillHandsByPosition() {
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(process.env.MONGO_URI, {
+    dbName: process.env.MONGO_DB_NAME || 'riveriq',
+  });
 
   const sessions = await Session.find({
     'handHistory.r2Key': { $exists: true, $ne: '' },

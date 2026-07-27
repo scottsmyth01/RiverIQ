@@ -12,11 +12,12 @@ import { Maximize2, X } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import { useEffect, useMemo, useState } from 'react';
 import './ProfitChart.css';
+import { getSessionAllInEvBb, parseBigBlind } from '../../utils/sessionUnits';
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler, Legend);
 
 const optionalMetrics = [
-  { key: 'allInEV', label: 'All-In EV', color: '#14b8a6', axis: 'allInEV', format: (value) => formatCurrency(value) },
+  { key: 'allInEV', label: 'All-In EV', color: '#14b8a6', axis: 'allInEV', format: (value) => `${formatSigned(value, 1)} BB` },
   { key: 'bbWon', label: 'BB Won', color: '#38bdf8', axis: 'bb', format: (value) => `${formatSigned(value, 1)} BB` },
   { key: 'bb100', label: 'BB/100', color: '#f59e0b', axis: 'rate', format: (value) => formatSigned(value, 2) },
   {
@@ -40,16 +41,6 @@ function formatSigned(value, digits) {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   })}`;
-}
-
-function parseBigBlind(stakes) {
-  if (!stakes) return null;
-
-  const amounts = String(stakes)
-    .match(/\d+(?:\.\d+)?/g)
-    ?.map(Number)
-    .filter((amount) => Number.isFinite(amount));
-  return amounts?.length ? amounts.at(-1) : null;
 }
 
 function getSessionBbWon(session) {
@@ -148,7 +139,6 @@ export default function ProfitChart({
     );
 
     let nextRunningProfit = 0;
-    let runningAllInEV = 0;
     let runningBbWon = 0;
     let nextRunningHands = 0;
     let runningMinutes = 0;
@@ -159,11 +149,10 @@ export default function ProfitChart({
       const sessionBbWon = getSessionBbWon(session);
       const sessionHands = Number(session.hands) || 0;
       const sessionDuration = Number(session.duration);
-      const sessionAllInEV = Number(session.allInEV ?? session.stats?.allInEV ?? session.profit);
+      const sessionAllInEV = getSessionAllInEvBb(session);
       const sessionProfit = Number(session.profit) || 0;
 
       nextRunningProfit += sessionProfit;
-      runningAllInEV += Number.isFinite(sessionAllInEV) ? sessionAllInEV : sessionProfit;
       runningBbWon += Number.isFinite(sessionBbWon) ? sessionBbWon : 0;
       nextRunningHands += sessionHands;
       runningMinutes += Number.isFinite(sessionDuration) ? sessionDuration : 0;
@@ -174,7 +163,7 @@ export default function ProfitChart({
         xLabel: `Session ${index + 1}`,
         timestamp: sessionDate.getTime(),
         profit: Number(nextRunningProfit.toFixed(2)),
-        allInEV: Number(runningAllInEV.toFixed(2)),
+        allInEV: Number.isFinite(sessionAllInEV) ? Number(sessionAllInEV.toFixed(1)) : null,
         bbWon: Number(runningBbWon.toFixed(1)),
         bb100: nextRunningHands > 0 ? Number(((runningBbWon / nextRunningHands) * 100).toFixed(2)) : null,
         handsPlayed: nextRunningHands,
@@ -412,7 +401,7 @@ export default function ProfitChart({
           ticks: {
             color: textColor,
             maxTicksLimit: fullScreen ? 9 : 5,
-            callback: (value) => formatCurrency(value),
+            callback: (value) => `${value.toLocaleString()} BB`,
           },
           border: {
             color: gridColor,

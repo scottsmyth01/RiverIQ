@@ -39,6 +39,7 @@ function getCurrencySymbol(currency) {
     CAD: 'C$',
     EUR: '€',
     GBP: '£',
+    USDT: '₮',
   };
 
   return symbols[currency] || currency || '';
@@ -129,8 +130,12 @@ export async function addSession(sessionData) {
     method: 'POST',
     body: sessionData,
   });
+  const sessions = (data.sessions || (data.session ? [data.session] : [])).map(normalizeSession);
+
   return {
-    session: normalizeSession(data.session),
+    session: sessions[0],
+    sessions,
+    createdSessions: data.createdSessions || sessions.length,
     user: data.user,
   };
 }

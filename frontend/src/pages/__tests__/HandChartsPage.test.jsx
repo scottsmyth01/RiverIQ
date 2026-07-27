@@ -21,12 +21,19 @@ describe('HandChartsPage', () => {
             handsByPosition: {},
           },
         },
+        {
+          tableSize: 9,
+          hands: 4900,
+          stats: {
+            handsPlayed: 4900,
+            handsByPosition: {},
+          },
+        },
       ],
     });
 
     renderWithRouter(<HandChartsPage />);
 
-    expect(screen.getByText('250 / 5,000 hands uploaded')).toBeInTheDocument();
-    expect(screen.getByText('Upload 4,750 more hands to reveal this section.')).toBeInTheDocument();
+    expect(screen.getByText('5000 hands needed for hand chart, you currently have 250/5000 at 6max.')).toBeInTheDocument();
   });
 });

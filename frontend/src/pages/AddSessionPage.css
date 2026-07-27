@@ -498,6 +498,7 @@
   .compatible-sites-list {
     justify-content: flex-start;
   }
+
 }
 
 @media (max-width: 460px) {

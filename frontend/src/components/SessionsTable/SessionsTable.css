@@ -228,6 +228,43 @@
   background: var(--overlay-chart-hover);
 }
 
+.sessions-site-cell {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.sessions-site-logo {
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 28px;
+  color: var(--text-white);
+  background: var(--surface-control-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 7px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.sessions-site-logo img {
+  width: 20px;
+  height: 20px;
+  display: block;
+  object-fit: contain;
+}
+
+.sessions-game-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .sessions-table th:nth-child(n + 3),
 .sessions-table td:nth-child(n + 3) {
   text-align: right;
@@ -632,6 +669,23 @@
   .sessions-table td {
     width: 20%;
     padding: 16px 8px;
+  }
+
+  .sessions-site-cell {
+    gap: 6px;
+  }
+
+  .sessions-site-logo {
+    width: 24px;
+    height: 24px;
+    flex-basis: 24px;
+    border-radius: 6px;
+    font-size: 0.52rem;
+  }
+
+  .sessions-site-logo img {
+    width: 17px;
+    height: 17px;
   }
 
   .sessions-table th {

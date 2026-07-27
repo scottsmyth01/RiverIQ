@@ -355,6 +355,49 @@
   border-radius: inherit;
 }
 
+.analytics-chart-frame {
+  position: relative;
+  min-height: 140px;
+}
+
+.analytics-chart-frame--loading > :not(.analytics-chart-loader) {
+  opacity: 0.22;
+}
+
+.analytics-chart-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  color: var(--text-control);
+  background: color-mix(in srgb, var(--surface-chart) 64%, transparent);
+  border-radius: 8px;
+}
+
+.analytics-chart-loader svg {
+  width: 26px;
+  height: 26px;
+  color: var(--color-primary);
+  animation: analytics-spin 850ms linear infinite;
+}
+
+.analytics-chart-loader span {
+  color: var(--text-table-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@keyframes analytics-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 :root[data-theme='light'] .analytics-meter,
 :root[data-theme='light'] .analytics-position-rate-track {
   background: #d1d1d1;

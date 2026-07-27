@@ -3,15 +3,17 @@ import { addSession, deleteSession, getSessions, updateSession } from '../api/se
 
 export const sessionsQueryKey = ['sessions'];
 const allSessionsQueryKey = [...sessionsQueryKey, { period: 'all-time' }];
+const SESSIONS_STALE_TIME_MS = 5 * 60 * 1000;
 
 export function useSessions(params = {}) {
-  const { period = 'all-time' } = params;
+  const { period = 'all-time', staleTime = SESSIONS_STALE_TIME_MS } = params;
 
   return useQuery({
     queryKey: [...sessionsQueryKey, { period }],
     queryFn: () => getSessions({ period }),
     placeholderData: (previousSessions) => previousSessions,
     refetchOnWindowFocus: false,
+    staleTime,
   });
 }
 
@@ -21,8 +23,9 @@ export function useAddSession() {
   return useMutation({
     mutationKey: ['sessions', 'add'],
     mutationFn: addSession,
-    onSuccess: ({ session: newSession, user }) => {
-      queryClient.setQueryData(allSessionsQueryKey, (sessions = []) => [...sessions, newSession]);
+    onSuccess: ({ session: newSession, sessions: newSessions = [], user }) => {
+      const sessionsToAdd = newSessions.length ? newSessions : [newSession].filter(Boolean);
+      queryClient.setQueryData(allSessionsQueryKey, (sessions = []) => [...sessions, ...sessionsToAdd]);
       if (user) {
         queryClient.setQueryData(['authUser'], { user });
       }

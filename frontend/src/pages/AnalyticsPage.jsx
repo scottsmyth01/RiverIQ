@@ -2,12 +2,13 @@ import './AnalyticsPage.css';
 import { allPositions, positionsByTableSize, tableSizes } from '../utils/analytics/positions';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, LinearScale, Tooltip } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import { CalendarDays, ChevronDown, Table2 } from 'lucide-react';
+import { CalendarDays, ChevronDown, LoaderCircle, Table2 } from 'lucide-react';
 import { datePeriods } from '../utils/analytics/datePeriods';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { getPeriodFromDefaultTimeFilter } from '../utils/dateRangePreferences';
 import { positionGoalRanges } from '../utils/analytics/positionGoalRanges';
 import { statKeys } from '../utils/analytics/statKeys';
+import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 import { useAuth } from '../hooks/useAuth';
 import { useSessions } from '../hooks/useSessions';
 import { toNumber, getStatValue, getByPosition } from '../utils/analytics/helpers';
@@ -380,6 +381,7 @@ const AnalyticsPage = () => {
   const {
     data: sessions = [],
     isLoading,
+    isFetching,
     error,
   } = useSessions({
     period: selectedPeriod,
@@ -494,6 +496,8 @@ const AnalyticsPage = () => {
     ],
   };
 
+  const showPageLoading = isLoading;
+
   const sharedTooltip = {
     backgroundColor: '#0f1720',
     titleColor: '#ffffff',
@@ -505,6 +509,7 @@ const AnalyticsPage = () => {
 
   return (
     <section className={`dashboard-content analytics-page analytics-page--${selectedTableSize}`}>
+      {showPageLoading && <LoadingScreen />}
       <header className='analytics-header'>
         <div>
           <h1>Analytics</h1>
@@ -577,32 +582,34 @@ const AnalyticsPage = () => {
 
         <article className='analytics-panel analytics-position-chart'>
           <h2>{selectedTableSize} Position Win Rate (bb/100)</h2>
-          <div className='analytics-bar-chart'>
-            <Bar
-              data={barData}
-              options={{
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                resizeDelay: 100,
-                plugins: { legend: { display: false }, tooltip: sharedTooltip },
-                scales: {
-                  x: {
-                    min: -10,
-                    max: 15,
-                    ticks: { color: chartTextColor },
-                    grid: { color: chartGridColor },
-                    border: { display: false },
+          <ChartLoadingFrame isLoading={isLoading}>
+            <div className='analytics-bar-chart'>
+              <Bar
+                data={barData}
+                options={{
+                  indexAxis: 'y',
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  resizeDelay: 100,
+                  plugins: { legend: { display: false }, tooltip: sharedTooltip },
+                  scales: {
+                    x: {
+                      min: -10,
+                      max: 15,
+                      ticks: { color: chartTextColor },
+                      grid: { color: chartGridColor },
+                      border: { display: false },
+                    },
+                    y: {
+                      ticks: { color: chartTextColor },
+                      grid: { display: false },
+                      border: { display: false },
+                    },
                   },
-                  y: {
-                    ticks: { color: chartTextColor },
-                    grid: { display: false },
-                    border: { display: false },
-                  },
-                },
-              }}
-            />
-          </div>
+                }}
+              />
+            </div>
+          </ChartLoadingFrame>
         </article>
       </div>
 
@@ -611,51 +618,55 @@ const AnalyticsPage = () => {
           title='Open Raise % by Position'
           stats={currentPositionStats}
           activePosition={activePosition}
+          isLoading={isLoading}
         />
         <MatrixPanel
           title={`${selectedTableSize} 3Bet vs Open by Position`}
           max={threeBetMatrixMax}
           matrix={threeBetMatrix}
           positionNames={positionNames}
+          isLoading={isLoading}
         />
 
         <article className='analytics-panel analytics-donut-panel'>
           <h2>Profit by Position</h2>
-          <div className='analytics-donut-layout'>
-            <div className='analytics-donut-wrap'>
-              <Doughnut
-                data={doughnutData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  resizeDelay: 100,
-                  plugins: { legend: { display: false }, tooltip: sharedTooltip },
-                }}
-              />
-              <div className='analytics-donut-center'>
-                <span>Total</span>
-                <strong>
-                  {totalProfit < 0 ? '-' : ''}$
-                  {Math.abs(totalProfit).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                </strong>
-                <span>Profit</span>
+          <ChartLoadingFrame isLoading={isLoading}>
+            <div className='analytics-donut-layout'>
+              <div className='analytics-donut-wrap'>
+                <Doughnut
+                  data={doughnutData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    resizeDelay: 100,
+                    plugins: { legend: { display: false }, tooltip: sharedTooltip },
+                  }}
+                />
+                <div className='analytics-donut-center'>
+                  <span>Total</span>
+                  <strong>
+                    {totalProfit < 0 ? '-' : ''}$
+                    {Math.abs(totalProfit).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                  </strong>
+                  <span>Profit</span>
+                </div>
+              </div>
+              <div className='analytics-donut-legend'>
+                {profitByPosition.map((item) => (
+                  <div className='analytics-legend-item' key={item.label}>
+                    <span style={{ background: item.color }} />
+                    <p>
+                      {item.label} ({item.percentage}%)
+                    </p>
+                    <strong className={item.displayValue >= 0 ? 'positive' : 'negative'}>
+                      {item.displayValue < 0 ? '-' : ''}$
+                      {Math.abs(item.displayValue).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    </strong>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className='analytics-donut-legend'>
-              {profitByPosition.map((item) => (
-                <div className='analytics-legend-item' key={item.label}>
-                  <span style={{ background: item.color }} />
-                  <p>
-                    {item.label} ({item.percentage}%)
-                  </p>
-                  <strong className={item.displayValue >= 0 ? 'positive' : 'negative'}>
-                    {item.displayValue < 0 ? '-' : ''}$
-                    {Math.abs(item.displayValue).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                  </strong>
-                </div>
-              ))}
-            </div>
-          </div>
+          </ChartLoadingFrame>
         </article>
       </div>
 
@@ -708,6 +719,20 @@ const AnalyticsPage = () => {
   );
 };
 
+function ChartLoadingFrame({ children, isLoading }) {
+  return (
+    <div className={`analytics-chart-frame${isLoading ? ' analytics-chart-frame--loading' : ''}`}>
+      {children}
+      {isLoading && (
+        <div className='analytics-chart-loader' role='status' aria-live='polite'>
+          <LoaderCircle aria-hidden='true' />
+          <span>Loading graph</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function MetricPanel({ title, stats }) {
   return (
     <article className='analytics-panel analytics-metric-panel'>
@@ -751,7 +776,7 @@ function MetricPanel({ title, stats }) {
   );
 }
 
-function PositionRatePanel({ title, stats, activePosition }) {
+function PositionRatePanel({ title, stats, activePosition, isLoading }) {
   const openRaiseValues = stats.filter((stat) => stat.position !== 'BB').map((stat) => stat.pfr).filter(isNumber);
   const maxOpenRaise = openRaiseValues.length ? Math.max(...openRaiseValues) : 0;
   const progressMax = Math.max(1, Math.ceil(maxOpenRaise * 1.15));
@@ -759,30 +784,32 @@ function PositionRatePanel({ title, stats, activePosition }) {
   return (
     <article className='analytics-panel analytics-position-rate-panel'>
       <h2>{title}</h2>
-      <div className='analytics-position-rate-list'>
-        {stats.map((stat) => {
-          const isMuted = activePosition !== 'Overall' && stat.position !== activePosition;
-          const hasOpenRaise = stat.position !== 'BB' && isNumber(stat.pfr);
+      <ChartLoadingFrame isLoading={isLoading}>
+        <div className='analytics-position-rate-list'>
+          {stats.map((stat) => {
+            const isMuted = activePosition !== 'Overall' && stat.position !== activePosition;
+            const hasOpenRaise = stat.position !== 'BB' && isNumber(stat.pfr);
 
-          return (
-            <div
-              className={isMuted ? 'analytics-position-rate-row muted' : 'analytics-position-rate-row'}
-              key={stat.position}
-            >
-              <span>{stat.position}</span>
-              <div className='analytics-position-rate-track'>
-                {hasOpenRaise && <span style={{ width: `${getProgress(stat.pfr, progressMax)}%` }} />}
+            return (
+              <div
+                className={isMuted ? 'analytics-position-rate-row muted' : 'analytics-position-rate-row'}
+                key={stat.position}
+              >
+                <span>{stat.position}</span>
+                <div className='analytics-position-rate-track'>
+                  {hasOpenRaise && <span style={{ width: `${getProgress(stat.pfr, progressMax)}%` }} />}
+                </div>
+                <strong>{hasOpenRaise ? `${stat.pfr}%` : 'N/A'}</strong>
               </div>
-              <strong>{hasOpenRaise ? `${stat.pfr}%` : 'N/A'}</strong>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </ChartLoadingFrame>
     </article>
   );
 }
 
-function MatrixPanel({ title, max, matrix, positionNames }) {
+function MatrixPanel({ title, max, matrix, positionNames, isLoading }) {
   const hasMatrixData = positionNames.some((rowPosition) =>
     positionNames.some(
       (columnPosition) =>
@@ -794,48 +821,50 @@ function MatrixPanel({ title, max, matrix, positionNames }) {
   return (
     <article className='analytics-panel analytics-matrix-panel'>
       <h2>{title}</h2>
-      {!hasMatrixData ? (
-        <div className='analytics-matrix-empty'>
-          <strong>No matchup data yet</strong>
-          <p>Existing sessions only include aggregate 3Bet by position.</p>
-        </div>
-      ) : (
-        <>
-          <div
-            className='analytics-matrix'
-            style={{ gridTemplateColumns: `minmax(44px, 52px) repeat(${positionNames.length}, minmax(22px, 1fr))` }}
-          >
-            <span />
-            {positionNames.map((column) => (
-              <strong key={column}>{column}</strong>
-            ))}
-            {positionNames.map((rowPosition) => (
-              <Fragment key={rowPosition}>
-                <strong key={`${rowPosition}-label`}>vs {rowPosition}</strong>
-                {positionNames.map((columnPosition) => {
-                  const isPossibleCell = canThreeBetOpener(rowPosition, columnPosition, positionNames);
-                  const value = isPossibleCell ? getMatrixCellValue(matrix[rowPosition]?.[columnPosition]) : null;
+      <ChartLoadingFrame isLoading={isLoading}>
+        {!hasMatrixData ? (
+          <div className='analytics-matrix-empty'>
+            <strong>No matchup data yet</strong>
+            <p>Existing sessions only include aggregate 3Bet by position.</p>
+          </div>
+        ) : (
+          <>
+            <div
+              className='analytics-matrix'
+              style={{ gridTemplateColumns: `minmax(44px, 52px) repeat(${positionNames.length}, minmax(22px, 1fr))` }}
+            >
+              <span />
+              {positionNames.map((column) => (
+                <strong key={column}>{column}</strong>
+              ))}
+              {positionNames.map((rowPosition) => (
+                <Fragment key={rowPosition}>
+                  <strong key={`${rowPosition}-label`}>vs {rowPosition}</strong>
+                  {positionNames.map((columnPosition) => {
+                    const isPossibleCell = canThreeBetOpener(rowPosition, columnPosition, positionNames);
+                    const value = isPossibleCell ? getMatrixCellValue(matrix[rowPosition]?.[columnPosition]) : null;
 
-                  return (
-                    <span
-                      className={!isNumber(value) ? 'empty' : ''}
-                      style={{ background: getMatrixColor(value, max), color: getMatrixTextColor(value, max) }}
-                      key={`${rowPosition}-${columnPosition}`}
-                    >
-                      {isNumber(value) ? `${value}%` : 'N/A'}
-                    </span>
-                  );
-                })}
-              </Fragment>
-            ))}
-          </div>
-          <div className='analytics-matrix-scale'>
-            <span>0%</span>
-            <div />
-            <span>{max.toFixed(1)}%</span>
-          </div>
-        </>
-      )}
+                    return (
+                      <span
+                        className={!isNumber(value) ? 'empty' : ''}
+                        style={{ background: getMatrixColor(value, max), color: getMatrixTextColor(value, max) }}
+                        key={`${rowPosition}-${columnPosition}`}
+                      >
+                        {isNumber(value) ? `${value}%` : 'N/A'}
+                      </span>
+                    );
+                  })}
+                </Fragment>
+              ))}
+            </div>
+            <div className='analytics-matrix-scale'>
+              <span>0%</span>
+              <div />
+              <span>{max.toFixed(1)}%</span>
+            </div>
+          </>
+        )}
+      </ChartLoadingFrame>
     </article>
   );
 }

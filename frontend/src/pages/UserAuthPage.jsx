@@ -37,19 +37,24 @@ const UserAuthPage = () => {
     handleSubmit,
     setError,
     getValues,
+    reset,
     formState: { errors: fieldErrors },
   } = useForm();
 
   const changeAuthMode = (mode) => {
     setAuthMode(mode);
+    reset();
     setResetLinkSent(false);
+    setIsRegisterSubmitting(false);
     navigate(mode === 'register' ? '/register' : mode === 'forgot' ? '/forgot-password' : '/login');
   };
 
   useEffect(() => {
     setAuthMode(modeByPath[location.pathname] || 'login');
+    reset();
     setResetLinkSent(false);
-  }, [location.pathname]);
+    setIsRegisterSubmitting(false);
+  }, [location.pathname, reset]);
 
   const submitForm = async (data) => {
     const { username, email, password, passwordConfirm } = data;
