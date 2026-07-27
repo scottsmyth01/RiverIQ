@@ -1,11 +1,11 @@
-const MONEY_CAPTURE = '([$\\u20ac\\u00a3]?\\s*[\\d,]+(?:\\.\\d+)?)';
+const MONEY_CAPTURE = '([$\\u20ac\\u00a3\\u20ae]?\\s*[\\d,]+(?:\\.\\d+)?)';
 export const MONEY_PATTERN = new RegExp(MONEY_CAPTURE);
 export const MONEY_PATTERN_GLOBAL = new RegExp(MONEY_CAPTURE, 'g');
 
 export function parseAmountText(value) {
   if (!value) return null;
 
-  const normalized = String(value).replace(/[$\u20ac\u00a3,\s]/g, '');
+  const normalized = String(value).replace(/[$\u20ac\u00a3\u20ae,\s]/g, '');
   const amount = Number(normalized);
 
   return Number.isFinite(amount) ? amount : null;

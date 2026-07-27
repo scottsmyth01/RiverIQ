@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useSessions, useUpdateSession } from '../hooks/useSessions';
 import ggPokerLogo from '../assets/gg-poker-logo.svg';
 import pokerStarsLogo from '../assets/pokerstars-logo.svg';
+import coinPokerLogo from '../assets/coinpoker-logo.svg';
 
 const pokerSiteDetails = {
   ggpoker: {
@@ -16,6 +17,10 @@ const pokerSiteDetails = {
   pokerstars: {
     label: 'PokerStars',
     logo: pokerStarsLogo,
+  },
+  coinpoker: {
+    label: 'CoinPoker',
+    logo: coinPokerLogo,
   },
 };
 
@@ -70,6 +75,10 @@ function getPokerSiteDetail(session) {
 
   if (siteKey.includes('ggpoker') || siteKey.includes('gg poker')) {
     return pokerSiteDetails.ggpoker;
+  }
+
+  if (siteKey.includes('coinpoker') || siteKey.includes('coin poker')) {
+    return pokerSiteDetails.coinpoker;
   }
 
   return {

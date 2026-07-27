@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import mongoose from 'mongoose';
 import Session from '../models/Session.js';
+import { parseCoinPoker } from '../utils/parsers/coinpoker/wrapper.js';
 import { parsePokerStars } from '../utils/parsers/pokerstars/wrapper.js';
 import { parseGGPoker } from '../utils/parsers/ggpoker/wrapper.js';
 
@@ -29,9 +30,11 @@ function parseHands(session, fileText) {
 
   if (pokerSite.includes('pokerstars')) return parsePokerStars(fileText);
   if (pokerSite.includes('ggpoker')) return parseGGPoker(fileText);
+  if (pokerSite.includes('coinpoker')) return parseCoinPoker(fileText);
 
   if (fileText.includes('PokerStars')) return parsePokerStars(fileText);
   if (fileText.includes('GGPoker')) return parseGGPoker(fileText);
+  if (fileText.includes('CoinPoker')) return parseCoinPoker(fileText);
 
   return [];
 }

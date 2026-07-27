@@ -1,0 +1,18 @@
+export const REGEX = {
+  handStart: /(?=^CoinPoker Hand #)/m,
+  handNumber: /CoinPoker Hand #(\d+)/,
+  tableHeader: /^CoinPoker Hand #\d+:\s*(.+?) \(\u20ae?([\d,.]+)\/\u20ae?([\d,.]+)(?:\/\u20ae?[\d,.]+)?\)/m,
+  blinds: /\(\u20ae?([\d,.]+)\/\u20ae?([\d,.]+)(?:\/\u20ae?[\d,.]+)?\)/,
+  currency: 'USDT',
+  table: /Table '.+?' (\d+)-max/,
+  players: /^Seat (\d+): (.+?) \(\u20ae?([\d,.]+) in chips\)$/gm,
+  hero: /^Dealt to (.+?) \[([^\]]+)\]$/,
+  buttonSeat: /Seat #(\d+) is the button/,
+  date: /(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}(?: [+-]\d{2})?)/,
+  preflop: /\*\*\* HOLE CARDS \*\*\*\r?\n([\s\S]*?)(?=\*\*\* FLOP \*\*\*|\*\*\* SUMMARY \*\*\*|\*\*\* SHOWDOWN \*\*\*)/,
+  flop: /\*\*\* FLOP \*\*\* \[([^\]]+)\]\r?\n([\s\S]*?)(?=\*\*\* TURN \*\*\*|\*\*\* SHOWDOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  turn: /\*\*\* TURN \*\*\* \[[^\]]+\] \[([^\]]+)\]\r?\n([\s\S]*?)(?=\*\*\* RIVER \*\*\*|\*\*\* SHOWDOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  river: /\*\*\* RIVER \*\*\* \[[^\]]+\] \[([^\]]+)\]\r?\n([\s\S]*?)(?=\*\*\* SHOWDOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
+  showdown: /\*\*\* SHOWDOWN \*\*\*([\s\S]*?)(?=\*\*\* SUMMARY \*\*\*|$)/,
+  summary: /\*\*\* SUMMARY \*\*\*([\s\S]*)$/,
+};

@@ -18,6 +18,18 @@ export function parseActions(actionLines) {
       continue;
     }
 
+    match = line.match(new RegExp(`^(.+?): RETURN ${MONEY_PATTERN.source}$`, 'i'));
+
+    if (match) {
+      actions.push({
+        player: match[1].trim(),
+        action: 'return',
+        amount: getFirstAmount(match[2]),
+        raw: line,
+      });
+      continue;
+    }
+
     match = line.match(/^(.+?): (.+)$/);
 
     if (!match) continue;
@@ -33,6 +45,11 @@ export function parseActions(actionLines) {
 
     if (lowerActionText.startsWith('checks')) {
       action.action = 'check';
+    }
+    else if (lowerActionText.startsWith('allin')) {
+      action.action = 'bet';
+      action.amount = getFirstAmount(actionText);
+      action.allIn = true;
     }
     else if (lowerActionText.startsWith('posts')) {
       action.action = 'post';
@@ -81,7 +98,7 @@ export function parseActions(actionLines) {
       action.action = 'unknown';
     }
 
-    if (lowerActionText.includes('all-in') || lowerActionText.includes('all in')) {
+    if (lowerActionText.includes('all-in') || lowerActionText.includes('all in') || lowerActionText.includes('allin')) {
       action.allIn = true;
     }
 

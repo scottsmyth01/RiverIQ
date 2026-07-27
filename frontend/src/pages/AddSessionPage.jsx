@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ArrowLeft, ChevronRight, CloudUpload, FileText, X } from 'lucide-react';
+import { ArrowLeft, ChevronRight, CircleHelp, CloudUpload, FileText, X } from 'lucide-react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useAddSession, useSessions } from '../hooks/useSessions';
@@ -11,6 +11,7 @@ const FREE_SESSION_LIMIT = 20;
 const pokerSites = [
   { label: 'PokerStars', value: 'pokerstars' },
   { label: 'GGPoker', value: 'ggpoker' },
+  { label: 'CoinPoker', value: 'coinpoker' },
   { label: '888poker', value: '888poker' },
   { label: 'partypoker', value: 'partypoker' },
 ];
@@ -111,8 +112,14 @@ const AddSessionPage = () => {
       </div>
 
       <header className='add-session-heading'>
-        <h1>Add New Session</h1>
-        <p>Upload your hand history and we’ll do the rest.</p>
+        <div>
+          <h1>Add New Session</h1>
+          <p>Upload your hand history and we’ll do the rest.</p>
+        </div>
+        <Link className='add-session-help-link' to='/dashboard/help#hand-history-uploads'>
+          <CircleHelp aria-hidden='true' />
+          Need help?
+        </Link>
       </header>
 
       <div className='add-session-layout'>

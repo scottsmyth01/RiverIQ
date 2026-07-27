@@ -1,5 +1,6 @@
 import Session from '../models/Session.js';
 import { parse888Poker } from '../utils/parsers/888poker/wrapper.js';
+import { parseCoinPoker } from '../utils/parsers/coinpoker/wrapper.js';
 import { parsePartyPoker } from '../utils/parsers/partypoker/wrapper.js';
 import { parsePokerStars } from '../utils/parsers/pokerstars/wrapper.js';
 import { parseGGPoker } from '../utils/parsers/ggpoker/wrapper.js';
@@ -39,6 +40,7 @@ function normalizeTags(tags) {
 function detectPokerSite(fileText) {
   if (fileText.includes('PokerStars')) return 'pokerstars';
   if (fileText.includes('GGPoker')) return 'ggpoker';
+  if (fileText.includes('CoinPoker')) return 'coinpoker';
   if (fileText.includes('888poker') || fileText.includes('888.pt Hand History') || fileText.includes('Pacific Poker')) {
     return '888poker';
   }
@@ -77,6 +79,7 @@ function getCurrencySymbol(currency) {
     CAD: 'C$',
     EUR: '€',
     GBP: '£',
+    USDT: '₮',
   };
 
   return symbols[currency] || currency || '';
@@ -199,6 +202,9 @@ export const addSession = async (req, res, next) => {
     }
     if (detectedSite.toLocaleLowerCase() === 'ggpoker') {
       hands = parseGGPoker(fileText);
+    }
+    if (detectedSite.toLocaleLowerCase() === 'coinpoker') {
+      hands = parseCoinPoker(fileText);
     }
     if (detectedSite.toLocaleLowerCase() === '888poker') {
       hands = parse888Poker(fileText);

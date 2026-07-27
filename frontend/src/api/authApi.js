@@ -1,4 +1,4 @@
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/$/, '');
 
 // helper function for API requests made from the frontend
 // pass in the endpoint and any options (like body, method etc.)

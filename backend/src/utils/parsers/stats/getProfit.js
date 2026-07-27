@@ -35,7 +35,9 @@ export function getHeroInvestment(hand) {
 
       if (action.action === 'post' || action.action === 'posts') {
         invested += action.amount;
-        committed = action.amount;
+        if (action.blind !== 'ante') {
+          committed = action.amount;
+        }
       } else if (action.action === 'call') {
         invested += action.amount;
         committed += action.amount;

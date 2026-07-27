@@ -42,10 +42,12 @@ const helpTopics = [
     label: 'Hand History Uploads',
     icon: FileUp,
     title: 'Hand History Uploads',
-    description: 'Help for importing PokerStars, GGPoker, 888poker, or partypoker hand histories and resolving upload issues.',
+    description:
+      'Help for importing PokerStars, GGPoker, CoinPoker, 888poker, or partypoker hand histories and resolving upload issues.',
     subtopics: [
       { id: 'pokerstars', label: 'PokerStars', title: 'PokerStars Hand History Uploads' },
       { id: 'ggpoker', label: 'GGPoker', title: 'GGPoker Hand History Uploads' },
+      { id: 'coinpoker', label: 'CoinPoker', title: 'CoinPoker Hand History Uploads' },
       { id: '888poker', label: '888poker', title: '888poker Hand History Uploads' },
       { id: 'partypoker', label: 'partypoker', title: 'partypoker Hand History Uploads' },
     ],
@@ -54,7 +56,7 @@ const helpTopics = [
         id: 'supported-uploads',
         heading: 'Supported uploads',
         items: [
-          'RiverIQ currently supports PokerStars, GGPoker, 888poker, and partypoker hand history files.',
+          'RiverIQ currently supports PokerStars, GGPoker, CoinPoker, 888poker, and partypoker hand history files.',
           'Upload original hand history text files when possible instead of edited or reformatted copies.',
           'Files should contain complete hand histories, including table details, actions, showdown, and summary lines.',
         ],
@@ -103,6 +105,11 @@ const helpTopics = [
             Select <strong>ALL</strong> and click on <strong>Download</strong>.
           </>,
         ],
+      },
+      {
+        id: 'coinpoker',
+        heading: 'CoinPoker',
+        items: [],
       },
       {
         id: '888poker',

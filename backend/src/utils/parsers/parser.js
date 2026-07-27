@@ -82,7 +82,7 @@ export function getTableInfo(handText, regex) {
     game: gameText?.includes("Hold'em No Limit") ? "Hold'em No Limit" : gameText,
     smallBlind: blindsMatch ? Number(blindsMatch[1].replace(/,/g, '')) : headerMatch ? Number(headerMatch[2]) : null,
     bigBlind: blindsMatch ? Number(blindsMatch[2].replace(/,/g, '')) : headerMatch ? Number(headerMatch[3]) : null,
-    currency: blindsMatch?.[3] || headerMatch?.[4] || null,
+    currency: blindsMatch?.[3] || headerMatch?.[4] || regex.currency || null,
     maxPlayers: tableMatch ? Number(tableMatch[1]) : null,
   };
 }
@@ -219,7 +219,7 @@ export function getSummary(handText, regex) {
     match = line.match(/^Board \[([^\]]+)\]/);
 
     if (match) {
-      summary.board = match[1].split(' ');
+      summary.board = match[1].trim().split(/\s+/);
       continue;
     }
 

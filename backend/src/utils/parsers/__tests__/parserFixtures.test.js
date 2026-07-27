@@ -1,6 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import { readFileSync } from 'node:fs';
 import { parse888Poker } from '../888poker/wrapper.js';
+import { parseCoinPoker } from '../coinpoker/wrapper.js';
 import { parseGGPoker } from '../ggpoker/wrapper.js';
 import { parsePartyPoker } from '../partypoker/wrapper.js';
 import { parsePokerStars } from '../pokerstars/wrapper.js';
@@ -17,6 +18,13 @@ const fixtureCases = [
       'src/utils/parsers/fixtures/ps/pokerstars_250_hand_high_variance_session_04.txt',
       'src/utils/parsers/fixtures/ps/pokerstars_250_hand_edge_session.txt',
     ],
+  },
+  {
+    site: 'CoinPoker',
+    parse: parseCoinPoker,
+    files: ['src/utils/parsers/fixtures/coinpoker/coinpoker_single_hand.txt'],
+    handCount: 1,
+    positions: ['BTN'],
   },
   {
     site: 'GGPoker',
@@ -81,16 +89,16 @@ describe('parser fixtures', () => {
     expect(parse('this is not a supported hand history')).toEqual([]);
   });
 
-  for (const { site, parse, files } of fixtureCases) {
+  for (const { site, parse, files, handCount = 250, positions = ['BB', 'BTN', 'CO', 'HJ', 'SB', 'UTG'] } of fixtureCases) {
     test.each(files)(`${site} parses %s and calculates complete stats`, (filePath) => {
       const fileText = readFileSync(filePath, 'utf8');
       const hands = parse(fileText);
       const stats = calculateStats(hands);
 
-      expect(hands).toHaveLength(250);
-      expect(stats.handsPlayed).toBe(250);
-      expect(Object.keys(stats.byPosition).sort()).toEqual(['BB', 'BTN', 'CO', 'HJ', 'SB', 'UTG']);
-      expect(Object.keys(stats.handsByPosition).sort()).toEqual(['BB', 'BTN', 'CO', 'HJ', 'SB', 'UTG']);
+      expect(hands).toHaveLength(handCount);
+      expect(stats.handsPlayed).toBe(handCount);
+      expect(Object.keys(stats.byPosition).sort()).toEqual(positions);
+      expect(Object.keys(stats.handsByPosition).sort()).toEqual(positions);
 
       for (const hand of hands) {
         expect(hand).toBeTruthy();

@@ -74,6 +74,10 @@
 
 .add-session-heading {
   padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1rem, 2.2vw, 1.75rem) 1.3rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .add-session-heading h1 {
@@ -86,6 +90,38 @@
 .add-session-heading p {
   color: var(--text-secondary);
   font-size: clamp(0.85rem, 1.3vw, 1rem);
+}
+
+.add-session-help-link {
+  min-height: 38px;
+  margin-top: 0.1rem;
+  padding: 0 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: 0 0 auto;
+  color: var(--text-input);
+  background: var(--surface-field);
+  border: 1px solid var(--border-light);
+  border-radius: 7px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition:
+    border-color var(--transition),
+    background var(--transition),
+    color var(--transition);
+}
+
+.add-session-help-link:hover,
+.add-session-help-link:focus-visible {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border-color: var(--accent-green-border-strong);
+}
+
+.add-session-help-link svg {
+  width: 17px;
+  height: 17px;
 }
 
 .add-session-layout {
@@ -428,6 +464,15 @@
 @media (max-width: 700px) {
   .add-session-toolbar {
     min-height: 56px;
+  }
+
+  .add-session-heading {
+    flex-direction: column;
+  }
+
+  .add-session-help-link {
+    width: 100%;
+    justify-content: center;
   }
 
   .add-session-back {

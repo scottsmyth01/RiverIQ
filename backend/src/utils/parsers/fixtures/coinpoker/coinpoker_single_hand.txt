@@ -1,0 +1,57 @@
+CoinPoker Hand #91559100065: NLH (₮0.10/₮0.25/₮0.04) 2026/07/17 19:49:00 -04
+Table '200902' 6-max Seat #4 is the button
+Seat 1: 27711951 (₮25.74 in chips)
+Seat 2: 6d0b5fad (₮26.89 in chips)
+Seat 3: 2234e0f8 (₮26.64 in chips)
+Seat 4: Hero (₮59.30 in chips)
+Seat 5: cdd46597 (₮25.28 in chips)
+Seat 6: 13f68647 (₮29.06 in chips)
+27711951: posts ante ₮0.04
+6d0b5fad: posts ante ₮0.04
+2234e0f8: posts ante ₮0.04
+Hero: posts ante ₮0.04
+cdd46597: posts ante ₮0.04
+13f68647: posts ante ₮0.04
+cdd46597: posts small blind ₮0.10
+13f68647: posts big blind ₮0.25
+*** HOLE CARDS ***
+Dealt to 27711951
+Dealt to 6d0b5fad
+Dealt to 2234e0f8
+Dealt to Hero [Kh Qs]
+Dealt to cdd46597
+Dealt to 13f68647
+27711951: folds
+6d0b5fad: folds
+2234e0f8: folds
+Hero: raises ₮0.37 to ₮0.62
+cdd46597: folds
+13f68647: calls ₮0.37
+*** FLOP *** [Kc Qc Jc]
+13f68647: checks
+Hero: bets ₮0.40
+13f68647: raises ₮1.68 to ₮2.08
+Hero: calls ₮1.68
+*** TURN *** [Kc Qc Jc] [Td]
+13f68647: bets ₮4.30
+Hero: calls ₮4.30
+*** RIVER *** [Kc Qc Jc Td] [Ts]
+13f68647: checks
+Hero: ALLIN ₮52.26
+13f68647: ALLIN ₮22.02
+Hero: RETURN ₮30.24
+*** SHOWDOWN ***
+13f68647: shows [Ac Jh] (Straight)
+13f68647 collected ₮56.36 from pot
+Hero: shows [Kh Qs] (Two Pair)
+*** SUMMARY ***
+Total pot ₮58.38 | Rake ₮2 | Splash Fee ₮0.02
+Hand was run once
+Board [ Kc Qc Jc Td Ts ]
+Game ended: 2026/07/17 19:50:41 -04
+Seat 1: 27711951 folded before Flop (didn't bet)
+Seat 2: 6d0b5fad folded before Flop (didn't bet)
+Seat 3: 2234e0f8 folded before Flop (didn't bet)
+Seat 4: Hero showed [Kh Qs] and lost with Two Pair
+Seat 5: cdd46597 folded before Flop (didn't bet)
+Seat 6: 13f68647 showed [Ac Jh] and won (₮56.36) with Straight
