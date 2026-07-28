@@ -73,6 +73,8 @@ const statKeys = [
   'handsPlayed',
   'profit',
   'allInEV',
+  'allInWinPercentage',
+  'allInWinSampleSize',
   'bb100',
   'vpip',
   'pfr',

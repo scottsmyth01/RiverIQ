@@ -91,6 +91,9 @@ function normalizeSession(session = {}) {
   const stats = session.stats || {};
   const profit = Number(session.profit ?? stats.profit ?? 0);
   const allInEV = Number(session.allInEV ?? stats.allInEV ?? profit);
+  const allInWinSampleSize = Number(session.allInWinSampleSize ?? stats.allInWinSampleSize ?? 0);
+  const allInWinPercentage =
+    allInWinSampleSize > 0 ? Number(session.allInWinPercentage ?? stats.allInWinPercentage) : null;
   const hands = Number(session.hands ?? session.handsPlayed ?? stats.handsPlayed ?? 0);
   const bb100 = Number(session.bb100 ?? stats.bb100 ?? session.winRate ?? 0);
   const duration = session.duration ?? stats.duration;
@@ -105,6 +108,8 @@ function normalizeSession(session = {}) {
     hands,
     profit,
     allInEV,
+    allInWinPercentage,
+    allInWinSampleSize,
     bb100,
     winRate: Number(session.winRate ?? bb100),
     duration: duration === null || duration === undefined || duration === '' ? null : Number(duration),

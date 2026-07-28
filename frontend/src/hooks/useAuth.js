@@ -6,6 +6,7 @@ import {
   loginUser,
   loginWithGoogle,
   logoutUser,
+  updateProfile,
   updatePreferences,
   updateBankroll,
   forgotPassword,
@@ -100,6 +101,14 @@ export function useAuth() {
     },
   });
 
+  const updateProfileMutation = useMutation({
+    mutationKey: ['auth', 'profile'],
+    mutationFn: updateProfile,
+    onSuccess: (data) => {
+      queryClient.setQueryData(['authUser'], data);
+    },
+  });
+
   const updateBankrollMutation = useMutation({
     mutationKey: ['auth', 'bankroll'],
     mutationFn: updateBankroll,
@@ -168,6 +177,7 @@ export function useAuth() {
     login: loginMutation.mutateAsync,
     loginGoogle: googleLoginMutation.mutateAsync,
     logout: logoutMutation.mutate,
+    updateProfile: updateProfileMutation.mutateAsync,
     updatePreferences: updatePreferencesMutation.mutateAsync,
     updateBankroll: updateBankrollMutation.mutateAsync,
     uploadAvatar: uploadAvatarMutation.mutateAsync,
@@ -181,6 +191,7 @@ export function useAuth() {
     googleLoginLoading,
     registerLoading,
     logoutLoading,
+    updateProfileLoading: updateProfileMutation.isPending,
     updatePreferencesLoading: updatePreferencesMutation.isPending,
     updateBankrollLoading: updateBankrollMutation.isPending,
     uploadAvatarLoading: uploadAvatarMutation.isPending,

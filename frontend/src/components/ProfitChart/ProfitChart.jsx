@@ -12,12 +12,12 @@ import { Maximize2, X } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import { useEffect, useMemo, useState } from 'react';
 import './ProfitChart.css';
-import { getSessionAllInEvBb, parseBigBlind } from '../../utils/sessionUnits';
+import { parseBigBlind } from '../../utils/sessionUnits';
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler, Legend);
 
 const optionalMetrics = [
-  { key: 'allInEV', label: 'All-In EV', color: '#14b8a6', axis: 'allInEV', format: (value) => `${formatSigned(value, 1)} BB` },
+  { key: 'allInWinPercentage', label: 'All In Win%', color: '#14b8a6', axis: 'allInWinPercentage', format: (value) => `${formatSigned(value, 1)}%` },
   { key: 'bbWon', label: 'BB Won', color: '#38bdf8', axis: 'bb', format: (value) => `${formatSigned(value, 1)} BB` },
   { key: 'bb100', label: 'BB/100', color: '#f59e0b', axis: 'rate', format: (value) => formatSigned(value, 2) },
   {
@@ -85,7 +85,7 @@ export default function ProfitChart({
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedMetrics, setSelectedMetrics] = useState({
-    allInEV: false,
+    allInWinPercentage: false,
     bbWon: false,
     bb100: false,
     hourlyProfit: true,
@@ -149,7 +149,9 @@ export default function ProfitChart({
       const sessionBbWon = getSessionBbWon(session);
       const sessionHands = Number(session.hands) || 0;
       const sessionDuration = Number(session.duration);
-      const sessionAllInEV = getSessionAllInEvBb(session);
+      const allInWinSampleSize = Number(session.allInWinSampleSize ?? session.stats?.allInWinSampleSize ?? 0);
+      const sessionAllInWinPercentage =
+        allInWinSampleSize > 0 ? Number(session.allInWinPercentage ?? session.stats?.allInWinPercentage) : null;
       const sessionProfit = Number(session.profit) || 0;
 
       nextRunningProfit += sessionProfit;
@@ -163,7 +165,7 @@ export default function ProfitChart({
         xLabel: `Session ${index + 1}`,
         timestamp: sessionDate.getTime(),
         profit: Number(nextRunningProfit.toFixed(2)),
-        allInEV: Number.isFinite(sessionAllInEV) ? Number(sessionAllInEV.toFixed(1)) : null,
+        allInWinPercentage: Number.isFinite(sessionAllInWinPercentage) ? Number(sessionAllInWinPercentage.toFixed(1)) : null,
         bbWon: Number(runningBbWon.toFixed(1)),
         bb100: nextRunningHands > 0 ? Number(((runningBbWon / nextRunningHands) * 100).toFixed(2)) : null,
         handsPlayed: nextRunningHands,
@@ -200,7 +202,7 @@ export default function ProfitChart({
 
     return {
       profit: getMetricBounds('profit'),
-      allInEV: getMetricBounds('allInEV'),
+      allInWinPercentage: getMetricBounds('allInWinPercentage'),
       bbWon: getMetricBounds('bbWon'),
       bb100: getMetricBounds('bb100'),
     };
@@ -390,18 +392,18 @@ export default function ProfitChart({
             display: fullScreen,
           },
         },
-        allInEV: {
+        allInWinPercentage: {
           type: 'linear',
-          display: selectedMetrics.allInEV,
+          display: selectedMetrics.allInWinPercentage,
           position: 'right',
-          ...metricBounds.allInEV,
+          ...metricBounds.allInWinPercentage,
           grid: {
             drawOnChartArea: false,
           },
           ticks: {
             color: textColor,
             maxTicksLimit: fullScreen ? 9 : 5,
-            callback: (value) => `${value.toLocaleString()} BB`,
+            callback: (value) => `${value.toLocaleString()}%`,
           },
           border: {
             color: gridColor,

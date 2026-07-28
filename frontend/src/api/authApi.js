@@ -77,6 +77,13 @@ export function logoutUser() {
   });
 }
 
+export function updateProfile(profile) {
+  return request('/api/auth/profile', {
+    method: 'PATCH',
+    body: JSON.stringify(profile),
+  });
+}
+
 export function updatePreferences(preferences) {
   return request('/api/auth/preferences', {
     method: 'POST',
@@ -129,6 +136,7 @@ export function resetPassword(id, token, formData) {
     method: 'POST',
     body: JSON.stringify(formData),
   });
+  x;
 }
 
 export function verifyEmail(token) {

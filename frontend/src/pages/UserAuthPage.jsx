@@ -280,8 +280,8 @@ const UserAuthPage = () => {
                           message: 'Username must be at least 3 characters',
                         },
                         maxLength: {
-                          value: 15,
-                          message: 'Username must be 15 characters or fewer',
+                          value: 20,
+                          message: 'Username must be 20 characters or fewer',
                         },
                       })}
                       placeholder='Choose a username'
@@ -405,7 +405,7 @@ const UserAuthPage = () => {
                 </span>
               </button>
 
-              {authMode !== 'forgot' && (
+              {authMode === 'register' && (
                 <>
                   <div className='auth-divider'>
                     <span>or</span>
@@ -425,7 +425,7 @@ const UserAuthPage = () => {
                           <GoogleLogin
                             onSuccess={handleGoogleSuccess}
                             onError={handleGoogleError}
-                            text={authMode === 'register' ? 'signup_with' : 'signin_with'}
+                            text='signup_with'
                             shape='rectangular'
                             width='100%'
                           />

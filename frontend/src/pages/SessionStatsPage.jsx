@@ -6,14 +6,13 @@ import { ArrowLeft, BadgeDollarSign, Clock3, FileText, Gauge, Layers3, Pencil } 
 import { Link, useParams } from 'react-router';
 import { useSessions } from '../hooks/useSessions';
 import { getByPosition, toNumber } from '../utils/analytics/helpers';
-import { getSessionAllInEvBb } from '../utils/sessionUnits';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip);
 
 const overviewStats = [
   { key: 'handsPlayed', label: 'Hands', format: 'integer' },
   { key: 'profit', label: 'Profit', format: 'currency' },
-  { key: 'allInEV', label: 'All-In EV', format: 'bigBlinds' },
+  { key: 'allInWinPercentage', label: 'All In Win%', format: 'percent' },
   { key: 'bb100', label: 'BB/100', format: 'decimal' },
   { key: 'vpip', label: 'VPIP', format: 'percent' },
   { key: 'pfr', label: 'PFR', format: 'percent' },
@@ -311,7 +310,10 @@ const SessionStatsPage = () => {
   };
   const overviewValues = {
     ...stats,
-    allInEV: getSessionAllInEvBb(session),
+    allInWinPercentage:
+      Number(session.allInWinSampleSize ?? stats.allInWinSampleSize ?? 0) > 0
+        ? Number(session.allInWinPercentage ?? stats.allInWinPercentage)
+        : null,
   };
   const chartOptions = {
     responsive: true,

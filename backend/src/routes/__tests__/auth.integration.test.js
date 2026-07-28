@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { afterEach, describe, expect, jest, test } from '@jest/globals';
 import request from 'supertest';
 import '../../test/setupDb.js';
 import app from '../../app.js';
@@ -10,6 +10,11 @@ const validUser = {
   password: 'Password123',
   passwordConfirm: 'Password123',
 };
+
+afterEach(() => {
+  jest.restoreAllMocks();
+  delete process.env.GOOGLE_CLIENT_ID;
+});
 
 async function createLoggedInAgent(overrides = {}) {
   const agent = request.agent(app);
@@ -102,6 +107,47 @@ describe('auth API integration', () => {
     expect(invalidPasswordResponse.body).toMatchObject({ field: 'password' });
   });
 
+  test('google login creates a username from the full email local part', async () => {
+    process.env.GOOGLE_CLIENT_ID = 'google-client-id';
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        aud: 'google-client-id',
+        email: 'fletcherrbeats@gmail.com',
+        email_verified: true,
+      }),
+    });
+
+    const response = await request(app).post('/api/auth/google').send({ credential: 'valid-google-token' }).expect(200);
+
+    expect(response.body.user).toMatchObject({
+      username: 'fletcherrbeats',
+      email: 'fletcherrbeats@gmail.com',
+    });
+  });
+
+  test('google login keeps generated usernames within 20 characters when adding a suffix', async () => {
+    process.env.GOOGLE_CLIENT_ID = 'google-client-id';
+    await User.create({
+      username: 'abcdefghijklmnopqrst',
+      email: 'existing@riveriq.test',
+      password: 'Password123',
+    });
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        aud: 'google-client-id',
+        email: 'abcdefghijklmnopqrst@gmail.com',
+        email_verified: true,
+      }),
+    });
+
+    const response = await request(app).post('/api/auth/google').send({ credential: 'valid-google-token' }).expect(200);
+
+    expect(response.body.user.username).toBe('abcdefghijklmnopqrs1');
+    expect(response.body.user.username).toHaveLength(20);
+  });
+
   test('protected auth routes update preferences and bankroll with validation', async () => {
     const agent = await createLoggedInAgent();
 
@@ -127,5 +173,36 @@ describe('auth API integration', () => {
 
     const badActionResponse = await agent.patch('/api/auth/bankroll').send({ action: 'transfer', amount: 10 }).expect(400);
     expect(badActionResponse.body.message).toMatch(/deposit or withdraw/i);
+  });
+
+  test('protected auth routes update username with validation', async () => {
+    const agent = await createLoggedInAgent();
+
+    const updateResponse = await agent.patch('/api/auth/profile').send({ username: 'newhero' }).expect(200);
+    expect(updateResponse.body.user.username).toBe('newhero');
+
+    const savedUser = await User.findOne({ email: validUser.email });
+    expect(savedUser.username).toBe('newhero');
+
+    const shortResponse = await agent.patch('/api/auth/profile').send({ username: 'ab' }).expect(400);
+    expect(shortResponse.body).toMatchObject({
+      field: 'username',
+      message: 'Username must be at least 3 characters',
+    });
+  });
+
+  test('protected auth routes reject duplicate usernames', async () => {
+    const agent = await createLoggedInAgent();
+    await User.create({
+      username: 'takenhero',
+      email: 'taken@riveriq.test',
+      password: 'Password123',
+    });
+
+    const duplicateResponse = await agent.patch('/api/auth/profile').send({ username: 'takenhero' }).expect(400);
+    expect(duplicateResponse.body).toMatchObject({
+      field: 'username',
+      message: 'Username already in use',
+    });
   });
 });

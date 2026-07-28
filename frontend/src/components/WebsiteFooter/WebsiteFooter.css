@@ -1,8 +1,11 @@
 .website-footer {
+  position: relative;
+  z-index: 10;
   width: 100%;
   border-top: 1px solid var(--border);
   background: var(--bg-main);
   color: var(--text-muted);
+  pointer-events: auto;
 }
 
 .website-footer__inner {
@@ -22,10 +25,12 @@
   justify-content: flex-end;
   gap: 18px;
   flex-wrap: wrap;
+  pointer-events: auto;
 }
 
 .website-footer a {
   color: var(--text-secondary);
+  pointer-events: auto;
 }
 
 .website-footer a:hover {

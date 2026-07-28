@@ -18,14 +18,3 @@ export function getSessionBigBlind(session = {}) {
 
   return parseBigBlind(session.stakes);
 }
-
-export function getSessionAllInEvBb(session = {}) {
-  const allInEV = Number(session.allInEV ?? session.stats?.allInEV ?? session.profit);
-  const bigBlind = getSessionBigBlind(session);
-
-  if (Number.isFinite(allInEV) && bigBlind > 0) {
-    return allInEV / bigBlind;
-  }
-
-  return null;
-}

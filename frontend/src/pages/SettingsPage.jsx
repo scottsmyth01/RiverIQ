@@ -42,6 +42,7 @@ const tableSizeOptions = [
 const SettingsPage = () => {
   const {
     user,
+    updateProfile,
     updatePreferences,
     uploadAvatar,
     uploadAvatarLoading,
@@ -51,8 +52,10 @@ const SettingsPage = () => {
     cancelSubscriptionLoading,
     forgotPassword,
     forgotPasswordLoading,
+    updateProfileLoading,
     updatePreferencesLoading,
   } = useAuth();
+  const [username, setUsername] = useState(user?.username || '');
   const [theme, setTheme] = useState(() => user?.preferences?.theme || localStorage.getItem('theme') || 'dark');
   const [dateRange, setDateRange] = useState(user?.preferences?.defaultTimeFilter || '30d');
   const [tableSize, setTableSize] = useState(user?.preferences?.defaultTableSize || '9max');
@@ -64,6 +67,7 @@ const SettingsPage = () => {
   const [avatarPreview, setAvatarPreview] = useState('');
   const [avatarFileName, setAvatarFileName] = useState('');
   const [avatarNotice, setAvatarNotice] = useState('');
+  const [profileNotice, setProfileNotice] = useState('');
   const [passwordNotice, setPasswordNotice] = useState('');
   const [settingsNotice, setSettingsNotice] = useState('');
   const [subscriptionNotice, setSubscriptionNotice] = useState('');
@@ -76,7 +80,11 @@ const SettingsPage = () => {
   const selectedCurrency = currencyOptions.find((option) => option.value === currency) || currencyOptions[0];
   const isPro = user?.subscription === 'pro';
   const savedPreferences = user?.preferences || {};
+  const savedUsername = user?.username || '';
+  const trimmedUsername = username.trim();
+  const isSavingProfile = updateProfileLoading || savingControl === 'profile';
   const isSavingSettings = updatePreferencesLoading || savingControl === 'settings';
+  const hasProfileChanges = trimmedUsername !== savedUsername;
   const hasSettingsChanges =
     theme !== (savedPreferences.theme || 'dark') ||
     dateRange !== (savedPreferences.defaultTimeFilter || '30d') ||
@@ -130,6 +138,32 @@ const SettingsPage = () => {
       setSettingsNotice('Settings saved successfully.');
     } catch (error) {
       setSettingsNotice(error.message || 'Could not save settings.');
+    } finally {
+      setSavingControl(null);
+    }
+  }
+
+  async function handleSaveProfile() {
+    setProfileNotice('');
+
+    if (trimmedUsername.length < 3) {
+      setProfileNotice('Username must be at least 3 characters.');
+      return;
+    }
+
+    if (trimmedUsername.length > 20) {
+      setProfileNotice('Username must be 20 characters or fewer.');
+      return;
+    }
+
+    setSavingControl('profile');
+
+    try {
+      await updateProfile({ username: trimmedUsername });
+      setUsername(trimmedUsername);
+      setProfileNotice('Profile saved successfully.');
+    } catch (error) {
+      setProfileNotice(error.message || 'Could not save profile.');
     } finally {
       setSavingControl(null);
     }
@@ -233,6 +267,10 @@ const SettingsPage = () => {
       setAvatarNotice(error.message || 'Could not remove avatar.');
     }
   }
+
+  useEffect(() => {
+    setUsername(user?.username || '');
+  }, [user?.username]);
 
   useEffect(() => {
     const preferences = user?.preferences;
@@ -350,12 +388,34 @@ const SettingsPage = () => {
           <div className='settings-profile-fields' aria-label='Account details'>
             <label className='settings-profile-field'>
               <span>Username</span>
-              <input type='text' value={user?.username || ''} disabled />
+              <input
+                type='text'
+                value={username}
+                minLength={3}
+                maxLength={20}
+                disabled={isSavingProfile}
+                onChange={(event) => {
+                  setUsername(event.target.value);
+                  setProfileNotice('');
+                }}
+              />
             </label>
             <label className='settings-profile-field'>
               <span>Email</span>
               <input type='email' value={user?.email || ''} disabled />
             </label>
+          </div>
+          <div className='settings-profile-actions'>
+            {profileNotice && <p className='settings-inline-note'>{profileNotice}</p>}
+            <button
+              className='settings-save-button'
+              type='button'
+              disabled={isSavingProfile || !hasProfileChanges}
+              onClick={handleSaveProfile}
+            >
+              <Save aria-hidden='true' />
+              {isSavingProfile ? 'Saving...' : 'Save Profile'}
+            </button>
           </div>
         </section>
 

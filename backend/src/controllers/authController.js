@@ -37,22 +37,20 @@ const serializeUser = (user) => ({
   avatarKey: user.avatarKey,
 });
 
-function createUsernameFromEmail(email) {
-  return email
+async function createUniqueUsername(email) {
+  const parsedEmail = email
     .split('@')[0]
     .replace(/[^a-zA-Z0-9_-]/g, '')
-    .slice(0, 12)
+    .slice(0, 20)
     .toLowerCase();
-}
 
-async function createUniqueUsername(email) {
-  const baseUsername = createUsernameFromEmail(email) || 'riveriq';
+  const baseUsername = parsedEmail || 'riveriq';
   let username = baseUsername;
   let suffix = 1;
 
   while (await User.exists({ username })) {
     const suffixText = String(suffix);
-    username = `${baseUsername.slice(0, 15 - suffixText.length)}${suffixText}`;
+    username = `${baseUsername.slice(0, 20 - suffixText.length)}${suffixText}`;
     suffix += 1;
   }
 
@@ -382,6 +380,51 @@ export const updatePreferences = async (req, res, next) => {
 
     return res.status(200).json({
       user: serializeUser(user),
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const updateProfile = async (req, res, next) => {
+  try {
+    const username = req.body.username?.trim();
+
+    if (!username) {
+      return res.status(400).json({ field: 'username', message: 'Please provide a username' });
+    }
+
+    if (username.length < 3) {
+      return res.status(400).json({ field: 'username', message: 'Username must be at least 3 characters' });
+    }
+
+    if (username.length > 20) {
+      return res.status(400).json({ field: 'username', message: 'Username must be 20 characters or fewer' });
+    }
+
+    if (username === req.user.username) {
+      return res.status(200).json({
+        user: serializeUser(req.user),
+      });
+    }
+
+    const usernameExists = await User.exists({
+      username,
+      _id: { $ne: req.user._id },
+    });
+
+    if (usernameExists) {
+      return res.status(400).json({
+        field: 'username',
+        message: 'Username already in use',
+      });
+    }
+
+    req.user.username = username;
+    await req.user.save();
+
+    return res.status(200).json({
+      user: serializeUser(req.user),
     });
   } catch (error) {
     return next(error);

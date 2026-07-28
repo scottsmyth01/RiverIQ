@@ -18,7 +18,7 @@ import { getHandsByPosition } from './getHandsByPosition.js';
 import { getWTSD } from './getWTSD.js';
 import { getWMSD } from './getWMSD.js';
 import { getAF } from './getAF.js';
-import { getAllInEV } from './getAllInEV.js';
+import { getAllInEV, getAllInWinPercentage, getAllInWinSampleSize } from './getAllInEV.js';
 
 function calculateBasicStats(hands) {
   const threeBet = getThreeBet(hands);
@@ -39,6 +39,8 @@ function calculateBasicStats(hands) {
     handsPlayed: getHandsPlayed(hands),
     profit: getProfit(hands),
     allInEV: getAllInEV(hands),
+    allInWinPercentage: getAllInWinPercentage(hands),
+    allInWinSampleSize: getAllInWinSampleSize(hands),
     bb100: getBB100(hands),
     vpip: getVPIP(hands),
     pfr: getPFR(hands),

@@ -4,6 +4,8 @@ const statFields = {
   handsPlayed: { type: Number, default: 0 },
   profit: { type: Number, default: 0 },
   allInEV: { type: Number, default: 0 },
+  allInWinPercentage: { type: Number, default: 0 },
+  allInWinSampleSize: { type: Number, default: 0 },
   bb100: { type: Number, default: 0 },
   vpip: { type: Number, default: 0 },
   pfr: { type: Number, default: 0 },

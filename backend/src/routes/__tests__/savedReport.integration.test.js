@@ -5,7 +5,7 @@ import app from '../../app.js';
 import SavedReport from '../../models/SavedReport.js';
 
 const makeUser = (prefix) => ({
-  username: `${prefix}hero`.slice(0, 15),
+  username: `${prefix}hero`.slice(0, 20),
   email: `${prefix}@riveriq.test`,
   password: 'Password123',
   passwordConfirm: 'Password123',
