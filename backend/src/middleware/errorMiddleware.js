@@ -9,11 +9,17 @@ export const globalErrorHandler = (err, req, res, next) => {
     return next(err);
   }
 
-  const statusCode = err.statusCode || err.status || 500;
+  const statusCode = err.code === 'LIMIT_FILE_SIZE' ? 400 : err.statusCode || err.status || 500;
   const isProduction = process.env.NODE_ENV === 'production';
+  const message =
+    err.code === 'LIMIT_FILE_SIZE'
+      ? 'Uploaded file is too large'
+      : isProduction && statusCode === 500
+        ? 'Server error'
+        : err.message || 'Server error';
 
   return res.status(statusCode).json({
-    message: isProduction && statusCode === 500 ? 'Server error' : err.message || 'Server error',
+    message,
     ...(!isProduction && { stack: err.stack }),
   });
 };

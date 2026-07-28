@@ -148,43 +148,59 @@ describe('auth API integration', () => {
     expect(response.body.user.username).toHaveLength(20);
   });
 
-  test('protected auth routes update preferences and bankroll with validation', async () => {
+  test('protected auth routes update settings and bankroll with validation', async () => {
     const agent = await createLoggedInAgent();
 
     await request(app).get('/api/auth/me').expect(401);
 
     const preferenceResponse = await agent
-      .patch('/api/auth/preferences')
-      .send({ theme: 'dark', defaultTableSize: '8max' })
+      .patch('/api/settings')
+      .send({ preferences: { theme: 'dark', defaultTableSize: '8max' } })
       .expect(200);
     expect(preferenceResponse.body.user.preferences).toMatchObject({
       theme: 'dark',
       defaultTableSize: '8max',
     });
 
-    const depositResponse = await agent.patch('/api/auth/bankroll').send({ action: 'deposit', amount: 250 }).expect(200);
+    const depositResponse = await agent.patch('/api/settings/bankroll').send({ action: 'deposit', amount: 250 }).expect(200);
     expect(depositResponse.body.user.bankroll).toBe(250);
 
-    const withdrawResponse = await agent.patch('/api/auth/bankroll').send({ action: 'withdraw', amount: 75.5 }).expect(200);
+    const withdrawResponse = await agent.patch('/api/settings/bankroll').send({ action: 'withdraw', amount: 75.5 }).expect(200);
     expect(withdrawResponse.body.user.bankroll).toBe(174.5);
 
-    const overdraftResponse = await agent.patch('/api/auth/bankroll').send({ action: 'withdraw', amount: 999 }).expect(400);
+    const overdraftResponse = await agent.patch('/api/settings/bankroll').send({ action: 'withdraw', amount: 999 }).expect(400);
     expect(overdraftResponse.body.message).toMatch(/cannot withdraw/i);
 
-    const badActionResponse = await agent.patch('/api/auth/bankroll').send({ action: 'transfer', amount: 10 }).expect(400);
+    const badActionResponse = await agent.patch('/api/settings/bankroll').send({ action: 'transfer', amount: 10 }).expect(400);
     expect(badActionResponse.body.message).toMatch(/deposit or withdraw/i);
   });
 
-  test('protected auth routes update username with validation', async () => {
+  test('protected auth routes update username and preferences together with validation', async () => {
     const agent = await createLoggedInAgent();
 
-    const updateResponse = await agent.patch('/api/auth/profile').send({ username: 'newhero' }).expect(200);
-    expect(updateResponse.body.user.username).toBe('newhero');
+    const updateResponse = await agent
+      .patch('/api/settings')
+      .send({
+        username: 'newhero',
+        preferences: {
+          currency: 'CAD',
+          defaultTableSize: '6max',
+        },
+      })
+      .expect(200);
+    expect(updateResponse.body.user).toMatchObject({
+      username: 'newhero',
+      preferences: {
+        currency: 'CAD',
+        defaultTableSize: '6max',
+      },
+    });
 
     const savedUser = await User.findOne({ email: validUser.email });
     expect(savedUser.username).toBe('newhero');
+    expect(savedUser.preferences.currency).toBe('CAD');
 
-    const shortResponse = await agent.patch('/api/auth/profile').send({ username: 'ab' }).expect(400);
+    const shortResponse = await agent.patch('/api/settings').send({ username: 'ab' }).expect(400);
     expect(shortResponse.body).toMatchObject({
       field: 'username',
       message: 'Username must be at least 3 characters',
@@ -199,10 +215,46 @@ describe('auth API integration', () => {
       password: 'Password123',
     });
 
-    const duplicateResponse = await agent.patch('/api/auth/profile').send({ username: 'takenhero' }).expect(400);
+    const duplicateResponse = await agent.patch('/api/settings').send({ username: 'takenhero' }).expect(400);
     expect(duplicateResponse.body).toMatchObject({
       field: 'username',
       message: 'Username already in use',
     });
+  });
+
+  test('protected auth routes upload and delete avatars', async () => {
+    const agent = await createLoggedInAgent();
+
+    const uploadResponse = await agent
+      .post('/api/settings/avatar')
+      .attach('avatar', Buffer.from('fake png'), {
+        filename: 'avatar.png',
+        contentType: 'image/png',
+      })
+      .expect(200);
+
+    expect(uploadResponse.body.user.avatarKey).toContain('test-avatars/');
+    expect(uploadResponse.body.user.avatarUrl).toContain(uploadResponse.body.user.avatarKey);
+
+    const deleteResponse = await agent.delete('/api/settings/avatar').expect(200);
+    expect(deleteResponse.body.user.avatarKey).toBe('');
+    expect(deleteResponse.body.user.avatarUrl).toBe('');
+  });
+
+  test('protected auth routes reject invalid avatar uploads', async () => {
+    const agent = await createLoggedInAgent();
+
+    const missingResponse = await agent.post('/api/settings/avatar').expect(400);
+    expect(missingResponse.body.message).toBe('Avatar image is required');
+
+    const invalidTypeResponse = await agent
+      .post('/api/settings/avatar')
+      .attach('avatar', Buffer.from('not an image'), {
+        filename: 'avatar.txt',
+        contentType: 'text/plain',
+      })
+      .expect(400);
+
+    expect(invalidTypeResponse.body.message).toBe('Avatar must be a JPG, PNG, or WebP image');
   });
 });

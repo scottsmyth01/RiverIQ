@@ -42,8 +42,7 @@ const tableSizeOptions = [
 const SettingsPage = () => {
   const {
     user,
-    updateProfile,
-    updatePreferences,
+    updateSettings,
     uploadAvatar,
     uploadAvatarLoading,
     deleteAvatar,
@@ -52,9 +51,9 @@ const SettingsPage = () => {
     cancelSubscriptionLoading,
     forgotPassword,
     forgotPasswordLoading,
-    updateProfileLoading,
-    updatePreferencesLoading,
+    updateSettingsLoading,
   } = useAuth();
+
   const [username, setUsername] = useState(user?.username || '');
   const [theme, setTheme] = useState(() => user?.preferences?.theme || localStorage.getItem('theme') || 'dark');
   const [dateRange, setDateRange] = useState(user?.preferences?.defaultTimeFilter || '30d');
@@ -67,7 +66,6 @@ const SettingsPage = () => {
   const [avatarPreview, setAvatarPreview] = useState('');
   const [avatarFileName, setAvatarFileName] = useState('');
   const [avatarNotice, setAvatarNotice] = useState('');
-  const [profileNotice, setProfileNotice] = useState('');
   const [passwordNotice, setPasswordNotice] = useState('');
   const [settingsNotice, setSettingsNotice] = useState('');
   const [subscriptionNotice, setSubscriptionNotice] = useState('');
@@ -82,20 +80,18 @@ const SettingsPage = () => {
   const savedPreferences = user?.preferences || {};
   const savedUsername = user?.username || '';
   const trimmedUsername = username.trim();
-  const isSavingProfile = updateProfileLoading || savingControl === 'profile';
-  const isSavingSettings = updatePreferencesLoading || savingControl === 'settings';
+  const isSavingSettings = updateSettingsLoading || savingControl === 'settings';
   const hasProfileChanges = trimmedUsername !== savedUsername;
-  const hasSettingsChanges =
+  const hasPreferenceChanges =
     theme !== (savedPreferences.theme || 'dark') ||
     dateRange !== (savedPreferences.defaultTimeFilter || '30d') ||
     tableSize !== (savedPreferences.defaultTableSize || '9max') ||
     currency !== (savedPreferences.currency || 'USD');
+  const hasSettingsChanges = hasProfileChanges || hasPreferenceChanges;
 
   function handleThemeChange(nextTheme) {
     if (nextTheme === theme) return;
 
-    localStorage.setItem('theme', nextTheme);
-    document.documentElement.dataset.theme = nextTheme;
     setTheme(nextTheme);
     setSettingsNotice('');
   }
@@ -126,44 +122,42 @@ const SettingsPage = () => {
 
   async function handleSaveSettings() {
     setSettingsNotice('');
+
+    if (hasProfileChanges && trimmedUsername.length < 3) {
+      setSettingsNotice('Username must be at least 3 characters.');
+      return;
+    }
+
+    if (hasProfileChanges && trimmedUsername.length > 20) {
+      setSettingsNotice('Username must be 20 characters or fewer.');
+      return;
+    }
+
     setSavingControl('settings');
 
     try {
-      await updatePreferences({
-        theme,
-        currency,
-        defaultTimeFilter: dateRange,
-        defaultTableSize: tableSize,
+      await updateSettings({
+        ...(hasProfileChanges && { username: trimmedUsername }),
+        ...(hasPreferenceChanges && {
+          preferences: {
+            theme,
+            currency,
+            defaultTimeFilter: dateRange,
+            defaultTableSize: tableSize,
+          },
+        }),
       });
+
+      setUsername(trimmedUsername);
+
+      if (hasPreferenceChanges) {
+        localStorage.setItem('theme', theme);
+        document.documentElement.dataset.theme = theme;
+      }
+
       setSettingsNotice('Settings saved successfully.');
     } catch (error) {
       setSettingsNotice(error.message || 'Could not save settings.');
-    } finally {
-      setSavingControl(null);
-    }
-  }
-
-  async function handleSaveProfile() {
-    setProfileNotice('');
-
-    if (trimmedUsername.length < 3) {
-      setProfileNotice('Username must be at least 3 characters.');
-      return;
-    }
-
-    if (trimmedUsername.length > 20) {
-      setProfileNotice('Username must be 20 characters or fewer.');
-      return;
-    }
-
-    setSavingControl('profile');
-
-    try {
-      await updateProfile({ username: trimmedUsername });
-      setUsername(trimmedUsername);
-      setProfileNotice('Profile saved successfully.');
-    } catch (error) {
-      setProfileNotice(error.message || 'Could not save profile.');
     } finally {
       setSavingControl(null);
     }
@@ -283,6 +277,15 @@ const SettingsPage = () => {
   }, [user?.preferences]);
 
   useEffect(() => {
+    const savedTheme = user?.preferences?.theme || 'dark';
+
+    return () => {
+      localStorage.setItem('theme', savedTheme);
+      document.documentElement.dataset.theme = savedTheme;
+    };
+  }, [user?.preferences?.theme]);
+
+  useEffect(() => {
     const closeMenu = (event) => {
       if (!menuRef.current?.contains(event.target)) {
         setOpenMenu(null);
@@ -393,10 +396,10 @@ const SettingsPage = () => {
                 value={username}
                 minLength={3}
                 maxLength={20}
-                disabled={isSavingProfile}
+                disabled={isSavingSettings}
                 onChange={(event) => {
                   setUsername(event.target.value);
-                  setProfileNotice('');
+                  setSettingsNotice('');
                 }}
               />
             </label>
@@ -404,18 +407,6 @@ const SettingsPage = () => {
               <span>Email</span>
               <input type='email' value={user?.email || ''} disabled />
             </label>
-          </div>
-          <div className='settings-profile-actions'>
-            {profileNotice && <p className='settings-inline-note'>{profileNotice}</p>}
-            <button
-              className='settings-save-button'
-              type='button'
-              disabled={isSavingProfile || !hasProfileChanges}
-              onClick={handleSaveProfile}
-            >
-              <Save aria-hidden='true' />
-              {isSavingProfile ? 'Saving...' : 'Save Profile'}
-            </button>
           </div>
         </section>
 

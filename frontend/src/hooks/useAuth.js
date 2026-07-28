@@ -6,17 +6,18 @@ import {
   loginUser,
   loginWithGoogle,
   logoutUser,
-  updateProfile,
-  updatePreferences,
-  updateBankroll,
   forgotPassword,
   validateResetToken,
   resetPassword,
   verifyEmail,
   cancelSubscription,
+} from '../api/authApi.js';
+import {
+  updateSettings,
+  updateBankroll,
   uploadAvatar,
   deleteAvatar,
-} from '../api/authApi.js';
+} from '../api/settingsApi.js';
 
 export function useAuth() {
   const queryClient = useQueryClient();
@@ -93,17 +94,9 @@ export function useAuth() {
     },
   });
 
-  const updatePreferencesMutation = useMutation({
-    mutationKey: ['auth', 'preferences'],
-    mutationFn: updatePreferences,
-    onSuccess: (data) => {
-      queryClient.setQueryData(['authUser'], data);
-    },
-  });
-
-  const updateProfileMutation = useMutation({
-    mutationKey: ['auth', 'profile'],
-    mutationFn: updateProfile,
+  const updateSettingsMutation = useMutation({
+    mutationKey: ['auth', 'settings'],
+    mutationFn: updateSettings,
     onSuccess: (data) => {
       queryClient.setQueryData(['authUser'], data);
     },
@@ -177,8 +170,7 @@ export function useAuth() {
     login: loginMutation.mutateAsync,
     loginGoogle: googleLoginMutation.mutateAsync,
     logout: logoutMutation.mutate,
-    updateProfile: updateProfileMutation.mutateAsync,
-    updatePreferences: updatePreferencesMutation.mutateAsync,
+    updateSettings: updateSettingsMutation.mutateAsync,
     updateBankroll: updateBankrollMutation.mutateAsync,
     uploadAvatar: uploadAvatarMutation.mutateAsync,
     deleteAvatar: deleteAvatarMutation.mutateAsync,
@@ -191,8 +183,7 @@ export function useAuth() {
     googleLoginLoading,
     registerLoading,
     logoutLoading,
-    updateProfileLoading: updateProfileMutation.isPending,
-    updatePreferencesLoading: updatePreferencesMutation.isPending,
+    updateSettingsLoading: updateSettingsMutation.isPending,
     updateBankrollLoading: updateBankrollMutation.isPending,
     uploadAvatarLoading: uploadAvatarMutation.isPending,
     deleteAvatarLoading: deleteAvatarMutation.isPending,

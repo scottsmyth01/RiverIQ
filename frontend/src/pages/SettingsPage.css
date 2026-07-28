@@ -602,18 +602,6 @@
   opacity: 0.72;
 }
 
-.settings-profile-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding-top: 0.9rem;
-}
-
-.settings-profile-actions .settings-inline-note {
-  margin-right: auto;
-}
-
 .settings-avatar-input {
   position: absolute;
   width: 1px;
@@ -657,7 +645,7 @@
 .settings-avatar-button--primary {
   color: var(--text-on-primary);
   background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
-  border-color: var(--theme-submit-border);
+  border-color: transparent;
 }
 
 .account-action {
@@ -839,15 +827,6 @@
   .settings-avatar-actions {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .settings-profile-actions {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .settings-profile-actions .settings-inline-note {
-    margin-right: 0;
   }
 
   .settings-confirm-modal {

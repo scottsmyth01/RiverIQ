@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import SettingsPage from '../SettingsPage';
 import { renderWithRouter } from '../../test/testUtils.jsx';
 
-const updatePreferences = vi.fn();
+const updateSettings = vi.fn();
 const mockUser = {
   username: 'hero',
   email: 'hero@riveriq.test',
@@ -20,8 +20,8 @@ const mockUser = {
 vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
     user: mockUser,
-    updatePreferences,
-    updatePreferencesLoading: false,
+    updateSettings,
+    updateSettingsLoading: false,
     uploadAvatar: vi.fn(),
     uploadAvatarLoading: false,
     deleteAvatar: vi.fn(),
@@ -35,7 +35,7 @@ vi.mock('../../hooks/useAuth', () => ({
 
 describe('SettingsPage', () => {
   test('keeps save disabled until settings change, then saves preferences', async () => {
-    updatePreferences.mockResolvedValue({});
+    updateSettings.mockResolvedValue({});
 
     renderWithRouter(<SettingsPage />);
 
@@ -49,11 +49,13 @@ describe('SettingsPage', () => {
 
     await userEvent.click(saveButton);
 
-    expect(updatePreferences).toHaveBeenCalledWith({
-      theme: 'light',
-      currency: 'USD',
-      defaultTimeFilter: '30d',
-      defaultTableSize: '6max',
+    expect(updateSettings).toHaveBeenCalledWith({
+      preferences: {
+        theme: 'light',
+        currency: 'USD',
+        defaultTimeFilter: '30d',
+        defaultTableSize: '6max',
+      },
     });
   });
 });

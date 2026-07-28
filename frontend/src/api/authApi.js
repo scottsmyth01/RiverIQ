@@ -77,43 +77,6 @@ export function logoutUser() {
   });
 }
 
-export function updateProfile(profile) {
-  return request('/api/auth/profile', {
-    method: 'PATCH',
-    body: JSON.stringify(profile),
-  });
-}
-
-export function updatePreferences(preferences) {
-  return request('/api/auth/preferences', {
-    method: 'POST',
-    body: JSON.stringify(preferences),
-  });
-}
-
-export function updateBankroll(payload) {
-  return request('/api/auth/bankroll', {
-    method: 'PATCH',
-    body: JSON.stringify(payload),
-  });
-}
-
-export function uploadAvatar(file) {
-  const formData = new FormData();
-  formData.append('avatar', file);
-
-  return request('/api/auth/avatar', {
-    method: 'POST',
-    body: formData,
-  });
-}
-
-export function deleteAvatar() {
-  return request('/api/auth/avatar', {
-    method: 'DELETE',
-  });
-}
-
 export function cancelSubscription() {
   return request('/api/payments/subscription/cancel', {
     method: 'POST',

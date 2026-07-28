@@ -6,6 +6,7 @@ import sessionRoutes from './routes/sessionRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import goalRoutes from './routes/goalRoutes.js';
 import savedReportRoutes from './routes/savedReportRoutes.js';
+import settingsRoutes from './routes/settingsRoutes.js';
 import { globalErrorHandler, notFound } from './middleware/errorMiddleware.js';
 
 const app = express();
@@ -35,6 +36,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/settings', settingsRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/goals', goalRoutes);

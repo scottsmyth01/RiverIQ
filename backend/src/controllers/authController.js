@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { readFileSync } from 'node:fs';
 import generateToken, { getCookieOptions } from '../utils/generateToken.js';
 import Cloudflare from 'cloudflare/index.js';
-import { deleteFromR2, uploadAvatarToR2 } from '../middleware/uploadToR2Middleware.js';
+import { serializeUser } from '../utils/serializeUser.js';
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -22,20 +22,6 @@ const escapeHtml = (value) =>
         "'": '&#39;',
       })[character],
   );
-
-const serializeUser = (user) => ({
-  _id: user._id,
-  name: user.name,
-  username: user.username,
-  email: user.email,
-  subscription: user.subscription,
-  bankroll: user.bankroll,
-  role: user.role,
-  isEmailVerified: user.isEmailVerified,
-  preferences: user.preferences,
-  avatarUrl: user.avatarUrl,
-  avatarKey: user.avatarKey,
-});
 
 async function createUniqueUsername(email) {
   const parsedEmail = email
@@ -354,114 +340,6 @@ export const getMe = async (req, res, next) => {
   }
 };
 
-export const updatePreferences = async (req, res, next) => {
-  try {
-    const allowedPreferences = ['theme', 'currency', 'defaultTimeFilter', 'defaultTableSize'];
-    const updates = {};
-
-    for (const key of allowedPreferences) {
-      if (req.body[key] !== undefined) {
-        updates[`preferences.${key}`] = req.body[key];
-      }
-    }
-
-    if (!Object.keys(updates).length) {
-      return res.status(400).json({ message: 'Please provide at least one preference to update' });
-    }
-
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { $set: updates },
-      {
-        returnDocument: 'after',
-        runValidators: true,
-      },
-    );
-
-    return res.status(200).json({
-      user: serializeUser(user),
-    });
-  } catch (error) {
-    return next(error);
-  }
-};
-
-export const updateProfile = async (req, res, next) => {
-  try {
-    const username = req.body.username?.trim();
-
-    if (!username) {
-      return res.status(400).json({ field: 'username', message: 'Please provide a username' });
-    }
-
-    if (username.length < 3) {
-      return res.status(400).json({ field: 'username', message: 'Username must be at least 3 characters' });
-    }
-
-    if (username.length > 20) {
-      return res.status(400).json({ field: 'username', message: 'Username must be 20 characters or fewer' });
-    }
-
-    if (username === req.user.username) {
-      return res.status(200).json({
-        user: serializeUser(req.user),
-      });
-    }
-
-    const usernameExists = await User.exists({
-      username,
-      _id: { $ne: req.user._id },
-    });
-
-    if (usernameExists) {
-      return res.status(400).json({
-        field: 'username',
-        message: 'Username already in use',
-      });
-    }
-
-    req.user.username = username;
-    await req.user.save();
-
-    return res.status(200).json({
-      user: serializeUser(req.user),
-    });
-  } catch (error) {
-    return next(error);
-  }
-};
-
-export const updateBankroll = async (req, res, next) => {
-  try {
-    const { action, amount } = req.body;
-    const numericAmount = Number(amount);
-
-    if (!['deposit', 'withdraw'].includes(action)) {
-      return res.status(400).json({ message: 'Bankroll action must be deposit or withdraw' });
-    }
-
-    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      return res.status(400).json({ message: 'Please provide a positive bankroll amount' });
-    }
-
-    const currentBankroll = Number(req.user.bankroll) || 0;
-    const nextBankroll = action === 'deposit' ? currentBankroll + numericAmount : currentBankroll - numericAmount;
-
-    if (nextBankroll < 0) {
-      return res.status(400).json({ message: 'You cannot withdraw more than your current bankroll' });
-    }
-
-    req.user.bankroll = Number(nextBankroll.toFixed(2));
-    await req.user.save();
-
-    return res.status(200).json({
-      user: serializeUser(req.user),
-    });
-  } catch (error) {
-    return next(error);
-  }
-};
-
 export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -537,59 +415,6 @@ export const resetPassword = async (req, res, next) => {
     error.statusCode = 400;
     error.message =
       error.name === 'TokenExpiredError' ? 'Password reset link has expired' : 'Invalid password reset link';
-    return next(error);
-  }
-};
-
-export const uploadAvatar = async (req, res, next) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'Avatar image is required' });
-    }
-
-    const publicBaseUrl = process.env.R2_PUBLIC_URL_AVATAR || process.env.R2_PUBLIC_URL;
-
-    if (!publicBaseUrl) {
-      return res.status(500).json({ message: 'Avatar public URL is not configured' });
-    }
-
-    const previousAvatarKey = req.user.avatarKey;
-    const avatarKey = await uploadAvatarToR2(req.file, req.user._id);
-
-    req.user.avatarKey = avatarKey;
-    req.user.avatarUrl = `${publicBaseUrl.replace(/\/$/, '')}/${avatarKey}`;
-
-    await req.user.save();
-
-    if (previousAvatarKey && previousAvatarKey !== avatarKey) {
-      deleteFromR2(previousAvatarKey).catch((error) => {
-        console.error('Failed to delete previous avatar from R2:', error);
-      });
-    }
-
-    return res.status(200).json({ user: serializeUser(req.user) });
-  } catch (error) {
-    return next(error);
-  }
-};
-
-export const deleteAvatar = async (req, res, next) => {
-  try {
-    const previousAvatarKey = req.user.avatarKey;
-
-    req.user.avatarKey = '';
-    req.user.avatarUrl = '';
-
-    await req.user.save();
-
-    if (previousAvatarKey) {
-      deleteFromR2(previousAvatarKey).catch((error) => {
-        console.error('Failed to delete avatar from R2:', error);
-      });
-    }
-
-    return res.status(200).json({ user: serializeUser(req.user) });
-  } catch (error) {
     return next(error);
   }
 };
