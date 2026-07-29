@@ -2,7 +2,14 @@ import Card from '../Card/Card';
 import { getStatCards } from './StatCardsData';
 import './StatCards.css';
 
-const StatCards = ({ sessions = [], periods = [], selectedPeriod = 'all-time', onPeriodChange }) => {
+// PROPS
+// sessions = filtered sessions for time period
+// periods = time periods with availability
+// selectedPeriod = currently selected period
+// onPeriodChange =
+
+const StatCards = ({ sessions = [], periods = [], selectedPeriod = 'all-time', setSelectedPeriod }) => {
+  // This function will return the data needed to populate the cards
   const cards = getStatCards(sessions);
 
   return (
@@ -15,15 +22,19 @@ const StatCards = ({ sessions = [], periods = [], selectedPeriod = 'all-time', o
             aria-pressed={selectedPeriod === period.id}
             disabled={!period.available}
             title={!period.available ? 'No sessions found for this period' : undefined}
-            onClick={() => onPeriodChange?.(period.id)}
+            onClick={() => setSelectedPeriod?.(period.id)} //call setSelectedPeriod(period.id)
             key={period.id}
           >
+            {/* period label is the title for the button */}
             {period.label}
+
+            {/* if not available (< 2 sessions) then return N/A icon on button */}
             {!period.available && <span className='period-unavailable'>N/A</span>}
           </button>
         ))}
       </div>
 
+      {/* iterate through the cards, which is just the array returned from line 13*/}
       <div className='stat-cards-grid'>
         {cards.map((card) => (
           <Card key={card.title}>

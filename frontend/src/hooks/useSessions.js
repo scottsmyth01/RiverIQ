@@ -6,11 +6,12 @@ const allSessionsQueryKey = [...sessionsQueryKey, { period: 'all-time' }];
 const SESSIONS_STALE_TIME_MS = 5 * 60 * 1000;
 
 export function useSessions(params = {}) {
-  const { period = 'all-time', staleTime = SESSIONS_STALE_TIME_MS } = params;
+  const { period = 'all-time', staleTime = SESSIONS_STALE_TIME_MS, enabled = true } = params;
 
   return useQuery({
     queryKey: [...sessionsQueryKey, { period }],
     queryFn: () => getSessions({ period }),
+    enabled,
     placeholderData: (previousSessions) => previousSessions,
     refetchOnWindowFocus: false,
     staleTime,

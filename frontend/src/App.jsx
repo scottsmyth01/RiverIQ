@@ -4,6 +4,7 @@ import Navbar from './components/Navbar/Navbar';
 import WebsiteFooter from './components/WebsiteFooter/WebsiteFooter';
 import LoadingScreen from './components/LoadingScreen/LoadingScreen';
 import { useAuth } from './hooks/useAuth';
+import { useSessions } from './hooks/useSessions';
 import ProtectedRoute from './utils/ProtectedRoute';
 import SessionsPage from './pages/SessionsPage';
 import DashboardLayout from './components/DashboardLayout/DashboardLayout';
@@ -55,6 +56,11 @@ function AppRoutes() {
   const isPaymentRoute = pathname === '/subscription/payment';
   const isResetPasswordRoute = pathname.startsWith('/reset-password');
   const isLegalRoute = pathname === '/terms' || pathname === '/privacy';
+  const { isLoading: isSessionsLoading } = useSessions({ enabled: isDashboardRoute && isAuthenticated });
+  const isAuthRouteLoading = loading && (isDashboardRoute || isSignedOutOnlyRoute);
+  const isDashboardDataLoading = isDashboardRoute && isAuthenticated && isSessionsLoading;
+  const showGlobalLoading = logoutLoading || isAuthRouteLoading || isDashboardDataLoading;
+  const shouldRenderRouteContent = !logoutLoading && !isAuthRouteLoading;
   const showWebsiteChrome = !loading && !isAuthenticated && !isPaymentRoute;
 
   useEffect(() => {
@@ -62,86 +68,80 @@ function AppRoutes() {
     document.documentElement.dataset.theme = 'dark';
   }, [isAuthenticated, loading]);
 
-  if (loading && (isDashboardRoute || isSignedOutOnlyRoute)) {
-    return <LoadingScreen />;
-  }
-
-  if (logoutLoading) {
-    return <LoadingScreen />;
-  }
-
   // if user is authenticated and emailVerified then navigate the user to their dashboard
   // if the route is the pricing page then do not run this code
-  if (
+  const redirectToDashboard =
     isAuthenticated &&
     isEmailVerified &&
     !isDashboardRoute &&
     !isPricingRoute &&
     !isPaymentRoute &&
     !isResetPasswordRoute &&
-    !isLegalRoute
-  ) {
-    return <Navigate to='/dashboard' replace />;
-  }
+    !isLegalRoute;
 
   // if user is authenticated, but email is not verified, then navigate to the /verify-email page
-  if (isAuthenticated && !isEmailVerified && !isVerifyEmailRoute && !isResetPasswordRoute) {
-    return <Navigate to='/verify-email' replace />;
-  }
+  const redirectToVerifyEmail = isAuthenticated && !isEmailVerified && !isVerifyEmailRoute && !isResetPasswordRoute;
 
   return (
     <>
-      {showWebsiteChrome && <Navbar />}
-      <Suspense fallback={isDashboardRoute ? <LoadingScreen /> : null}>
-        <Routes>
-          <Route path='/' element={<Navigate to='/login' replace />} />
-          <Route path='/features' element={<FeaturePage />} />
-          <Route path='/pricing' element={<PricingPage />} />
-          <Route
-            path='/subscription/payment'
-            element={
-              <ProtectedRoute>
-                <PaymentPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path='/about' element={<AboutPage />} />
-          <Route path='/faq' element={<FaqPage />} />
-          <Route path='/help' element={<Navigate to='/login' replace />} />
-          <Route path='/privacy' element={<PrivacyPage />} />
-          <Route path='/terms' element={<TermsPage />} />
-          <Route path='/login' element={<UserAuthPage />} />
-          <Route path='/register' element={<UserAuthPage />} />
-          <Route path='/forgot-password' element={<UserAuthPage />} />
-          <Route path='/reset-password/:id/:token' element={<ResetPasswordPage />} />
-          <Route path='/verify-email' element={<VerifyEmailPage />} />
-          <Route path='/verify-email/:token' element={<VerifyEmailPage />} />
-          <Route
-            path='/dashboard'
-            element={
-              <ProtectedRoute>
-                <DashboardLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<DashboardPage />} />
-            <Route path='sessions' element={<SessionsPage />} />
-            <Route path='sessions/:id/stats' element={<SessionStatsPage />} />
-            <Route path='sessions/:id' element={<SessionDetailPage />} />
-            <Route path='sessions/new' element={<AddSessionPage />} />
-            <Route path='analytics' element={<AnalyticsPage />} />
-            <Route path='reports' element={<SavedReportsPage />} />
-            <Route path='reports/new' element={<ReportsPage />} />
-            <Route path='reports/saved' element={<Navigate to='/dashboard/reports' replace />} />
-            <Route path='goals' element={<GoalsPage />} />
-            <Route path='hand-history' element={<HandChartsPage />} />
-            <Route path='help' element={<InfoPage />} />
-            <Route path='settings' element={<SettingsPage />} />
-          </Route>
-          <Route path='*' element={<FeaturePage />} />
-        </Routes>
-      </Suspense>
-      {showWebsiteChrome && <WebsiteFooter />}
+      <LoadingScreen visible={showGlobalLoading} />
+      {shouldRenderRouteContent && redirectToDashboard && <Navigate to='/dashboard' replace />}
+      {shouldRenderRouteContent && redirectToVerifyEmail && <Navigate to='/verify-email' replace />}
+      {shouldRenderRouteContent && !redirectToDashboard && !redirectToVerifyEmail && (
+        <>
+          {showWebsiteChrome && <Navbar />}
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path='/' element={<Navigate to='/login' replace />} />
+              <Route path='/features' element={<FeaturePage />} />
+              <Route path='/pricing' element={<PricingPage />} />
+              <Route
+                path='/subscription/payment'
+                element={
+                  <ProtectedRoute>
+                    <PaymentPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path='/about' element={<AboutPage />} />
+              <Route path='/faq' element={<FaqPage />} />
+              <Route path='/help' element={<Navigate to='/login' replace />} />
+              <Route path='/privacy' element={<PrivacyPage />} />
+              <Route path='/terms' element={<TermsPage />} />
+              <Route path='/login' element={<UserAuthPage />} />
+              <Route path='/register' element={<UserAuthPage />} />
+              <Route path='/forgot-password' element={<UserAuthPage />} />
+              <Route path='/reset-password/:id/:token' element={<ResetPasswordPage />} />
+              <Route path='/verify-email' element={<VerifyEmailPage />} />
+              <Route path='/verify-email/:token' element={<VerifyEmailPage />} />
+              <Route
+                path='/dashboard'
+                element={
+                  <ProtectedRoute>
+                    <DashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<DashboardPage />} />
+                <Route path='sessions' element={<SessionsPage />} />
+                <Route path='sessions/:id/stats' element={<SessionStatsPage />} />
+                <Route path='sessions/:id' element={<SessionDetailPage />} />
+                <Route path='sessions/new' element={<AddSessionPage />} />
+                <Route path='analytics' element={<AnalyticsPage />} />
+                <Route path='reports' element={<SavedReportsPage />} />
+                <Route path='reports/new' element={<ReportsPage />} />
+                <Route path='reports/saved' element={<Navigate to='/dashboard/reports' replace />} />
+                <Route path='goals' element={<GoalsPage />} />
+                <Route path='hand-history' element={<HandChartsPage />} />
+                <Route path='help' element={<InfoPage />} />
+                <Route path='settings' element={<SettingsPage />} />
+              </Route>
+              <Route path='*' element={<FeaturePage />} />
+            </Routes>
+          </Suspense>
+          {showWebsiteChrome && <WebsiteFooter />}
+        </>
+      )}
     </>
   );
 }

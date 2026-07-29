@@ -10,6 +10,8 @@ import ProfitChart from '../components/ProfitChart/ProfitChart';
 import SessionsTable from '../components/SessionsTable/SessionsTable';
 import StatCards from '../components/StatCards/StatCards';
 
+// data
+
 const dashboardPeriods = [
   { id: 'all-time', value: 'all', label: 'All Time', chartLabel: 'Total Profit' },
   { id: 'past-90', value: 90, label: 'Past 90 Days', chartLabel: 'Past 90 Days Profit' },
@@ -18,16 +20,19 @@ const dashboardPeriods = [
 ];
 
 const DashboardPage = () => {
+  // STATE
   const { user } = useAuth();
   const { data: allSessions = [], isLoading: isAllSessionsLoading } = useSessions();
   const defaultPeriod = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
   const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod);
   const username = user?.username || user?.name;
 
+  // UE: get default time period (edit in settings) and update when changed
   useEffect(() => {
     setSelectedPeriod(defaultPeriod);
   }, [defaultPeriod]);
 
+  // MEMO: returns the period, along with availibility and session count.
   const periodsWithAvailability = useMemo(() => {
     return dashboardPeriods.map((period) => {
       // if all-time, just return the object with allSessions.length
@@ -43,9 +48,11 @@ const DashboardPage = () => {
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - period.value);
 
+      const today = new Date();
+
       const sessionCount = allSessions.filter((session) => {
         const sessionDate = new Date(session.date);
-        return !Number.isNaN(sessionDate.getTime()) && sessionDate >= cutoffDate && sessionDate <= new Date();
+        return !Number.isNaN(sessionDate.getTime()) && sessionDate >= cutoffDate && sessionDate <= today;
       }).length;
 
       return {
@@ -56,8 +63,10 @@ const DashboardPage = () => {
     });
   }, [allSessions]);
 
+  // MEMO: filter the allSessions into a new array that contains documents in the specified date range.
   const sessions = useMemo(() => filterSessions(allSessions, selectedPeriod), [allSessions, selectedPeriod]);
 
+  // UE: if the time period is not available (< 2 sessions) then set the period to 'all time'
   useEffect(() => {
     const activePeriod = periodsWithAvailability.find((period) => period.id === selectedPeriod);
 
@@ -73,6 +82,8 @@ const DashboardPage = () => {
   return (
     <>
       {allSessions.length <= 2 && <NewUserPage sessions={allSessions} />}
+      {/* ^^ If there are less than 3 sessions for a given user, then render the NewUserPage */}
+
       <section className='dashboard-content'>
         <header className='dashboard-page-header'>
           <div className='dashboard-page-header__top'>
@@ -83,16 +94,16 @@ const DashboardPage = () => {
           </div>
         </header>
         <StatCards
-          sessions={sessions}
-          periods={periodsWithAvailability}
-          selectedPeriod={selectedPeriod}
-          onPeriodChange={setSelectedPeriod}
+          sessions={sessions} //filtered session array
+          periods={periodsWithAvailability} //all periods and availability
+          selectedPeriod={selectedPeriod} //selected period (via buttons)
+          setSelectedPeriod={setSelectedPeriod} //call this function when clicking a new time period (pass up period.id)
         />
         <ProfitChart
-          sessions={sessions}
-          periods={periodsWithAvailability}
-          selectedPeriod={selectedPeriod}
-          onPeriodChange={setSelectedPeriod}
+          sessions={sessions} //filtered session array
+          periods={periodsWithAvailability} //all periods and availability
+          selectedPeriod={selectedPeriod} //selected period (via buttons)
+          setSelectedPeriod={setSelectedPeriod} //call this function when clicking a new time period (pass up period.id)
         />
         <SessionsTable sessions={sessions} sessionsPerPage={5} variant='home-page' />
       </section>

@@ -1,43 +1,27 @@
 import { ClipboardPen, Star, TrendingUp } from 'lucide-react';
 import { IconCards } from '@tabler/icons-react';
-
-function parseBigBlind(stakes) {
-  if (!stakes) return null;
-
-  const amounts = String(stakes).match(/\d+(?:\.\d+)?/g)?.map(Number).filter((amount) => Number.isFinite(amount));
-  return amounts?.length ? amounts.at(-1) : null;
-}
-
-function getSessionBbWon(session) {
-  const profit = Number(session.profit) || 0;
-  const bigBlind = parseBigBlind(session.stakes);
-
-  if (bigBlind > 0) {
-    return profit / bigBlind;
-  }
-
-  const hands = Number(session.hands) || Number(session.stats?.handsPlayed) || 0;
-  const bb100 = Number(session.bb100 ?? session.stats?.bb100 ?? session.winRate);
-
-  return hands > 0 && Number.isFinite(bb100) ? (bb100 * hands) / 100 : 0;
-}
+import { getSessionBbWon } from '../../utils/sessionUnits';
 
 export const getStatCards = (sessions = []) => {
+  // profit calculation: dead simple, just iterate and add to sum
   const totalProfit = sessions.reduce((sum, session) => {
     return sum + (Number(session.profit) || 0);
   }, 0);
 
+  // hands played: get num from session.stats object
   const totalHands = sessions.reduce((sum, session) => {
-    return sum + (Number(session.hands) || Number(session.stats?.handsPlayed) || 0);
+    return sum + Number(session.stats?.handsPlayed) || 0;
   }, 0);
 
+  // total sessions: just the sessions array length
   const totalSessions = sessions.length;
 
+  //bb100: totalBbWon / totalHands * 100
   const totalBbWon = sessions.reduce((sum, session) => {
     return sum + getSessionBbWon(session);
   }, 0);
 
-  const bb100 = totalHands > 0 ? (totalBbWon / totalHands) * 100 : 0;
+  const bb100 = (totalBbWon / totalHands) * 100; //calculate BB100
 
   return [
     {
@@ -70,3 +54,13 @@ export const getStatCards = (sessions = []) => {
     },
   ];
 };
+
+function parseBigBlind(stakes) {
+  if (!stakes) return null;
+
+  const amounts = String(stakes)
+    .match(/\d+(?:\.\d+)?/g)
+    ?.map(Number)
+    .filter((amount) => Number.isFinite(amount));
+  return amounts?.length ? amounts.at(-1) : null;
+}

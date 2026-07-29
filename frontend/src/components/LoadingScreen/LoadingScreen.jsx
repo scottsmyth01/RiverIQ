@@ -1,13 +1,14 @@
 import './LoadingScreen.css';
 import logo from '../Navbar_dashboard/logo.png';
 
-const LoadingScreen = () => {
+const LoadingScreen = ({ visible = true }) => {
   return (
     <div
-      className='loading-screen'
+      className={`loading-screen${visible ? ' loading-screen--visible' : ''}`}
       role='dialog'
-      aria-modal='true'
+      aria-modal={visible ? 'true' : undefined}
       aria-label='Loading'
+      aria-hidden={!visible}
     >
       <div className='loading-modal'>
         <img className='loading-logo' src={logo} alt='RiverIQ loading' />

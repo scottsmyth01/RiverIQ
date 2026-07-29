@@ -12,12 +12,11 @@ import { Maximize2, X } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import { useEffect, useMemo, useState } from 'react';
 import './ProfitChart.css';
-import { parseBigBlind } from '../../utils/sessionUnits';
+import { getSessionBbWon, parseBigBlind } from '../../utils/sessionUnits';
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler, Legend);
 
 const optionalMetrics = [
-  { key: 'allInWinPercentage', label: 'All In Win%', color: '#14b8a6', axis: 'allInWinPercentage', format: (value) => `${formatSigned(value, 1)}%` },
   { key: 'bbWon', label: 'BB Won', color: '#38bdf8', axis: 'bb', format: (value) => `${formatSigned(value, 1)} BB` },
   { key: 'bb100', label: 'BB/100', color: '#f59e0b', axis: 'rate', format: (value) => formatSigned(value, 2) },
   {
@@ -43,20 +42,6 @@ function formatSigned(value, digits) {
   })}`;
 }
 
-function getSessionBbWon(session) {
-  const profit = Number(session.profit) || 0;
-  const bigBlind = parseBigBlind(session.stakes);
-
-  if (bigBlind > 0) {
-    return profit / bigBlind;
-  }
-
-  const hands = Number(session.hands) || 0;
-  const bb100 = Number(session.bb100);
-
-  return hands > 0 && Number.isFinite(bb100) ? (bb100 * hands) / 100 : null;
-}
-
 function getMetricSeries(chartData, key) {
   return chartData.map((item) => item[key]);
 }
@@ -79,13 +64,12 @@ export default function ProfitChart({
   sessions,
   periods = [],
   selectedPeriod = 'all-time',
-  onPeriodChange,
+  setSelectedPeriod,
   isLoading = false,
 }) {
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [selectedMetrics, setSelectedMetrics] = useState({
-    allInWinPercentage: false,
     bbWon: false,
     bb100: false,
     hourlyProfit: true,
@@ -134,6 +118,7 @@ export default function ProfitChart({
   }, [isFullScreen]);
 
   const { chartData, runningHands, runningProfit, visibleSessionCount } = useMemo(() => {
+    // Sort the sessions by date (oldest to newest)
     const visibleSessions = [...sessions].sort(
       (firstSession, secondSession) => new Date(firstSession.date) - new Date(secondSession.date),
     );
@@ -143,29 +128,26 @@ export default function ProfitChart({
     let nextRunningHands = 0;
     let runningMinutes = 0;
 
+    // map through the visible sessions and popualte the following:
     const nextChartData = visibleSessions.map((session, index) => {
-      const sessionDate = new Date(session.date);
-      const formattedDate = formatChartDate(sessionDate);
-      const sessionBbWon = getSessionBbWon(session);
-      const sessionHands = Number(session.hands) || 0;
-      const sessionDuration = Number(session.duration);
-      const allInWinSampleSize = Number(session.allInWinSampleSize ?? session.stats?.allInWinSampleSize ?? 0);
-      const sessionAllInWinPercentage =
-        allInWinSampleSize > 0 ? Number(session.allInWinPercentage ?? session.stats?.allInWinPercentage) : null;
-      const sessionProfit = Number(session.profit) || 0;
+      const sessionDate = new Date(session.date); //session date
+      const formattedDate = formatChartDate(sessionDate); //formatted date
+      const sessionBbWon = getSessionBbWon(session); //get BB100 for the session
+      const sessionHands = Number(session.stats.handsPlayed); //get number of hands played
+      const sessionDuration = Number(session.duration); //get session duration
+      const sessionProfit = Number(session.profit) || 0; //get session profit
 
-      nextRunningProfit += sessionProfit;
-      runningBbWon += Number.isFinite(sessionBbWon) ? sessionBbWon : 0;
-      nextRunningHands += sessionHands;
-      runningMinutes += Number.isFinite(sessionDuration) ? sessionDuration : 0;
-      const runningHours = runningMinutes / 60;
+      nextRunningProfit += sessionProfit; //running profit value
+      runningBbWon += Number.isFinite(sessionBbWon) ? sessionBbWon : 0; //running BB won value
+      nextRunningHands += sessionHands; //running hands played value
+      runningMinutes += Number.isFinite(sessionDuration) ? sessionDuration : 0; //for hourly profit
+      const runningHours = runningMinutes / 60; //for hourly profit
 
       return {
         date: formattedDate,
         xLabel: `Session ${index + 1}`,
         timestamp: sessionDate.getTime(),
         profit: Number(nextRunningProfit.toFixed(2)),
-        allInWinPercentage: Number.isFinite(sessionAllInWinPercentage) ? Number(sessionAllInWinPercentage.toFixed(1)) : null,
         bbWon: Number(runningBbWon.toFixed(1)),
         bb100: nextRunningHands > 0 ? Number(((runningBbWon / nextRunningHands) * 100).toFixed(2)) : null,
         handsPlayed: nextRunningHands,
@@ -202,7 +184,6 @@ export default function ProfitChart({
 
     return {
       profit: getMetricBounds('profit'),
-      allInWinPercentage: getMetricBounds('allInWinPercentage'),
       bbWon: getMetricBounds('bbWon'),
       bb100: getMetricBounds('bb100'),
     };
@@ -263,6 +244,7 @@ export default function ProfitChart({
     [chartData, selectedMetrics],
   );
 
+  // data used for the line graph
   const data = useMemo(
     () => ({
       labels: chartData.map((item) => item.xLabel),
@@ -392,24 +374,6 @@ export default function ProfitChart({
             display: fullScreen,
           },
         },
-        allInWinPercentage: {
-          type: 'linear',
-          display: selectedMetrics.allInWinPercentage,
-          position: 'right',
-          ...metricBounds.allInWinPercentage,
-          grid: {
-            drawOnChartArea: false,
-          },
-          ticks: {
-            color: textColor,
-            maxTicksLimit: fullScreen ? 9 : 5,
-            callback: (value) => `${value.toLocaleString()}%`,
-          },
-          border: {
-            color: gridColor,
-            display: fullScreen,
-          },
-        },
         bb: {
           type: 'linear',
           display: selectedMetrics.bbWon,
@@ -482,6 +446,7 @@ export default function ProfitChart({
         <h2>{activePeriod?.chartLabel || 'Total Profit'}</h2>
         <div className='profit-header-actions'>
           <div className='profit-period-buttons' aria-label='Profit chart period'>
+            {/* Same code as in the stat cards, date range buttons/availability*/}
             {periods.map((period) => (
               <button
                 className={selectedPeriod === period.id ? 'active' : ''}
@@ -489,7 +454,7 @@ export default function ProfitChart({
                 aria-pressed={selectedPeriod === period.id}
                 disabled={!period.available}
                 title={!period.available ? 'No sessions found for this period' : undefined}
-                onClick={() => onPeriodChange?.(period.id)}
+                onClick={() => setSelectedPeriod?.(period.id)}
                 key={period.id}
               >
                 {period.label}
@@ -497,6 +462,7 @@ export default function ProfitChart({
               </button>
             ))}
           </div>
+          {/* button to expand the graph to full screen */}
           <button
             className='profit-expand-button'
             type='button'
@@ -509,15 +475,18 @@ export default function ProfitChart({
       </div>
 
       <div className='profit-metric-toggles' aria-label='Profit chart metrics'>
+        {/* Map through the optional metrics - all in win %, BB Won, BB/100, Hourly Profit */}
         {optionalMetrics.map((metric) => (
           <label style={{ '--metric-color': metric.color }} key={metric.key}>
             <input
               type='checkbox'
-              checked={selectedMetrics[metric.key]}
+              checked={selectedMetrics[metric.key]} //true if checked, false if not
+              // OnChange: run when a checkbox is clicked
               onChange={(event) =>
-                setSelectedMetrics((currentMetrics) => ({
-                  ...currentMetrics,
-                  [metric.key]: event.target.checked,
+                // simple code: change the metric selected to either checked or unchecked
+                setSelectedMetrics((prev) => ({
+                  ...prev, //copy the old values/metrics
+                  [metric.key]: event.target.checked, //change selected metric to checked/true
                 }))
               }
             />

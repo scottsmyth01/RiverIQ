@@ -18,3 +18,17 @@ export function getSessionBigBlind(session = {}) {
 
   return parseBigBlind(session.stakes);
 }
+
+export function getSessionBbWon(session) {
+  const profit = Number(session.profit) || 0;
+  const bigBlind = parseBigBlind(session.stakes);
+
+  if (bigBlind > 0) {
+    return profit / bigBlind;
+  }
+
+  const hands = Number(session.hands) || 0;
+  const bb100 = Number(session.bb100);
+
+  return hands > 0 && Number.isFinite(bb100) ? (bb100 * hands) / 100 : null;
+}

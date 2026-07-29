@@ -9,18 +9,36 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease-out;
+  will-change: opacity;
+}
+
+.loading-screen--visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .loading-modal {
   display: grid;
   place-items: center;
+  transform: scale(0.98);
+  transition: transform 220ms ease-out;
+  will-change: transform;
+}
+
+.loading-screen--visible .loading-modal {
+  transform: scale(1);
 }
 
 .loading-logo {
   width: min(150px, 34vw);
   height: auto;
   display: block;
-  animation: spin-logo 0.6s ease-in-out infinite;
+  animation: spin-logo 900ms linear infinite;
+  transform-origin: 50% 50%;
+  will-change: transform;
 }
 
 @keyframes spin-logo {

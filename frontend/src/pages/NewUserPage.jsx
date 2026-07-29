@@ -1,10 +1,11 @@
-import React from 'react';
-import { useAuth } from '../hooks/useAuth';
 import './NewUserPage.css';
-import ProgressBar from '../components/ProgressBar/ProgressBar';
 import { Link, useNavigate } from 'react-router';
+import { useAuth } from '../hooks/useAuth';
+import ProgressBar from '../components/ProgressBar/ProgressBar';
+import React from 'react';
 
 export const NewUserPage = ({ sessions }) => {
+  // get user (need username for this page)
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -32,7 +33,7 @@ export const NewUserPage = ({ sessions }) => {
         )}
         {sessions.length > 0 && (
           <div className='prompt'>
-            <h3>Upload your next session!</h3>
+            <h3>{user.username}, upload your next session!</h3>
             <p>Add at least 3 sessions to unlock your dashboard!</p>
             <p>{sessions.length}/3 sessions added</p>
             <ProgressBar range={3} value={sessions.length} />
