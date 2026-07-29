@@ -7,6 +7,7 @@ export function filterSessions(sessions = [], period = 'all-time') {
   };
 
   return sessions.filter((session) => {
+    //grab the date from the
     const sessionDate = new Date(session.date);
 
     if (periodDays[period]) {

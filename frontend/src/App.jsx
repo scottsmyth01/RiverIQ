@@ -48,22 +48,21 @@ function AppRoutes() {
   const { isAuthenticated, isEmailVerified, loading, logoutLoading } = useAuth();
 
   const isDashboardRoute = pathname.startsWith('/dashboard');
+  const isSignedOutOnlyRoute =
+    pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/forgot-password' || pathname === '/help';
   const isVerifyEmailRoute = pathname.startsWith('/verify-email');
   const isPricingRoute = pathname === '/pricing';
   const isPaymentRoute = pathname === '/subscription/payment';
   const isResetPasswordRoute = pathname.startsWith('/reset-password');
   const isLegalRoute = pathname === '/terms' || pathname === '/privacy';
-  const showWebsiteChrome = !isAuthenticated && !isPaymentRoute;
+  const showWebsiteChrome = !loading && !isAuthenticated && !isPaymentRoute;
 
   useEffect(() => {
     if (loading || isAuthenticated) return;
     document.documentElement.dataset.theme = 'dark';
   }, [isAuthenticated, loading]);
 
-  // if loading and a dashboard route we render the custom loading screen
-  // if it is a route outside of the /dashboard then it will just load as normal (logged out routes)
-
-  if (loading && isDashboardRoute) {
+  if (loading && (isDashboardRoute || isSignedOutOnlyRoute)) {
     return <LoadingScreen />;
   }
 

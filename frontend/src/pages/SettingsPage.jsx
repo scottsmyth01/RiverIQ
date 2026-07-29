@@ -39,6 +39,18 @@ const tableSizeOptions = [
   { label: '9max', value: '9max' },
 ];
 
+function getSettingsForm(user) {
+  const preferences = user?.preferences || {};
+
+  return {
+    username: user?.username || '',
+    theme: preferences.theme || localStorage.getItem('theme') || 'dark',
+    dateRange: preferences.defaultTimeFilter || '30d',
+    tableSize: preferences.defaultTableSize || '9max',
+    currency: preferences.currency || 'USD',
+  };
+}
+
 const SettingsPage = () => {
   const {
     user,
@@ -54,11 +66,7 @@ const SettingsPage = () => {
     updateSettingsLoading,
   } = useAuth();
 
-  const [username, setUsername] = useState(user?.username || '');
-  const [theme, setTheme] = useState(() => user?.preferences?.theme || localStorage.getItem('theme') || 'dark');
-  const [dateRange, setDateRange] = useState(user?.preferences?.defaultTimeFilter || '30d');
-  const [tableSize, setTableSize] = useState(user?.preferences?.defaultTableSize || '9max');
-  const [currency, setCurrency] = useState(user?.preferences?.currency || 'USD');
+  const [settingsForm, setSettingsForm] = useState(() => getSettingsForm(user));
   const [openMenu, setOpenMenu] = useState(null);
   const [savingControl, setSavingControl] = useState(null);
   const [autoDetectSite, setAutoDetectSite] = useState(true);
@@ -72,7 +80,9 @@ const SettingsPage = () => {
   const [showCancelSubscriptionModal, setShowCancelSubscriptionModal] = useState(false);
   const avatarInputRef = useRef(null);
   const menuRef = useRef(null);
+  const savedThemeRef = useRef(user?.preferences?.theme || localStorage.getItem('theme') || 'dark');
 
+  const { username, theme, dateRange, tableSize, currency } = settingsForm;
   const selectedDateRange = dateRangeOptions.find((option) => option.value === dateRange) || dateRangeOptions[2];
   const selectedTableSize = tableSizeOptions.find((option) => option.value === tableSize) || tableSizeOptions[3];
   const selectedCurrency = currencyOptions.find((option) => option.value === currency) || currencyOptions[0];
@@ -89,35 +99,40 @@ const SettingsPage = () => {
     currency !== (savedPreferences.currency || 'USD');
   const hasSettingsChanges = hasProfileChanges || hasPreferenceChanges;
 
+  function updateSettingsField(field, value) {
+    setSettingsForm((currentForm) => ({
+      ...currentForm,
+      [field]: value,
+    }));
+    setSettingsNotice('');
+  }
+
   function handleThemeChange(nextTheme) {
     if (nextTheme === theme) return;
 
-    setTheme(nextTheme);
-    setSettingsNotice('');
+    document.documentElement.dataset.theme = nextTheme;
+    updateSettingsField('theme', nextTheme);
   }
 
   function handleDateRangeChange(nextDateRange) {
     setOpenMenu(null);
     if (nextDateRange === dateRange) return;
 
-    setDateRange(nextDateRange);
-    setSettingsNotice('');
+    updateSettingsField('dateRange', nextDateRange);
   }
 
   function handleCurrencyChange(nextCurrency) {
     setOpenMenu(null);
     if (nextCurrency === currency) return;
 
-    setCurrency(nextCurrency);
-    setSettingsNotice('');
+    updateSettingsField('currency', nextCurrency);
   }
 
   function handleTableSizeChange(nextTableSize) {
     setOpenMenu(null);
     if (nextTableSize === tableSize) return;
 
-    setTableSize(nextTableSize);
-    setSettingsNotice('');
+    updateSettingsField('tableSize', nextTableSize);
   }
 
   async function handleSaveSettings() {
@@ -148,9 +163,13 @@ const SettingsPage = () => {
         }),
       });
 
-      setUsername(trimmedUsername);
+      setSettingsForm((currentForm) => ({
+        ...currentForm,
+        username: trimmedUsername,
+      }));
 
       if (hasPreferenceChanges) {
+        savedThemeRef.current = theme;
         localStorage.setItem('theme', theme);
         document.documentElement.dataset.theme = theme;
       }
@@ -263,27 +282,22 @@ const SettingsPage = () => {
   }
 
   useEffect(() => {
-    setUsername(user?.username || '');
-  }, [user?.username]);
+    setSettingsForm(getSettingsForm(user));
+    savedThemeRef.current = user?.preferences?.theme || 'dark';
+  }, [
+    user?.username,
+    user?.preferences?.theme,
+    user?.preferences?.defaultTimeFilter,
+    user?.preferences?.defaultTableSize,
+    user?.preferences?.currency,
+  ]);
 
   useEffect(() => {
-    const preferences = user?.preferences;
-    if (!preferences) return;
-
-    setTheme(preferences.theme || 'dark');
-    setDateRange(preferences.defaultTimeFilter || '30d');
-    setTableSize(preferences.defaultTableSize || '9max');
-    setCurrency(preferences.currency || 'USD');
-  }, [user?.preferences]);
-
-  useEffect(() => {
-    const savedTheme = user?.preferences?.theme || 'dark';
-
     return () => {
-      localStorage.setItem('theme', savedTheme);
-      document.documentElement.dataset.theme = savedTheme;
+      localStorage.setItem('theme', savedThemeRef.current);
+      document.documentElement.dataset.theme = savedThemeRef.current;
     };
-  }, [user?.preferences?.theme]);
+  }, []);
 
   useEffect(() => {
     const closeMenu = (event) => {
@@ -398,8 +412,7 @@ const SettingsPage = () => {
                 maxLength={20}
                 disabled={isSavingSettings}
                 onChange={(event) => {
-                  setUsername(event.target.value);
-                  setSettingsNotice('');
+                  updateSettingsField('username', event.target.value);
                 }}
               />
             </label>

@@ -1,41 +1,36 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router';
 import './DashboardPage.css';
-import StatCards from '../components/StatCards/StatCards';
+import { filterSessions } from '../utils/filterSessions';
+import { getPeriodFromDefaultTimeFilter } from '../utils/dateRangePreferences';
+import { Link } from 'react-router';
+import { NewUserPage } from './NewUserPage';
+import { useAuth } from '../hooks/useAuth';
+import { useEffect, useMemo, useState } from 'react';
 import { useSessions } from '../hooks/useSessions';
 import ProfitChart from '../components/ProfitChart/ProfitChart';
 import SessionsTable from '../components/SessionsTable/SessionsTable';
-import { NewUserPage } from './NewUserPage';
-import { useAuth } from '../hooks/useAuth';
-import { getPeriodFromDefaultTimeFilter } from '../utils/dateRangePreferences';
-import { filterSessions } from '../utils/filterSessions';
+import StatCards from '../components/StatCards/StatCards';
 
 const dashboardPeriods = [
-  { id: 'all-time', label: 'All Time', chartLabel: 'Total Profit' },
-  { id: 'past-90', label: 'Past 90 Days', chartLabel: 'Past 90 Days Profit' },
-  { id: 'past-30', label: 'Past 30 Days', chartLabel: 'Past 30 Days Profit' },
-  { id: 'past-7', label: 'Past 7 Days', chartLabel: 'Past 7 Days Profit' },
+  { id: 'all-time', value: 'all', label: 'All Time', chartLabel: 'Total Profit' },
+  { id: 'past-90', value: 90, label: 'Past 90 Days', chartLabel: 'Past 90 Days Profit' },
+  { id: 'past-30', value: 30, label: 'Past 30 Days', chartLabel: 'Past 30 Days Profit' },
+  { id: 'past-7', value: 7, label: 'Past 7 Days', chartLabel: 'Past 7 Days Profit' },
 ];
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const { data: allSessions = [], isLoading: isAllSessionsLoading } = useSessions();
   const defaultPeriod = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
   const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod);
-  const { data: allSessions = [], isLoading: isAllSessionsLoading } = useSessions();
-  const username = user?.username || user?.name || 'there';
+  const username = user?.username || user?.name;
 
   useEffect(() => {
     setSelectedPeriod(defaultPeriod);
   }, [defaultPeriod]);
 
   const periodsWithAvailability = useMemo(() => {
-    const periodDays = {
-      'past-7': 7,
-      'past-30': 30,
-      'past-90': 90,
-    };
-
     return dashboardPeriods.map((period) => {
+      // if all-time, just return the object with allSessions.length
       if (period.id === 'all-time') {
         return {
           ...period,
@@ -44,8 +39,9 @@ const DashboardPage = () => {
         };
       }
 
+      // else, we need to calculate the session count by filtering the allSessions for documents in that date range
       const cutoffDate = new Date();
-      cutoffDate.setDate(cutoffDate.getDate() - periodDays[period.id]);
+      cutoffDate.setDate(cutoffDate.getDate() - period.value);
 
       const sessionCount = allSessions.filter((session) => {
         const sessionDate = new Date(session.date);
@@ -54,7 +50,7 @@ const DashboardPage = () => {
 
       return {
         ...period,
-        available: period.id === 'past-7' ? sessionCount > 1 : sessionCount > 0,
+        available: sessionCount > 1,
         sessionCount,
       };
     });
