@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Goal from '../models/Goal.js';
 
 function getGoalPayload(body = {}) {
@@ -10,6 +11,7 @@ function getGoalPayload(body = {}) {
     progress: body.progress,
     status: body.status,
     dueDate: body.dueDate || null,
+    ...(Number.isFinite(Number(body.order)) ? { order: Number(body.order) } : {}),
     completedAt: body.status === 'Completed' ? body.completedAt || new Date() : null,
   };
 }
@@ -18,7 +20,7 @@ export const getGoals = async (req, res, next) => {
   // get userId from protect middleware
   // get all sessions that have that userId and return to frontend
   try {
-    const goals = await Goal.find({ user: req.user._id }).sort({ createdAt: -1 });
+    const goals = await Goal.find({ user: req.user._id }).sort({ order: 1, createdAt: -1 });
     return res.status(200).json({ goals });
   } catch (error) {
     return next(error);
@@ -27,12 +29,39 @@ export const getGoals = async (req, res, next) => {
 
 export const createGoal = async (req, res, next) => {
   try {
+    const goalCount = await Goal.countDocuments({ user: req.user._id });
     const goal = await Goal.create({
       user: req.user._id,
       ...getGoalPayload(req.body),
+      order: Number.isFinite(Number(req.body.order)) ? Number(req.body.order) : goalCount,
     });
 
     return res.status(201).json({ goal });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const reorderGoals = async (req, res, next) => {
+  try {
+    const ids = Array.isArray(req.body.ids) ? req.body.ids : [];
+    const validIds = ids.filter((id) => mongoose.Types.ObjectId.isValid(id));
+
+    if (!validIds.length || validIds.length !== ids.length) {
+      return res.status(400).json({ message: 'A valid ordered goal id list is required' });
+    }
+
+    await Goal.bulkWrite(
+      validIds.map((id, index) => ({
+        updateOne: {
+          filter: { _id: id, user: req.user._id },
+          update: { $set: { order: index } },
+        },
+      })),
+    );
+
+    const goals = await Goal.find({ user: req.user._id }).sort({ order: 1, createdAt: -1 });
+    return res.status(200).json({ goals });
   } catch (error) {
     return next(error);
   }

@@ -46,6 +46,16 @@ const handChartCellSchema = new mongoose.Schema(
   { _id: false },
 );
 
+const handResultSchema = new mongoose.Schema(
+  {
+    handNumber: String,
+    date: Date,
+    profit: { type: Number, default: 0 },
+    cumulativeProfit: { type: Number, default: 0 },
+  },
+  { _id: false },
+);
+
 const sessionSchema = new mongoose.Schema(
   {
     user: {
@@ -75,6 +85,10 @@ const sessionSchema = new mongoose.Schema(
       fileSize: Number,
       contentType: String,
       uploadedAt: Date,
+    },
+    handResults: {
+      type: [handResultSchema],
+      default: [],
     },
 
     stats: {

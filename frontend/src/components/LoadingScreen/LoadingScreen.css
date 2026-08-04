@@ -36,7 +36,7 @@
   width: min(150px, 34vw);
   height: auto;
   display: block;
-  animation: spin-logo 900ms linear infinite;
+  animation: spin-logo 525ms ease-in-out infinite;
   transform-origin: 50% 50%;
   will-change: transform;
 }

@@ -3,7 +3,7 @@ export const REGEX = {
   handNumber: /CoinPoker Hand #(\d+)/,
   tableHeader: /^CoinPoker Hand #\d+:\s*(.+?) \(\u20ae?([\d,.]+)\/\u20ae?([\d,.]+)(?:\/\u20ae?[\d,.]+)?\)/m,
   blinds: /\(\u20ae?([\d,.]+)\/\u20ae?([\d,.]+)(?:\/\u20ae?[\d,.]+)?\)/,
-  currency: 'USDT',
+  currency: 'USD',
   table: /Table '.+?' (\d+)-max/,
   players: /^Seat (\d+): (.+?) \(\u20ae?([\d,.]+) in chips\)$/gm,
   hero: /^Dealt to (.+?) \[([^\]]+)\]$/,

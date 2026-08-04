@@ -11,40 +11,68 @@ import {
 import { Maximize2, X } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './ProfitChart.css';
-import { getSessionBbWon, parseBigBlind } from '../../utils/sessionUnits';
+import { formatCurrency } from '../../utils/sessionUnits';
+
+/*
+Whenever the component renders, it follows this sequence:
+
+1. Receive sessions and other props.
+2. Calculate running totals (profit, hands, and hourly profit) with useMemo.
+3. Build the Chart.js datasets from those calculations.
+4. Generate the chart options (colors, tooltips, axes, legends, etc.).
+5. Render the <Line /> chart.
+6. If the user changes the date range, metric checkboxes, theme, or fullscreen state, React updates the relevant state, recomputes only what changed, and redraws the chart.
+*/
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler, Legend);
 
+const HOURLY_PROFIT_MIN_HANDS = 250;
+
 const optionalMetrics = [
-  { key: 'bbWon', label: 'BB Won', color: '#38bdf8', axis: 'bb', format: (value) => `${formatSigned(value, 1)} BB` },
-  { key: 'bb100', label: 'BB/100', color: '#f59e0b', axis: 'rate', format: (value) => formatSigned(value, 2) },
   {
     key: 'hourlyProfit',
     label: 'Hourly Profit',
-    color: '#f43f5e',
-    axis: 'hourly',
-    format: (value) => formatCurrency(value),
+    color: '#ff3b4b',
+    axis: 'hourlyProfit',
+    format: (value) => `${formatCurrency(value)}/hr`,
   },
 ];
 
-function formatCurrency(value) {
-  return `${value < 0 ? '-' : ''}$${Math.abs(value).toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+// returns key value of specified key
+/*
+Example:
+
+sessionsWithData = [
+    {profit:5},
+    {profit:8},
+    {profit:10}
+]
+getMetricValues(sessionsWithData,"profit")
+returns [5,8,10]
+*/
+function getMetricValues(sessionsWithData, key) {
+  return sessionsWithData.map((item) => item[key]);
 }
 
-function formatSigned(value, digits) {
-  return `${value > 0 ? '+' : ''}${value.toLocaleString('en-US', {
-    minimumFractionDigits: digits,
-    maximumFractionDigits: digits,
-  })}`;
+function formatWholeCurrency(value) {
+  return `$${Math.round(Number(value) || 0).toLocaleString('en-US')}`;
 }
 
-function getMetricSeries(chartData, key) {
-  return chartData.map((item) => item[key]);
+function getSessionTime(session) {
+  const date = new Date(session.date || session.createdAt || session.updatedAt);
+
+  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
 }
+
+function getPointTime(point, session) {
+  const date = new Date(point.date || session.date || session.createdAt || session.updatedAt);
+
+  return Number.isNaN(date.getTime()) ? getSessionTime(session) : date.getTime();
+}
+
+// turn 2026-07-30 into Jul 30
 
 function formatChartDate(value, options = {}) {
   const date = new Date(value);
@@ -61,23 +89,26 @@ function formatChartDate(value, options = {}) {
 }
 
 export default function ProfitChart({
-  sessions,
-  periods = [],
-  selectedPeriod = 'all-time',
-  setSelectedPeriod,
-  isLoading = false,
+  sessions = [], //all sessions array
+  periods = [], //periods array (time period + availability)
+  selectedPeriod = 'all-time', //currently selected period, set to preferences value
+  setSelectedPeriod, //change the selected period
+  isLoading = false, //if isLoading show the loading spinner
 }) {
-  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark');
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [selectedMetrics, setSelectedMetrics] = useState({
-    bbWon: false,
-    bb100: false,
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark'); // store light/dark
+  const [isFullScreen, setIsFullScreen] = useState(false); //controls fullscreen graph
+  const [isMobileChart, setIsMobileChart] = useState(() => window.matchMedia?.('(max-width: 760px)').matches ?? false);
+  const [metricFlags, setMetricFlags] = useState({
     hourlyProfit: true,
   });
+
+  //
   const activePeriod = useMemo(
     () => periods.find((period) => period.id === selectedPeriod) || periods[0],
     [periods, selectedPeriod],
   );
+
+  // change graph colors based on selected theme.
   const isLightTheme = theme === 'light';
   const chartTextColor = isLightTheme ? '#111827' : '#cbd5e1';
   const chartGridColor = isLightTheme ? 'rgba(17, 24, 39, 0.14)' : 'rgba(148, 163, 184, 0.15)';
@@ -85,6 +116,7 @@ export default function ProfitChart({
   const fullScreenGridColor = isLightTheme ? '#d1d5db' : '#263545';
 
   useEffect(() => {
+    //observes any HTML element with the data-theme attr. Without this the line graph would not know that the theme changed.
     const observer = new MutationObserver(() => {
       setTheme(document.documentElement.dataset.theme || 'dark');
     });
@@ -98,6 +130,17 @@ export default function ProfitChart({
   }, []);
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 760px)');
+    const updateMobileChart = () => setIsMobileChart(mediaQuery.matches);
+
+    updateMobileChart();
+    mediaQuery.addEventListener('change', updateMobileChart);
+
+    return () => mediaQuery.removeEventListener('change', updateMobileChart);
+  }, []);
+
+  useEffect(() => {
+    //runs when in fullscreen mode. Disabled scrolling behind the modal and allow pressing escape to close the modal.
     if (!isFullScreen) return undefined;
 
     const previousOverflow = document.body.style.overflow;
@@ -117,98 +160,180 @@ export default function ProfitChart({
     };
   }, [isFullScreen]);
 
-  const { chartData, runningHands, runningProfit, visibleSessionCount } = useMemo(() => {
-    // Sort the sessions by date (oldest to newest)
-    const visibleSessions = [...sessions].sort(
-      (firstSession, secondSession) => new Date(firstSession.date) - new Date(secondSession.date),
-    );
+  // MEMO - the heart of the component
+  const { sessionsWithData, runningHands, runningProfit, sessionsCount } = useMemo(() => {
+    // Sort the sessions by date
+    // Don't mutate the sessions prop (props are immutable)
+    const sortedSessions = [...sessions].sort((firstSession, secondSession) => {
+      const dateDiff = getSessionTime(firstSession) - getSessionTime(secondSession);
 
-    let nextRunningProfit = 0;
-    let runningBbWon = 0;
-    let nextRunningHands = 0;
-    let runningMinutes = 0;
+      if (dateDiff !== 0) return dateDiff;
 
-    // map through the visible sessions and popualte the following:
-    const nextChartData = visibleSessions.map((session, index) => {
-      const sessionDate = new Date(session.date); //session date
-      const formattedDate = formatChartDate(sessionDate); //formatted date
-      const sessionBbWon = getSessionBbWon(session); //get BB100 for the session
-      const sessionHands = Number(session.stats.handsPlayed); //get number of hands played
-      const sessionDuration = Number(session.duration); //get session duration
-      const sessionProfit = Number(session.profit) || 0; //get session profit
-
-      nextRunningProfit += sessionProfit; //running profit value
-      runningBbWon += Number.isFinite(sessionBbWon) ? sessionBbWon : 0; //running BB won value
-      nextRunningHands += sessionHands; //running hands played value
-      runningMinutes += Number.isFinite(sessionDuration) ? sessionDuration : 0; //for hourly profit
-      const runningHours = runningMinutes / 60; //for hourly profit
-
-      return {
-        date: formattedDate,
-        xLabel: `Session ${index + 1}`,
-        timestamp: sessionDate.getTime(),
-        profit: Number(nextRunningProfit.toFixed(2)),
-        bbWon: Number(runningBbWon.toFixed(1)),
-        bb100: nextRunningHands > 0 ? Number(((runningBbWon / nextRunningHands) * 100).toFixed(2)) : null,
-        handsPlayed: nextRunningHands,
-        hourlyProfit: runningHours > 0 ? Number((nextRunningProfit / runningHours).toFixed(2)) : null,
-      };
+      return new Date(firstSession.createdAt || 0) - new Date(secondSession.createdAt || 0);
     });
 
-    return {
-      chartData: nextChartData,
-      runningHands: nextRunningHands,
-      runningProfit: nextRunningProfit,
-      visibleSessionCount: visibleSessions.length,
-    };
-  }, [sessions]);
+    let runningProfit = 0;
+    let runningDurationMinutes = 0;
+    let runningHands = 0;
+    const sessionsWithData = [];
 
-  const metricBounds = useMemo(() => {
-    function getMetricBounds(key, paddingRatio = 0.28) {
-      const values = chartData.map((item) => Number(item[key])).filter((value) => Number.isFinite(value));
+    if (sortedSessions.length) {
+      const firstSession = sortedSessions[0];
+      const startTimestamp = getSessionTime(firstSession);
+
+      sessionsWithData.push({
+        date: formatChartDate(startTimestamp),
+        xLabel: '0',
+        timestamp: startTimestamp,
+        profit: 0,
+        hourlyProfit: 0,
+        handsPlayed: 0,
+        sessionLabel: 'Start',
+      });
+    }
+
+    // map through the visible sessions and popualte the following:
+
+    sortedSessions.forEach((session, index) => {
+      const sessionDate = new Date(session.date); //session date
+      const formattedDate = formatChartDate(sessionDate); //formatted date
+      const sessionDuration = Number(session.duration);
+      const sessionDurationMinutes = Number.isFinite(sessionDuration) && sessionDuration > 0 ? sessionDuration : 0;
+      const sessionHands = Number(session.hands ?? session.stats?.handsPlayed) || 0; //get number of hands played
+      const sessionProfit = Number(session.profit) || 0; //get session profit
+      const handResults = Array.isArray(session.handResults) ? session.handResults : [];
+      const previousHands = runningHands;
+      const previousDurationMinutes = runningDurationMinutes;
+
+      const points = handResults.length
+        ? handResults
+        : [
+            {
+              date: session.date,
+              profit: sessionProfit,
+              cumulativeProfit: sessionProfit,
+            },
+          ];
+
+      points.forEach((point, pointIndex) => {
+        const handProfit = Number(point.profit);
+        const pointProfit = Number.isFinite(handProfit) ? handProfit : 0;
+        const handCount = handResults.length ? previousHands + pointIndex + 1 : previousHands + sessionHands;
+        const sessionProgress = handResults.length ? (pointIndex + 1) / handResults.length : 1;
+        const pointDurationMinutes = previousDurationMinutes + sessionDurationMinutes * sessionProgress;
+
+        runningProfit += pointProfit; //running profit value
+        runningHands = handCount; //running hands played value
+
+        //For each hand, return:
+        sessionsWithData.push({
+          date: formattedDate, //date of the session
+          xLabel: runningHands.toLocaleString('en-US'), //hand number (x-axis)
+          timestamp: getPointTime(point, session), //hand/session timestamp
+          profit: Number(runningProfit.toFixed(2)), //running profit value
+          hourlyProfit:
+            runningHands < HOURLY_PROFIT_MIN_HANDS || pointDurationMinutes <= 0
+              ? 0
+              : Number((runningProfit / (pointDurationMinutes / 60)).toFixed(2)),
+          handsPlayed: runningHands, // running hands value
+          sessionLabel: session.sessionName || `Session ${index + 1}`,
+        });
+      });
+
+      runningDurationMinutes = previousDurationMinutes + sessionDurationMinutes;
+    });
+
+    // after iterating through the visible sessions
+    // **THESE VALUES ARE USED THROUGHOUT THE FILE
+    return {
+      sessionsWithData, //required chart meta data
+      runningHands, //running hands played
+      runningProfit, //running total profit
+      sessionsCount: sortedSessions.length, //length of sessions (sorted array)
+    };
+  }, [sessions]); // when the sessions mutates, run this memo
+
+  // MEMO: get min/max axes values while keeping both y-axis zero lines aligned.
+  const axesMinMax = useMemo(() => {
+    function getAxisValues(keys) {
+      const values = keys
+        .flatMap((key) => sessionsWithData.map((item) => Number(item[key])))
+        .filter((value) => Number.isFinite(value));
 
       if (!values.length) {
         return {};
       }
 
-      const min = Math.min(0, ...values);
-      const max = Math.max(0, ...values);
-      const span = Math.max(max - min, Math.abs(max), Math.abs(min), 1);
-      const padding = span * paddingRatio;
-
       return {
-        suggestedMin: min < 0 ? min - padding : 0,
-        suggestedMax: max > 0 ? max + padding : 0,
+        min: Math.min(0, ...values),
+        max: Math.max(0, ...values),
       };
     }
 
-    return {
-      profit: getMetricBounds('profit'),
-      bbWon: getMetricBounds('bbWon'),
-      bb100: getMetricBounds('bb100'),
-    };
-  }, [chartData]);
+    function getAxesMinMax(range, alignAroundZero, paddingRatio = 0.38) {
+      if (!Number.isFinite(range.min) || !Number.isFinite(range.max)) {
+        return {};
+      }
 
+      const min = range.min;
+      const max = range.max;
+      const span = Math.max(max - min, Math.abs(max), Math.abs(min), 1);
+      const padding = span * paddingRatio;
+
+      if (alignAroundZero) {
+        const limit = Math.max(Math.abs(min), Math.abs(max), 1) + padding;
+
+        return {
+          min: -limit,
+          max: limit,
+        };
+      }
+
+      return {
+        min: min < 0 ? min - padding : 0,
+        max: max > 0 ? max + padding : 0,
+      };
+    }
+
+    const profitRange = getAxisValues(['profit']);
+    const hourlyProfitRange = getAxisValues(['hourlyProfit']);
+    const ranges = [profitRange, hourlyProfitRange];
+    const hasNegative = ranges.some((range) => Number.isFinite(range.min) && range.min < 0);
+    const hasPositive = ranges.some((range) => Number.isFinite(range.max) && range.max > 0);
+    const alignAroundZero = hasNegative && hasPositive;
+
+    return {
+      profit: getAxesMinMax(profitRange, alignAroundZero),
+      hourlyProfit: getAxesMinMax(hourlyProfitRange, alignAroundZero),
+    };
+  }, [sessionsWithData]);
+
+  /*
+  example dataset:
+    {
+    label:"Total Profit",
+    data:[5,12,18,14]
+    }
+  */
   const datasets = useMemo(
     () => [
       {
-        label: 'Total Profit',
-        data: getMetricSeries(chartData, 'profit'),
-        yAxisID: 'money',
-        borderColor: '#39ff64',
+        label: 'Total Profit', //main title
+        data: getMetricValues(sessionsWithData, 'profit'), //get the profit values from sessionsWithData
+        yAxisID: 'money', //axes ID
+        borderColor: '#39ff64', //color of the line
         backgroundColor: (context) => {
+          //add color underneath the line
           const chart = context.chart;
           const { ctx, chartArea } = chart;
-
           if (!chartArea) return null;
-
+          // more color code
           const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-
-          gradient.addColorStop(0, 'rgba(57, 255, 100, 0.35)');
+          gradient.addColorStop(0, 'rgba(9, 255, 0, 0.344)');
           gradient.addColorStop(1, 'rgba(57, 255, 100, 0)');
-
           return gradient;
         },
+        // misc settings to make graph pop
         fill: true,
         tension: 0,
         pointRadius: 0,
@@ -221,10 +346,10 @@ export default function ProfitChart({
         metricKey: 'profit',
       },
       ...optionalMetrics
-        .filter((metric) => selectedMetrics[metric.key])
+        .filter((metric) => metricFlags[metric.key])
         .map((metric) => ({
           label: metric.label,
-          data: getMetricSeries(chartData, metric.key),
+          data: sessionsWithData.map((item) => (item.handsPlayed > 0 ? item[metric.key] : null)),
           yAxisID: metric.axis,
           borderColor: metric.color,
           backgroundColor: `${metric.color}26`,
@@ -241,23 +366,28 @@ export default function ProfitChart({
           metricKey: metric.key,
         })),
     ],
-    [chartData, selectedMetrics],
+    [sessionsWithData, metricFlags],
   );
 
-  // data used for the line graph
+  // Exactly what Chart.js expects.
+  // Lables from sessionsWithData array (xLabel)
+  // Datasets provides the data for each line
   const data = useMemo(
     () => ({
-      labels: chartData.map((item) => item.xLabel),
+      labels: sessionsWithData.map((item) => item.xLabel),
       datasets,
     }),
-    [chartData, datasets],
+    [sessionsWithData, datasets],
   );
 
+  //Same as the above MEMO but data for fullscreen mode
+  //
   const fullScreenData = useMemo(
     () => ({
       labels: data.labels,
       datasets: datasets.map((dataset) => ({
         ...dataset,
+        // fullscreen options
         backgroundColor: 'transparent',
         fill: false,
         borderWidth: dataset.metricKey === 'profit' ? 2.5 : 2,
@@ -268,6 +398,7 @@ export default function ProfitChart({
     [data.labels, datasets],
   );
 
+  // Chart Options
   function getChartOptions({ fullScreen = false } = {}) {
     const textColor = fullScreen ? fullScreenTextColor : chartTextColor;
     const gridColor = fullScreen ? fullScreenGridColor : chartGridColor;
@@ -282,7 +413,7 @@ export default function ProfitChart({
 
       plugins: {
         legend: {
-          display: datasets.length > 1,
+          display: !isMobileChart && datasets.length > 1,
           align: 'start',
           labels: {
             color: textColor,
@@ -303,17 +434,17 @@ export default function ProfitChart({
           displayColors: true,
           callbacks: {
             title: (items) => {
-              const item = chartData[items[0]?.dataIndex];
+              const item = sessionsWithData[items[0]?.dataIndex];
               return item ? formatChartDate(item.timestamp, { year: 'numeric' }) : '';
             },
             afterTitle: (items) => {
-              const item = chartData[items[0]?.dataIndex];
+              const item = sessionsWithData[items[0]?.dataIndex];
 
               if (!item) {
                 return '';
               }
 
-              const details = [item.xLabel];
+              const details = [item.sessionLabel || item.xLabel, item.xLabel];
 
               if (Number.isFinite(item.handsPlayed)) {
                 details.push(`${item.handsPlayed.toLocaleString('en-US')} hands`);
@@ -334,12 +465,12 @@ export default function ProfitChart({
         x: {
           type: 'category',
           title: {
-            display: false,
+            display: true,
             color: textColor,
             font: {
               weight: '700',
             },
-            text: 'Date',
+            text: 'Hands',
           },
           grid: {
             color: gridColor,
@@ -347,7 +478,9 @@ export default function ProfitChart({
           },
           ticks: {
             color: textColor,
-            maxTicksLimit: fullScreen ? 12 : 7,
+            maxTicksLimit: fullScreen ? 12 : isMobileChart ? 4 : 7,
+            autoSkip: true,
+            maxRotation: 0,
           },
           border: {
             color: gridColor,
@@ -357,13 +490,23 @@ export default function ProfitChart({
 
         money: {
           type: 'linear',
-          position: 'left',
+          position: 'right',
           beginAtZero: true,
-          ...metricBounds.profit,
+          ...axesMinMax.profit,
+          title: {
+            display: true,
+            color: textColor,
+            font: {
+              weight: '700',
+            },
+            text: 'Profit',
+          },
           ticks: {
             color: textColor,
-            maxTicksLimit: fullScreen ? 9 : 5,
-            callback: (value) => `$${value.toLocaleString()}`,
+            maxTicksLimit: fullScreen ? 9 : isMobileChart ? 4 : 5,
+            precision: 0,
+            stepSize: 10,
+            callback: (value) => `$${(Math.round(Number(value) / 10) * 10).toLocaleString('en-US')}`,
           },
           grid: {
             color: gridColor,
@@ -374,53 +517,20 @@ export default function ProfitChart({
             display: fullScreen,
           },
         },
-        bb: {
+        hourlyProfit: {
           type: 'linear',
-          display: selectedMetrics.bbWon,
-          position: 'right',
-          ...metricBounds.bbWon,
+          display: metricFlags.hourlyProfit,
+          position: 'left',
+          ...axesMinMax.hourlyProfit,
           grid: {
             drawOnChartArea: false,
           },
           ticks: {
             color: textColor,
-            maxTicksLimit: fullScreen ? 9 : 5,
-            callback: (value) => `${value.toLocaleString()} BB`,
-          },
-          border: {
-            color: gridColor,
-            display: fullScreen,
-          },
-        },
-        rate: {
-          type: 'linear',
-          display: selectedMetrics.bb100,
-          position: 'right',
-          ...metricBounds.bb100,
-          grid: {
-            drawOnChartArea: false,
-          },
-          ticks: {
-            color: textColor,
-            maxTicksLimit: fullScreen ? 9 : 5,
-            callback: (value) => value.toLocaleString(),
-          },
-          border: {
-            color: gridColor,
-            display: fullScreen,
-          },
-        },
-        hourly: {
-          type: 'linear',
-          display: selectedMetrics.hourlyProfit,
-          position: 'right',
-          grid: {
-            drawOnChartArea: false,
-          },
-          ticks: {
-            color: textColor,
-            maxTicksLimit: fullScreen ? 9 : 5,
-            callback: (value) => `${formatCurrency(value)}/hr`,
+            maxTicksLimit: fullScreen ? 9 : isMobileChart ? 4 : 5,
+            precision: 0,
+            stepSize: 10,
+            callback: (value) => `${formatWholeCurrency(Math.round(Number(value) / 10) * 10)}/hr`,
           },
           border: {
             color: gridColor,
@@ -433,12 +543,51 @@ export default function ProfitChart({
 
   const options = useMemo(
     () => getChartOptions(),
-    [chartData, chartGridColor, chartTextColor, datasets.length, metricBounds, selectedMetrics],
+    [sessionsWithData, chartGridColor, chartTextColor, datasets.length, axesMinMax, metricFlags, isMobileChart],
   );
   const fullScreenOptions = useMemo(
     () => getChartOptions({ fullScreen: true }),
-    [chartData, datasets.length, fullScreenGridColor, fullScreenTextColor, metricBounds, selectedMetrics],
+    [
+      sessionsWithData,
+      datasets.length,
+      fullScreenGridColor,
+      fullScreenTextColor,
+      axesMinMax,
+      metricFlags,
+      isMobileChart,
+    ],
   );
+
+  const fullScreenChart = isFullScreen
+    ? createPortal(
+        <div className='profit-fullscreen' role='dialog' aria-modal='true' aria-labelledby='profit-fullscreen-title'>
+          <div className='profit-fullscreen__surface'>
+            <header className='profit-fullscreen__header'>
+              <div>
+                <h2 id='profit-fullscreen-title'>Results Graph</h2>
+                <p>
+                  {activePeriod?.label || 'All Time'} · {sessionsCount.toLocaleString('en-US')} sessions
+                </p>
+              </div>
+              <button type='button' aria-label='Close full page graph' onClick={() => setIsFullScreen(false)}>
+                <X aria-hidden='true' />
+              </button>
+            </header>
+
+            <div className='profit-fullscreen__toolbar'>
+              <span>Graph</span>
+              <span>Hands: {runningHands.toLocaleString('en-US')}</span>
+              <span>Profit: {formatCurrency(runningProfit)}</span>
+            </div>
+
+            <div className='profit-fullscreen__chart'>
+              <Line key='profit-fullscreen-chart' data={fullScreenData} options={fullScreenOptions} />
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )
+    : null;
 
   return (
     <div className='profit-card'>
@@ -475,18 +624,15 @@ export default function ProfitChart({
       </div>
 
       <div className='profit-metric-toggles' aria-label='Profit chart metrics'>
-        {/* Map through the optional metrics - all in win %, BB Won, BB/100, Hourly Profit */}
         {optionalMetrics.map((metric) => (
           <label style={{ '--metric-color': metric.color }} key={metric.key}>
             <input
               type='checkbox'
-              checked={selectedMetrics[metric.key]} //true if checked, false if not
-              // OnChange: run when a checkbox is clicked
+              checked={metricFlags[metric.key]}
               onChange={(event) =>
-                // simple code: change the metric selected to either checked or unchecked
-                setSelectedMetrics((prev) => ({
-                  ...prev, //copy the old values/metrics
-                  [metric.key]: event.target.checked, //change selected metric to checked/true
+                setMetricFlags((prev) => ({
+                  ...prev,
+                  [metric.key]: event.target.checked,
                 }))
               }
             />
@@ -506,33 +652,7 @@ export default function ProfitChart({
         )}
       </div>
 
-      {isFullScreen && (
-        <div className='profit-fullscreen' role='dialog' aria-modal='true' aria-labelledby='profit-fullscreen-title'>
-          <div className='profit-fullscreen__surface'>
-            <header className='profit-fullscreen__header'>
-              <div>
-                <h2 id='profit-fullscreen-title'>Results Graph</h2>
-                <p>
-                  {activePeriod?.label || 'All Time'} · {visibleSessionCount.toLocaleString('en-US')} sessions
-                </p>
-              </div>
-              <button type='button' aria-label='Close full page graph' onClick={() => setIsFullScreen(false)}>
-                <X aria-hidden='true' />
-              </button>
-            </header>
-
-            <div className='profit-fullscreen__toolbar'>
-              <span>Graph</span>
-              <span>Hands: {runningHands.toLocaleString('en-US')}</span>
-              <span>Profit: {formatCurrency(runningProfit)}</span>
-            </div>
-
-            <div className='profit-fullscreen__chart'>
-              <Line data={fullScreenData} options={fullScreenOptions} />
-            </div>
-          </div>
-        </div>
-      )}
+      {fullScreenChart}
     </div>
   );
 }

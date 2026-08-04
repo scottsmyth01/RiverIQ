@@ -56,6 +56,8 @@ describe('session API integration', () => {
     expect(session.sessionName).toBe('API Integration PokerStars');
     expect(session.stats.handsPlayed).toBe(250);
     expect(session.stats.profit).toBe(262.5);
+    expect(session.handResults).toHaveLength(250);
+    expect(session.handResults.at(-1).cumulativeProfit).toBe(262.5);
     expect(session.stats.foldToSteal).toEqual(expect.any(Number));
     expect(session.stats.handsByPosition).toBeTruthy();
     expect(session.stats.handsByPosition.BTN).toBeTruthy();
@@ -123,32 +125,12 @@ describe('session API integration', () => {
     const { session } = uploadResponse.body;
     expect(session.sessionName).toBe('API Integration CoinPoker');
     expect(session.pokerSite).toBe('coinpoker');
-    expect(session.gameType).toBe('NLH');
-    expect(session.stakes).toBe('₮0.10/₮0.25');
-    expect(session.currency).toBe('USDT');
+    expect(session.gameType).toBe('NL Holdem');
+    expect(session.stakes).toBe('$0.10/$0.25 ($0.04)');
+    expect(session.currency).toBe('USD');
     expect(session.tableSize).toBe(6);
     expect(session.stats.handsPlayed).toBe(1);
     expect(session.stats.profit).toBe(-29.06);
-  });
-
-  test('uploads a Bovada session and calculates stats', async () => {
-    const agent = await createLoggedInAgent();
-
-    const uploadResponse = await agent
-      .post('/api/sessions/add-session')
-      .field('pokerSite', 'bovada')
-      .field('sessionName', 'API Integration Bovada')
-      .attach('handHistory', 'src/utils/parsers/fixtures/bovada/bovada_single_hand.txt')
-      .expect(201);
-
-    const { session } = uploadResponse.body;
-    expect(session.sessionName).toBe('API Integration Bovada');
-    expect(session.pokerSite).toBe('bovada');
-    expect(session.gameType).toBe('NL Holdem');
-    expect(session.stakes).toBe('10/20');
-    expect(session.tableSize).toBe(9);
-    expect(session.stats.handsPlayed).toBe(1);
-    expect(session.stats.profit).toBe(0);
   });
 
   test('automatically splits a multi-session upload by time gaps', async () => {
@@ -178,6 +160,34 @@ describe('session API integration', () => {
     expect(sessions.map((session) => session.stats.handsPlayed)).toEqual([1, 1]);
     expect(sessions.map((session) => session.stats.profit)).toEqual([-29.06, -29.06]);
     expect(updatedUser.bankroll).toBe(-58.12);
+    expect(await Session.countDocuments()).toBe(2);
+  });
+
+  test('uploads multiple hand history files in one request', async () => {
+    const agent = await createLoggedInAgent();
+
+    const uploadResponse = await agent
+      .post('/api/sessions/add-session')
+      .field('pokerSite', 'pokerstars')
+      .field('sessionName', 'PokerStars Batch')
+      .attach('handHistory', 'src/utils/parsers/fixtures/ps/pokerstars_250_hand_winning_session_01.txt')
+      .attach('handHistory', 'src/utils/parsers/fixtures/ps/pokerstars_250_hand_losing_session_02.txt')
+      .expect(201);
+
+    const { sessions, user: updatedUser } = uploadResponse.body;
+
+    expect(uploadResponse.body.createdSessions).toBe(2);
+    expect(sessions).toHaveLength(2);
+    expect(sessions.map((session) => session.sessionName)).toEqual([
+      'PokerStars Batch - Session 1',
+      'PokerStars Batch - Session 2',
+    ]);
+    expect(sessions.map((session) => session.stats.handsPlayed)).toEqual([250, 250]);
+    expect(sessions.map((session) => session.handHistory.originalFileName)).toEqual([
+      'pokerstars_250_hand_winning_session_01.txt',
+      'pokerstars_250_hand_losing_session_02.txt',
+    ]);
+    expect(updatedUser.bankroll).toBe(50);
     expect(await Session.countDocuments()).toBe(2);
   });
 });

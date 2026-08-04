@@ -5,26 +5,34 @@ import { ArrowLeft, BarChart3, FileText } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { toast } from 'sonner';
 import { useSessions, useUpdateSession } from '../hooks/useSessions';
-import ggPokerLogo from '../assets/gg-poker-logo.svg';
 import pokerStarsLogo from '../assets/pokerstars-logo.svg';
+import ggPokerMark from '../assets/gg-poker-mark.svg';
 import coinPokerLogo from '../assets/coinpoker-logo.svg';
+import partyPokerLogo from '../assets/partypoker-diamond-logo.svg';
 
 const pokerSiteDetails = {
   ggpoker: {
     label: 'GGPoker',
-    logo: ggPokerLogo,
+    logo: ggPokerMark,
+    fallback: 'GG',
+    className: 'session-site-card__logo--ggpoker',
   },
   pokerstars: {
     label: 'PokerStars',
     logo: pokerStarsLogo,
   },
+  fanduel: {
+    label: 'FanDuel',
+    logo: null,
+    fallback: 'FD',
+  },
   coinpoker: {
     label: 'CoinPoker',
     logo: coinPokerLogo,
   },
-  bovada: {
-    label: 'Bovada',
-    logo: null,
+  partypoker: {
+    label: 'partypoker',
+    logo: partyPokerLogo,
   },
 };
 
@@ -77,6 +85,10 @@ function getPokerSiteDetail(session) {
     return pokerSiteDetails.pokerstars;
   }
 
+  if (siteKey.includes('fanduel') || siteKey.includes('fan duel')) {
+    return pokerSiteDetails.fanduel;
+  }
+
   if (siteKey.includes('ggpoker') || siteKey.includes('gg poker')) {
     return pokerSiteDetails.ggpoker;
   }
@@ -85,8 +97,8 @@ function getPokerSiteDetail(session) {
     return pokerSiteDetails.coinpoker;
   }
 
-  if (siteKey.includes('bovada') || siteKey.includes('ignition') || siteKey.includes('bodog')) {
-    return pokerSiteDetails.bovada;
+  if (siteKey.includes('party')) {
+    return pokerSiteDetails.partypoker;
   }
 
   return {
@@ -202,8 +214,8 @@ const SessionDetailPage = () => {
       <section className='session-detail-layout'>
         <form className='session-detail-form' onSubmit={handleSaveSession}>
           <section className='session-site-card' aria-label='Poker site'>
-            <div className='session-site-card__logo'>
-              {pokerSite.logo ? <img src={pokerSite.logo} alt='' /> : <FileText aria-hidden='true' />}
+            <div className={`session-site-card__logo${pokerSite.className ? ` ${pokerSite.className}` : ''}`}>
+              {pokerSite.logo ? <img src={pokerSite.logo} alt='' /> : pokerSite.fallback || <FileText aria-hidden='true' />}
             </div>
             <div>
               <span>Poker Site</span>

@@ -1,20 +1,23 @@
 export function getProfit(hands) {
+  const profit = hands.reduce((total, hand) => total + getHandProfit(hand), 0);
+
+  return Number(profit.toFixed(2));
+}
+
+export function getHandProfit(hand) {
   let profit = 0;
+  const heroName = hand.hero?.name;
+  const hero = hand.summary?.seats?.find((seat) => seat.player === heroName);
 
-  for (const hand of hands) {
-    const heroName = hand.hero?.name;
-    const hero = hand.summary?.seats?.find((seat) => seat.player === heroName);
-
-    if (!hero) {
-      continue;
-    }
-
-    if (hero.result === 'won' || hero.result === 'collected') {
-      profit += hero.amount;
-    }
-
-    profit -= getHeroInvestment(hand);
+  if (!hero) {
+    return 0;
   }
+
+  if (hero.result === 'won' || hero.result === 'collected') {
+    profit += hero.amount;
+  }
+
+  profit -= getHeroInvestment(hand);
 
   return Number(profit.toFixed(2));
 }

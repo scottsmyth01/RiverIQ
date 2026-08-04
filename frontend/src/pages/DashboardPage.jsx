@@ -11,7 +11,6 @@ import SessionsTable from '../components/SessionsTable/SessionsTable';
 import StatCards from '../components/StatCards/StatCards';
 
 // data
-
 const dashboardPeriods = [
   { id: 'all-time', value: 'all', label: 'All Time', chartLabel: 'Total Profit' },
   { id: 'past-90', value: 90, label: 'Past 90 Days', chartLabel: 'Past 90 Days Profit' },
@@ -39,7 +38,7 @@ const DashboardPage = () => {
       if (period.id === 'all-time') {
         return {
           ...period,
-          available: allSessions.length > 0,
+          available: allSessions.length > 1,
           sessionCount: allSessions.length,
         };
       }
@@ -84,7 +83,7 @@ const DashboardPage = () => {
       {allSessions.length <= 2 && <NewUserPage sessions={allSessions} />}
       {/* ^^ If there are less than 3 sessions for a given user, then render the NewUserPage */}
 
-      <section className='dashboard-content'>
+      <section className='dashboard-content dashboard-home-page'>
         <header className='dashboard-page-header'>
           <div className='dashboard-page-header__top'>
             <div>
@@ -101,7 +100,7 @@ const DashboardPage = () => {
         />
         <ProfitChart
           sessions={sessions} //filtered session array
-          periods={periodsWithAvailability} //all periods and availability
+          periods={periodsWithAvailability} //all periods and availibility
           selectedPeriod={selectedPeriod} //selected period (via buttons)
           setSelectedPeriod={setSelectedPeriod} //call this function when clicking a new time period (pass up period.id)
         />

@@ -9,6 +9,7 @@ import {
   CircleAlert,
   CircleCheck,
   CircleDot,
+  GripVertical,
   MoreVertical,
   Pencil,
   Plus,
@@ -19,11 +20,13 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { useCreateGoal, useDeleteGoal, useGoals, useUpdateGoal } from '../hooks/useGoals';
+import { toast } from 'sonner';
+import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
+import { useCreateGoal, useDeleteGoal, useGoals, useReorderGoals, useUpdateGoal } from '../hooks/useGoals';
 
-const tabs = ['All Goals', 'Not Started', 'Active', 'Needs Attention', 'Paused', 'Completed'];
+const tabs = ['All Goals', 'Not Started', 'Active', 'Needs Attention', 'Completed'];
 const categoryOptions = ['All Categories', 'Preflop', 'Postflop', 'Results', 'Volume', 'Bankroll', 'Study'];
-const sortOptions = ['All', 'Recently Created', 'Progress: High to Low', 'Progress: Low to High', 'Due Date'];
+const sortOptions = ['Custom Order', 'Recently Created', 'Due Date'];
 
 const statusToneByStatus = {
   'Not Started': 'gray',
@@ -51,24 +54,47 @@ const iconToneByCategory = {
   Study: 'gray',
 };
 
-const barToneByStatus = {
-  'Not Started': 'gray',
-  Active: 'blue',
-  'Needs Attention': 'orange',
-  Paused: 'gray',
-  Completed: 'green',
-};
-
 const emptyDraft = {
   title: '',
   description: '',
   category: 'Preflop',
   target: '',
   current: '',
-  progress: 50,
+  progress: 0,
   status: 'Active',
   dueDate: '',
 };
+
+function moveItem(items, fromIndex, toIndex) {
+  const nextItems = [...items];
+  const [movedItem] = nextItems.splice(fromIndex, 1);
+  nextItems.splice(toIndex, 0, movedItem);
+  return nextItems;
+}
+
+function setGoalDragPreview(event) {
+  const row = event.currentTarget.closest('tr');
+
+  if (!row || !event.dataTransfer.setDragImage) return;
+
+  const table = document.createElement('table');
+  const body = document.createElement('tbody');
+  const preview = row.cloneNode(true);
+  const rowBox = row.getBoundingClientRect();
+
+  table.className = 'goals-drag-preview-table';
+  table.style.width = `${rowBox.width}px`;
+  preview.classList.add('goal-row--drag-preview');
+
+  body.appendChild(preview);
+  table.appendChild(body);
+  document.body.appendChild(table);
+  event.dataTransfer.setDragImage(table, rowBox.width - 24, Math.max(18, rowBox.height / 2));
+
+  window.setTimeout(() => {
+    table.remove();
+  }, 0);
+}
 
 function getDueMeta(status, dueDate) {
   if (status === 'Completed') return 'Completed';
@@ -88,11 +114,24 @@ function formatDueDate(dueDate) {
   }).format(new Date(dueDate));
 }
 
-function sortGoals(goalList, sortBy) {
+function getGoalId(goal) {
+  return goal._id || goal.id;
+}
+
+function sortGoals(goalList, sortBy, orderIds = []) {
+  const orderMap = new Map(orderIds.map((id, index) => [id, index]));
+
   return [...goalList].sort((a, b) => {
-    if (sortBy === 'Progress: High to Low') return b.progress - a.progress;
-    if (sortBy === 'Progress: Low to High') return a.progress - b.progress;
     if (sortBy === 'Due Date') return new Date(a.dueDate) - new Date(b.dueDate);
+    if (sortBy === 'Custom Order') {
+      const firstOrder = orderMap.has(getGoalId(a)) ? orderMap.get(getGoalId(a)) : Number(a.order);
+      const secondOrder = orderMap.has(getGoalId(b)) ? orderMap.get(getGoalId(b)) : Number(b.order);
+
+      if (Number.isFinite(firstOrder) && Number.isFinite(secondOrder) && firstOrder !== secondOrder) {
+        return firstOrder - secondOrder;
+      }
+    }
+
     return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
   });
 }
@@ -112,16 +151,20 @@ function SummaryCard({ card }) {
   );
 }
 
-function GoalRow({ goal, isMenuOpen, onEdit, onMenuToggle, onRemove }) {
+function GoalRow({ goal, isDragging, isMenuOpen, onDragEnd, onDragOver, onDragStart, onDrop, onEdit, onMenuToggle, onRemove }) {
   const Icon = iconByCategory[goal.category] ?? Target;
   const iconTone = iconToneByCategory[goal.category] ?? 'blue';
   const statusTone = statusToneByStatus[goal.status] ?? 'gray';
-  const barTone = barToneByStatus[goal.status] ?? 'gray';
   const dueMeta = goal.dueMeta ?? getDueMeta(goal.status, goal.dueDate);
   const dueDate = formatDueDate(goal.dueDate);
 
   return (
-    <tr>
+    <tr
+      className={isDragging ? 'goal-row goal-row--dragging' : 'goal-row'}
+      onDragEnd={onDragEnd}
+      onDragOver={(event) => onDragOver(event, getGoalId(goal))}
+      onDrop={(event) => onDrop(event, getGoalId(goal))}
+    >
       <td>
         <div className='goal-title-cell'>
           <span className={`goal-icon goal-icon--${iconTone}`}>
@@ -129,22 +172,13 @@ function GoalRow({ goal, isMenuOpen, onEdit, onMenuToggle, onRemove }) {
           </span>
           <div>
             <strong>{goal.title}</strong>
-            <small>{goal.description}</small>
+            <small>{goal.category}</small>
           </div>
         </div>
       </td>
       <td>{goal.target}</td>
       <td>
-        <div className='goal-progress-cell'>
-          <strong>{goal.current}</strong>
-          <div className='goal-progress-track'>
-            <span
-              className={`goal-progress-fill goal-progress-fill--${barTone}`}
-              style={{ width: `${Math.min(goal.progress, 100)}%` }}
-            />
-          </div>
-          <small>{goal.progress}% of target</small>
-        </div>
+        <p className='goal-description-cell'>{goal.description || 'No description added yet.'}</p>
       </td>
       <td>
         <span className={`goal-status goal-status--${statusTone}`}>{goal.status}</span>
@@ -160,6 +194,16 @@ function GoalRow({ goal, isMenuOpen, onEdit, onMenuToggle, onRemove }) {
       </td>
       <td>
         <div className='goal-actions-cell'>
+          <button
+            className='goal-drag-button'
+            type='button'
+            aria-label={`Drag ${goal.title} to reorder`}
+            title='Drag to reorder'
+            draggable
+            onDragStart={(event) => onDragStart(event, getGoalId(goal))}
+          >
+            <GripVertical aria-hidden='true' />
+          </button>
           <button
             className='goal-more-button'
             type='button'
@@ -192,12 +236,15 @@ const GoalsPage = () => {
   const createGoalMutation = useCreateGoal();
   const updateGoalMutation = useUpdateGoal();
   const deleteGoalMutation = useDeleteGoal();
+  const reorderGoalsMutation = useReorderGoals();
   const isSavingGoal = createGoalMutation.isPending || updateGoalMutation.isPending;
   const [activeTab, setActiveTab] = useState('All Goals');
   const [category, setCategory] = useState('All Categories');
-  const [sortBy, setSortBy] = useState('All');
+  const [sortBy, setSortBy] = useState('Custom Order');
   const [openMenu, setOpenMenu] = useState(null);
   const [rowMenuId, setRowMenuId] = useState(null);
+  const [draggedGoalId, setDraggedGoalId] = useState(null);
+  const [goalOrderIds, setGoalOrderIds] = useState([]);
   const [modalMode, setModalMode] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState(emptyDraft);
@@ -214,11 +261,14 @@ const GoalsPage = () => {
     return () => document.removeEventListener('pointerdown', handlePointerDown);
   }, []);
 
+  useEffect(() => {
+    setGoalOrderIds(sortGoals(goals, 'Custom Order').map(getGoalId));
+  }, [goals]);
+
   const summaryCards = useMemo(() => {
     const total = goals.length;
     const active = goals.filter((goal) => goal.status === 'Active').length;
     const needsAttention = goals.filter((goal) => goal.status === 'Needs Attention').length;
-    const paused = goals.filter((goal) => goal.status === 'Paused').length;
     const completed = goals.filter((goal) => goal.status === 'Completed').length;
 
     return [
@@ -237,28 +287,21 @@ const GoalsPage = () => {
         icon: CircleAlert,
         tone: 'orange',
       },
-      {
-        label: 'Paused',
-        value: paused,
-        meta: `${Math.round((paused / total) * 100) || 0}% of goals`,
-        icon: CircleDot,
-        tone: 'muted',
-      },
       { label: 'Completed', value: completed, meta: 'Finished goals', icon: CircleCheck, tone: 'green' },
     ];
   }, [goals]);
 
   const visibleGoals = useMemo(() => {
     if (activeTab === 'All Goals') {
-      return sortGoals(goals, sortBy);
+      return sortGoals(goals, sortBy, goalOrderIds);
     }
 
     const filteredGoals = goals
       .filter((goal) => goal.status === activeTab)
       .filter((goal) => category === 'All Categories' || goal.category === category);
 
-    return sortGoals(filteredGoals, sortBy);
-  }, [activeTab, category, goals, sortBy]);
+    return sortGoals(filteredGoals, sortBy, goalOrderIds);
+  }, [activeTab, category, goalOrderIds, goals, sortBy]);
 
   function openNewGoalModal() {
     setDraft(emptyDraft);
@@ -287,11 +330,11 @@ const GoalsPage = () => {
 
     const goalData = {
       title: draft.title.trim() || 'Untitled Goal',
-      description: draft.description.trim() || 'Track progress toward this goal',
+      description: draft.description.trim() || 'Focus for this goal',
       category: draft.category,
       target: draft.target.trim() || 'N/A',
       current: draft.current.trim() || '0%',
-      progress: Number(draft.progress) || 0,
+      progress: draft.status === 'Completed' ? 100 : Number(draft.progress) || 0,
       status: draft.status,
       dueDate: draft.dueDate || null,
     };
@@ -299,6 +342,7 @@ const GoalsPage = () => {
     try {
       if (modalMode === 'edit') {
         await updateGoalMutation.mutateAsync({ id: editingId, goalData });
+        toast.success('Goal updated');
       } else {
         await createGoalMutation.mutateAsync(goalData);
       }
@@ -306,6 +350,7 @@ const GoalsPage = () => {
       setModalMode(null);
     } catch (mutationError) {
       console.error(mutationError);
+      toast.error(mutationError.message || 'Could not save goal');
     }
   }
 
@@ -318,6 +363,59 @@ const GoalsPage = () => {
     }
   }
 
+  function handleGoalDragStart(event, goalId) {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', goalId);
+    setGoalDragPreview(event);
+    setDraggedGoalId(goalId);
+    setRowMenuId(null);
+
+    if (sortBy !== 'Custom Order') {
+      setSortBy('Custom Order');
+    }
+  }
+
+  function handleGoalDragOver(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }
+
+  async function handleGoalDrop(event, targetGoalId) {
+    event.preventDefault();
+
+    const sourceGoalId = event.dataTransfer.getData('text/plain') || draggedGoalId;
+
+    if (!sourceGoalId || sourceGoalId === targetGoalId) {
+      setDraggedGoalId(null);
+      return;
+    }
+
+    const visibleIds = visibleGoals.map(getGoalId);
+    const sourceIndex = visibleIds.indexOf(sourceGoalId);
+    const targetIndex = visibleIds.indexOf(targetGoalId);
+
+    if (sourceIndex === -1 || targetIndex === -1) {
+      setDraggedGoalId(null);
+      return;
+    }
+
+    const nextVisibleIds = moveItem(visibleIds, sourceIndex, targetIndex);
+    const visibleIdSet = new Set(visibleIds);
+    const replacements = [...nextVisibleIds];
+    const sortedGoalIds = sortGoals(goals, 'Custom Order', goalOrderIds).map(getGoalId);
+    const nextOrderIds = sortedGoalIds.map((goalId) => (visibleIdSet.has(goalId) ? replacements.shift() : goalId));
+
+    setGoalOrderIds(nextOrderIds);
+    setDraggedGoalId(null);
+
+    try {
+      await reorderGoalsMutation.mutateAsync(nextOrderIds);
+    } catch (mutationError) {
+      console.error(mutationError);
+      setGoalOrderIds(sortedGoalIds);
+    }
+  }
+
   function handleTabChange(tab) {
     setActiveTab(tab);
 
@@ -327,11 +425,7 @@ const GoalsPage = () => {
   }
 
   if (isLoading) {
-    return (
-      <main className='goals-page'>
-        <div className='goals-empty-state'>Loading goals...</div>
-      </main>
-    );
+    return <LoadingScreen />;
   }
 
   if (error) {
@@ -347,7 +441,7 @@ const GoalsPage = () => {
       <header className='goals-header'>
         <div>
           <h1>Goals</h1>
-          <p>Set goals, track your progress, and become a better player.</p>
+          <p>Set goals, define the focus, and become a better player.</p>
         </div>
         {goals.length > 0 && (
           <button className='goals-new-button' type='button' onClick={openNewGoalModal}>
@@ -436,7 +530,7 @@ const GoalsPage = () => {
               <tr>
                 <th>Goal</th>
                 <th>Target</th>
-                <th>Progress</th>
+                <th>Description</th>
                 <th>Status</th>
                 <th>Due Date</th>
                 <th>Actions</th>
@@ -446,8 +540,13 @@ const GoalsPage = () => {
               {visibleGoals.map((goal) => (
                 <GoalRow
                   goal={goal}
+                  isDragging={draggedGoalId === getGoalId(goal)}
                   isMenuOpen={rowMenuId === goal._id}
                   key={goal._id}
+                  onDragEnd={() => setDraggedGoalId(null)}
+                  onDragOver={handleGoalDragOver}
+                  onDragStart={handleGoalDragStart}
+                  onDrop={handleGoalDrop}
                   onEdit={openEditGoalModal}
                   onMenuToggle={(goalId) => setRowMenuId(rowMenuId === goalId ? null : goalId)}
                   onRemove={handleRemove}
@@ -509,7 +608,7 @@ const GoalsPage = () => {
                 <textarea
                   value={draft.description}
                   onChange={(event) => setDraft({ ...draft, description: event.target.value })}
-                  placeholder='What should this goal track?'
+                  placeholder='Why does this goal matter, and what should you focus on?'
                 />
               </label>
               <label>
@@ -526,16 +625,6 @@ const GoalsPage = () => {
                   value={draft.current}
                   onChange={(event) => setDraft({ ...draft, current: event.target.value })}
                   placeholder='8.5%'
-                />
-              </label>
-              <label>
-                <span>Progress</span>
-                <input
-                  max='120'
-                  min='0'
-                  type='number'
-                  value={draft.progress}
-                  onChange={(event) => setDraft({ ...draft, progress: event.target.value })}
                 />
               </label>
               <label>

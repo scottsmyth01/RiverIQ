@@ -23,6 +23,24 @@ export function parseSummarySeat(line) {
   }
 
   // ==========================================
+  // Hero showed [Ah As] and won ($2.35)
+  // CoinPoker can omit the "with ..." hand description.
+  // ==========================================
+
+  match = line.match(new RegExp(`^Seat (\\d+): (.+?)(?: \\((.*?)\\))* showed \\[([^\\]]+)\\] and won \\(${MONEY_PATTERN.source}\\)$`, 'i'));
+
+  if (match) {
+    return {
+      seat: Number(match[1]),
+      player: match[2],
+      position: match[3] || null,
+      cards: match[4].split(' '),
+      result: 'won',
+      amount: getFirstAmount(match[5]),
+    };
+  }
+
+  // ==========================================
   // Hero showed [Ah As] and collected ($2.35)
   // Hero (button) showed [Ah As] and collected ($2.35)
   // ==========================================

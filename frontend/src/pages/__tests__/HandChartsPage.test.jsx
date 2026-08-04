@@ -10,7 +10,7 @@ vi.mock('../../hooks/useSessions', () => ({
 const { useSessions } = await import('../../hooks/useSessions');
 
 describe('HandChartsPage', () => {
-  test('shows 5,000-hand unlock progress for actual hand charts', () => {
+  test('shows 10,000-hand unlock progress for actual hand charts', () => {
     useSessions.mockReturnValue({
       data: [
         {
@@ -34,6 +34,11 @@ describe('HandChartsPage', () => {
 
     renderWithRouter(<HandChartsPage />);
 
-    expect(screen.getByText('5000 hands needed for hand chart, you currently have 250/5000 at 6max.')).toBeInTheDocument();
+    expect(
+      screen.getByText((content) =>
+        content.includes('10,000 hands needed for hand chart') &&
+        content.includes('250/10000 at 6max.'),
+      ),
+    ).toBeInTheDocument();
   });
 });

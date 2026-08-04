@@ -135,6 +135,22 @@
   object-fit: contain;
 }
 
+:root[data-theme='dark'] .session-site-card__logo--ggpoker {
+  background: #080808;
+}
+
+.session-site-card__logo--ggpoker {
+  padding: 0;
+  background: #080808;
+  border-color: color-mix(in srgb, #fff 12%, transparent);
+  overflow: hidden;
+}
+
+.session-site-card__logo--ggpoker img {
+  width: 100%;
+  height: 100%;
+}
+
 .session-site-card__logo svg {
   width: 26px;
   height: 26px;

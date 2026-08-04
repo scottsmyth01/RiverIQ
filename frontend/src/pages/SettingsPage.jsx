@@ -45,7 +45,7 @@ function getSettingsForm(user) {
   return {
     username: user?.username || '',
     theme: preferences.theme || localStorage.getItem('theme') || 'dark',
-    dateRange: preferences.defaultTimeFilter || '30d',
+    dateRange: preferences.defaultTimeFilter || 'all',
     tableSize: preferences.defaultTableSize || '9max',
     currency: preferences.currency || 'USD',
   };
@@ -83,7 +83,7 @@ const SettingsPage = () => {
   const savedThemeRef = useRef(user?.preferences?.theme || localStorage.getItem('theme') || 'dark');
 
   const { username, theme, dateRange, tableSize, currency } = settingsForm;
-  const selectedDateRange = dateRangeOptions.find((option) => option.value === dateRange) || dateRangeOptions[2];
+  const selectedDateRange = dateRangeOptions.find((option) => option.value === dateRange) || dateRangeOptions[0];
   const selectedTableSize = tableSizeOptions.find((option) => option.value === tableSize) || tableSizeOptions[3];
   const selectedCurrency = currencyOptions.find((option) => option.value === currency) || currencyOptions[0];
   const isPro = user?.subscription === 'pro';
@@ -94,7 +94,7 @@ const SettingsPage = () => {
   const hasProfileChanges = trimmedUsername !== savedUsername;
   const hasPreferenceChanges =
     theme !== (savedPreferences.theme || 'dark') ||
-    dateRange !== (savedPreferences.defaultTimeFilter || '30d') ||
+    dateRange !== (savedPreferences.defaultTimeFilter || 'all') ||
     tableSize !== (savedPreferences.defaultTableSize || '9max') ||
     currency !== (savedPreferences.currency || 'USD');
   const hasSettingsChanges = hasProfileChanges || hasPreferenceChanges;

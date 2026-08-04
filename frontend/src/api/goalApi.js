@@ -53,6 +53,15 @@ export async function updateGoal({ id, goalData }) {
   return normalizeGoal(data.goal);
 }
 
+export async function reorderGoals(ids) {
+  const data = await request('/api/goals/order', {
+    method: 'PATCH',
+    body: JSON.stringify({ ids }),
+  });
+
+  return (data.goals || []).map(normalizeGoal);
+}
+
 export async function deleteGoal(id) {
   await request(`/api/goals/${id}`, {
     method: 'DELETE',

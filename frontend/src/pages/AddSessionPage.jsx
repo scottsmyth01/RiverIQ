@@ -12,9 +12,9 @@ const pokerSites = [
   { label: 'PokerStars', value: 'pokerstars' },
   { label: 'GGPoker', value: 'ggpoker' },
   { label: 'CoinPoker', value: 'coinpoker' },
-  { label: 'Bovada', value: 'bovada' },
-  { label: '888poker', value: '888poker' },
-  { label: 'partypoker', value: 'partypoker' },
+  { label: 'FanDuel', value: 'fanduel' },
+  // { label: '888poker', value: '888poker' },
+  // { label: 'partypoker', value: 'partypoker' },
 ];
 
 const AddSessionPage = () => {
@@ -24,7 +24,7 @@ const AddSessionPage = () => {
     notes: '',
     tags: '',
   });
-  const [handHistoryFile, setHandHistoryFile] = useState(null);
+  const [handHistoryFiles, setHandHistoryFiles] = useState([]);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -42,12 +42,19 @@ const AddSessionPage = () => {
   }
 
   function handleFileChange(event) {
-    const [file] = event.target.files || [];
-    setHandHistoryFile(file || null);
+    setHandHistoryFiles(Array.from(event.target.files || []));
   }
 
-  function clearSelectedFile() {
-    setHandHistoryFile(null);
+  function clearSelectedFiles() {
+    setHandHistoryFiles([]);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }
+
+  function removeSelectedFile(fileIndex) {
+    setHandHistoryFiles((files) => files.filter((_, index) => index !== fileIndex));
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -59,8 +66,7 @@ const AddSessionPage = () => {
 
     if (isPending) return;
 
-    const [file] = event.dataTransfer.files || [];
-    setHandHistoryFile(file || null);
+    setHandHistoryFiles(Array.from(event.dataTransfer.files || []));
   }
 
   async function handleSubmit(event) {
@@ -71,8 +77,8 @@ const AddSessionPage = () => {
       return;
     }
 
-    if (!handHistoryFile) {
-      toast.error('Please choose a hand history file');
+    if (!handHistoryFiles.length) {
+      toast.error('Please choose at least one hand history file');
       return;
     }
 
@@ -81,7 +87,9 @@ const AddSessionPage = () => {
     formData.set('sessionName', sessionDetails.sessionName.trim());
     formData.set('notes', sessionDetails.notes.trim());
     formData.set('tags', sessionDetails.tags.trim());
-    formData.set('handHistory', handHistoryFile);
+    handHistoryFiles.forEach((file) => {
+      formData.append('handHistory', file);
+    });
 
     try {
       const result = await addSession(formData);
@@ -115,7 +123,7 @@ const AddSessionPage = () => {
       <header className='add-session-heading'>
         <div>
           <h1>Add New Session</h1>
-          <p>Upload a single hand history file with one or more sessions.</p>
+          <p>Upload one or more hand history files. RiverIQ will create each detected session.</p>
         </div>
         <Link className='add-session-help-link' to='/dashboard/help#hand-history-uploads'>
           <CircleHelp aria-hidden='true' />
@@ -155,15 +163,16 @@ const AddSessionPage = () => {
             >
               <CloudUpload aria-hidden='true' />
               <h2>Upload Hand History File</h2>
-              <p>Drag and drop your file here, or click to browse</p>
+              <p>Drag and drop your files here, or click to browse</p>
 
-              <span className='choose-file-button'>Choose File</span>
+              <span className='choose-file-button'>Choose Files</span>
               <input
                 ref={fileInputRef}
                 id='hand-history-file'
                 name='handHistory'
                 type='file'
                 accept='.txt,.hhh'
+                multiple
                 disabled={isPending}
                 onChange={handleFileChange}
               />
@@ -175,18 +184,30 @@ const AddSessionPage = () => {
               </small>
             </label>
 
-            {handHistoryFile && (
-              <div className='selected-file'>
-                <FileText aria-hidden='true' />
-                <span>{handHistoryFile.name}</span>
-                <button
-                  type='button'
-                  aria-label='Remove selected file'
-                  disabled={isPending}
-                  onClick={clearSelectedFile}
-                >
-                  <X aria-hidden='true' />
-                </button>
+            {handHistoryFiles.length > 0 && (
+              <div className='selected-files'>
+                <div className='selected-files__header'>
+                  <span>
+                    {handHistoryFiles.length} file{handHistoryFiles.length === 1 ? '' : 's'} selected
+                  </span>
+                  <button type='button' disabled={isPending} onClick={clearSelectedFiles}>
+                    Clear all
+                  </button>
+                </div>
+                {handHistoryFiles.map((file, index) => (
+                  <div className='selected-file' key={`${file.name}-${file.lastModified}-${index}`}>
+                    <FileText aria-hidden='true' />
+                    <span>{file.name}</span>
+                    <button
+                      type='button'
+                      aria-label={`Remove ${file.name}`}
+                      disabled={isPending}
+                      onClick={() => removeSelectedFile(index)}
+                    >
+                      <X aria-hidden='true' />
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </section>

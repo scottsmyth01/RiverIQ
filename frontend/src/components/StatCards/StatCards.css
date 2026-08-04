@@ -60,6 +60,13 @@
   }
 }
 
+@media (max-width: 760px) {
+  .stat-card--hands,
+  .stat-card--win-rate {
+    display: none;
+  }
+}
+
 .icon-background {
   width: 56px;
   height: 56px;

@@ -2,8 +2,9 @@ import './AnalyticsPage.css';
 import { allPositions, positionsByTableSize, tableSizes } from '../utils/analytics/positions';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, LinearScale, Tooltip } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import { CalendarDays, ChevronDown, LoaderCircle, Table2 } from 'lucide-react';
+import { CalendarDays, ChevronDown, Gauge, LoaderCircle, Table2 } from 'lucide-react';
 import { datePeriods } from '../utils/analytics/datePeriods';
+import { filterSessions } from '../utils/filterSessions';
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { getPeriodFromDefaultTimeFilter } from '../utils/dateRangePreferences';
 import { positionGoalRanges } from '../utils/analytics/positionGoalRanges';
@@ -12,6 +13,7 @@ import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 import { useAuth } from '../hooks/useAuth';
 import { useSessions } from '../hooks/useSessions';
 import { toNumber, getStatValue, getByPosition } from '../utils/analytics/helpers';
+import { getSessionBigBlind, getSessionBbWon } from '../utils/sessionUnits';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip);
 
@@ -117,9 +119,10 @@ function getMatrixColor(value, max) {
   if (!isNumber(value)) return 'var(--analytics-empty-cell)';
   const percentage = Number(value) / max;
 
-  if (percentage < 0.25) return '#dc2626';
-  if (percentage < 0.72) return '#f97316';
-  return '#facc15';
+  if (percentage < 0.25) return '#243244';
+  if (percentage < 0.5) return '#0f766e';
+  if (percentage < 0.75) return '#34d399';
+  return '#bef264';
 }
 
 function getMatrixTextColor(value, max) {
@@ -247,12 +250,161 @@ function getOverallProfile(stats) {
   };
 }
 
+function getOverallProfileFromSessions(sessions, fallbackPositionStats = []) {
+  if (!sessions.length) {
+    return getOverallProfile(fallbackPositionStats);
+  }
+
+  const weightedAverage = (sessionKey) => {
+    const totals = sessions.reduce(
+      (accumulator, session) => {
+        const value = getSessionStat(session, sessionKey);
+        const hands = getSessionHands(session);
+
+        if (!isNumber(value) || hands <= 0) return accumulator;
+
+        accumulator.value += value * hands;
+        accumulator.hands += hands;
+        return accumulator;
+      },
+      { value: 0, hands: 0 },
+    );
+
+    return totals.hands > 0 ? roundStat(totals.value / totals.hands) : 'N/A';
+  };
+
+  return {
+    position: 'Overall',
+    hands: sessions.reduce((sum, session) => sum + getSessionHands(session), 0),
+    vpip: weightedAverage('vpip'),
+    pfr: weightedAverage('pfr'),
+    winRate: weightedAverage('bb100'),
+    threeBet: weightedAverage('threeBet'),
+    foldToThreeBet: weightedAverage('foldToThreeBet'),
+    fourBet: weightedAverage('fourBet'),
+    foldToFourBet: weightedAverage('foldToFourBet'),
+    steal: weightedAverage('steal'),
+    foldToSteal: weightedAverage('foldToSteal'),
+    cBet: weightedAverage('cBet'),
+    foldCBet: weightedAverage('foldToCBet'),
+    turnCBet: weightedAverage('turnCBet'),
+    foldToTurnCBet: weightedAverage('foldToTurnCBet'),
+    wtsd: weightedAverage('wtsd'),
+    wsd: weightedAverage('wsd'),
+    aggressionFactor: weightedAverage('aggressionFactor'),
+    netWon: Number(
+      sessions
+        .reduce((sum, session) => sum + toNumber(session.profit ?? session.stats?.profit), 0)
+        .toFixed(2),
+    ),
+  };
+}
+
+function getSessionsForTableSize(sessions, tableSize) {
+  return sessions.filter((session) => {
+    const positions = Object.keys(getByPosition(session.stats));
+    return getTableSizeFromPositions(positions) === tableSize;
+  });
+}
+
 function getMetricStatus(value, min, max) {
   return value >= min && value <= max ? 'good' : 'warning';
 }
 
 function getProgress(value, max) {
   return Math.min(96, Math.max(8, Math.round((value / max) * 100)));
+}
+
+function getSessionHands(session) {
+  return toNumber(session?.hands ?? session?.stats?.handsPlayed);
+}
+
+function getSessionStat(session, key) {
+  const value = session?.stats?.[key] ?? session?.[key];
+  const number = Number(value);
+
+  return Number.isFinite(number) ? number : null;
+}
+
+function getSessionAllInEvBb(session) {
+  const allInEV = Number(session?.allInEV ?? session?.stats?.allInEV);
+  const bigBlind = getSessionBigBlind(session);
+
+  return Number.isFinite(allInEV) && bigBlind > 0 ? allInEV / bigBlind : null;
+}
+
+function getSessionAllInHandCount(session) {
+  return toNumber(session?.allInWinSampleSize ?? session?.stats?.allInWinSampleSize);
+}
+
+function getAllInEvSummary(sessions) {
+  return sessions.reduce(
+    (summary, session) => {
+      const allInEvBb = getSessionAllInEvBb(session);
+      const actualBb = getSessionBbWon(session);
+      const hands = getSessionHands(session);
+      const allInHands = getSessionAllInHandCount(session);
+
+      if (allInEvBb !== null) {
+        summary.allInEvBb += allInEvBb;
+        summary.sessionsWithEv += 1;
+      }
+
+      if (actualBb !== null) {
+        summary.actualBb += actualBb;
+      }
+
+      summary.hands += hands;
+      summary.allInHands += allInHands;
+      return summary;
+    },
+    { allInEvBb: 0, actualBb: 0, allInHands: 0, hands: 0, sessionsWithEv: 0 },
+  );
+}
+
+function formatBigBlindValue(value, hasValue = true) {
+  if (!hasValue || !Number.isFinite(value)) return 'N/A';
+
+  return `${value > 0 ? '+' : ''}${value.toLocaleString('en-US', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  })} BB`;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getPlayerStyleProfile(profile) {
+  const vpip = isNumber(profile.vpip) ? profile.vpip : null;
+  const aggressionFactor = isNumber(profile.aggressionFactor) ? profile.aggressionFactor : null;
+  const hasStyle = vpip !== null && aggressionFactor !== null;
+
+  if (!hasStyle) {
+    return {
+      aggressionFactor,
+      hasStyle: false,
+      label: 'Not enough data',
+      note: 'Upload more hands to classify your player type.',
+      vpip,
+      x: 50,
+      y: 50,
+    };
+  }
+
+  const isLoose = vpip >= 24;
+  const isAggressive = aggressionFactor >= 1.8;
+  const label = `${isLoose ? 'Loose' : 'Tight'} ${isAggressive ? 'Aggressive' : 'Passive'}`;
+
+  return {
+    aggressionFactor,
+    hasStyle,
+    label,
+    note: `${profile.position} profile based on VPIP and postflop aggression factor.`,
+    vpip,
+    x: clamp((vpip / 45) * 100, 5, 95),
+    y: clamp((aggressionFactor / 3.5) * 100, 5, 95),
+  };
 }
 
 function getPositionGoals(position) {
@@ -282,7 +434,7 @@ const metricDescriptions = {
   FTBet: 'How often you fold on the turn after facing a second barrel.',
   AF: 'Postflop aggression ratio. Bets and raises compared with calls.',
   WTSD: 'Went To Showdown. How often you reach showdown after seeing the flop.',
-  'W$SD': 'Won Money at Showdown. How often you win when the hand reaches showdown.',
+  W$SD: 'Won Money at Showdown. How often you win when the hand reaches showdown.',
 };
 
 function buildMetric(label, value, suffix, range, progressMax) {
@@ -312,7 +464,13 @@ function buildPreflopStats(profile) {
 
   return [
     buildMetric('VPIP', profile.vpip, '%', goals.vpip, 52),
-    buildMetric('PFR', profile.position === 'BB' ? 'N/A' : profile.pfr, '%', profile.position === 'BB' ? null : goals.pfr, 44),
+    buildMetric(
+      'PFR',
+      profile.position === 'BB' ? 'N/A' : profile.pfr,
+      '%',
+      profile.position === 'BB' ? null : goals.pfr,
+      44,
+    ),
     buildMetric('3Bet', profile.threeBet, '%', goals.threeBet, 13),
     buildMetric('F3Bet', profile.foldToThreeBet, '%', goals.foldToThreeBet, 70),
     buildMetric('4Bet', profile.fourBet, '%', goals.fourBet, 10),
@@ -358,15 +516,15 @@ function EmptyLeakTracker() {
 }
 
 const positionColors = [
-  '#2563eb',
-  '#7c3aed',
-  '#db2777',
-  '#f59e0b',
-  '#eab308',
-  '#16a34a',
-  '#14b8a6',
-  '#0ea5e9',
-  '#ef4444',
+  '#60a5fa',
+  '#a78bfa',
+  '#f472b6',
+  '#2dd4bf',
+  '#bef264',
+  '#86efac',
+  '#22d3ee',
+  '#38bdf8',
+  '#fb7185',
 ];
 
 const AnalyticsPage = () => {
@@ -389,9 +547,25 @@ const AnalyticsPage = () => {
   const { data: allSessions = [] } = useSessions();
 
   const availableTableSizes = useMemo(() => getAvailableTableSizes(allSessions), [allSessions]);
+  const datePeriodsWithAvailability = useMemo(
+    () =>
+      datePeriods.map((period) => {
+        if (period.value === 'all-time') {
+          return { ...period, available: true, sessionCount: allSessions.length };
+        }
+
+        const sessionCount = filterSessions(allSessions, period.value).length;
+        return { ...period, available: sessionCount > 0, sessionCount };
+      }),
+    [allSessions],
+  );
   const positionStats = getPositionStatsFromSessions(sessions);
   const currentPositionStats = positionStats.filter((stat) => positionNames.includes(stat.position));
-  const overallProfile = getOverallProfile(currentPositionStats);
+  const currentTableSessions = getSessionsForTableSize(sessions, selectedTableSize);
+  const overallProfile = getOverallProfileFromSessions(currentTableSessions, currentPositionStats);
+  const allInEvSummary = getAllInEvSummary(currentTableSessions);
+  const hasAllInEv = allInEvSummary.sessionsWithEv > 0;
+  const allInEvDiff = allInEvSummary.allInEvBb - allInEvSummary.actualBb;
   const selectedPositionProfile = currentPositionStats.find((stat) => stat.position === activePosition);
   const activeProfile = activePosition === 'Overall' ? overallProfile : selectedPositionProfile || overallProfile;
   const selectedPreflopStats = buildPreflopStats(activeProfile);
@@ -410,7 +584,7 @@ const AnalyticsPage = () => {
     color: positionColors[index % positionColors.length],
   }));
   const totalProfit = currentPositionStats.reduce((sum, stat) => sum + stat.netWon, 0);
-  const threeBetMatrix = getThreeBetMatrixFromSessions(sessions);
+  const threeBetMatrix = getThreeBetMatrixFromSessions(currentTableSessions);
   const threeBetMatrixMax = Math.max(
     1,
     ...positionNames.flatMap((rowPosition) =>
@@ -447,6 +621,14 @@ const AnalyticsPage = () => {
   }, [defaultPeriod]);
 
   useEffect(() => {
+    const activePeriod = datePeriodsWithAvailability.find((period) => period.value === selectedPeriod);
+
+    if (activePeriod && !activePeriod.available) {
+      setSelectedPeriod('all-time');
+    }
+  }, [datePeriodsWithAvailability, selectedPeriod]);
+
+  useEffect(() => {
     if (activePosition !== 'Overall' && !positionNames.includes(activePosition)) {
       setActivePosition('Overall');
     }
@@ -473,10 +655,10 @@ const AnalyticsPage = () => {
         data: currentPositionStats.map((item) => item.winRate),
         backgroundColor: currentPositionStats.map((item) => {
           if (activePosition !== 'Overall' && item.position !== activePosition) {
-            return item.winRate >= 0 ? 'rgba(69, 189, 87, 0.28)' : 'rgba(227, 73, 67, 0.28)';
+            return item.winRate >= 0 ? 'rgba(134, 239, 172, 0.26)' : 'rgba(251, 113, 133, 0.24)';
           }
 
-          return item.winRate >= 0 ? '#45bd57' : '#e34943';
+          return item.winRate >= 0 ? '#86efac' : '#fb7185';
         }),
         borderRadius: 2,
         barThickness: 26,
@@ -543,9 +725,10 @@ const AnalyticsPage = () => {
               value={selectedPeriod}
               onChange={(event) => setSelectedPeriod(event.target.value)}
             >
-              {datePeriods.map((period) => (
-                <option value={period.value} key={period.value}>
+              {datePeriodsWithAvailability.map((period) => (
+                <option value={period.value} disabled={!period.available} key={period.value}>
                   {period.label}
+                  {!period.available ? ' (N/A)' : ''}
                 </option>
               ))}
             </select>
@@ -576,9 +759,20 @@ const AnalyticsPage = () => {
         </div>
       </div>
 
+      <RunStatusPanel diffBb={allInEvDiff} hasAllInEv={hasAllInEv} />
+      <PlayerStylePanel profile={activeProfile} isLoading={isLoading} />
+
       <div className='analytics-grid analytics-grid--top'>
         <MetricPanel title={`Preflop ${activeProfile.position}`} stats={selectedPreflopStats} />
         <MetricPanel title={`Postflop ${activeProfile.position}`} stats={selectedPostflopStats} />
+        <ResultsPanel
+          allInEvBb={allInEvSummary.allInEvBb}
+          actualBb={allInEvSummary.actualBb}
+          allInHands={allInEvSummary.allInHands}
+          diffBb={allInEvDiff}
+          hasAllInEv={hasAllInEv}
+          hands={allInEvSummary.hands}
+        />
 
         <article className='analytics-panel analytics-position-chart'>
           <h2>{selectedTableSize} Position Win Rate (bb/100)</h2>
@@ -776,8 +970,131 @@ function MetricPanel({ title, stats }) {
   );
 }
 
+function getRunStatus(diffBb, hasAllInEv) {
+  if (!hasAllInEv || !Number.isFinite(diffBb)) {
+    return {
+      label: 'Not enough data',
+      tone: 'neutral',
+      text: 'Upload hands with all-in EV data to see whether your results are ahead of or behind expectation.',
+    };
+  }
+
+  if (diffBb >= 5) {
+    return {
+      label: 'Running Cold',
+      tone: 'cold',
+      text: 'Your actual results are behind your all-in EV. The decisions may be better than the short-term results look.',
+    };
+  }
+
+  if (diffBb <= -5) {
+    return {
+      label: 'Running Hot',
+      tone: 'hot',
+      text: 'Your actual results are ahead of your all-in EV. Nice heater, but expect this to normalize over more hands.',
+    };
+  }
+
+  return {
+    label: 'Running Neutral',
+    tone: 'neutral',
+    text: 'Your actual results are close to your all-in EV. No major luck swing is showing in this sample.',
+  };
+}
+
+function ResultsPanel({ actualBb, allInEvBb, allInHands, diffBb, hands, hasAllInEv }) {
+  const resultRows = [
+    { label: 'All-in EV', value: formatBigBlindValue(allInEvBb, hasAllInEv), tone: allInEvBb >= 0 ? 'positive' : 'negative' },
+    { label: 'Actual', value: formatBigBlindValue(actualBb, hasAllInEv), tone: actualBb >= 0 ? 'positive' : 'negative' },
+    { label: 'EV Diff', value: formatBigBlindValue(diffBb, hasAllInEv), tone: diffBb >= 0 ? 'positive' : 'negative' },
+    { label: 'All-in Hands', value: allInHands.toLocaleString('en-US') },
+    { label: 'Total Hands', value: hands.toLocaleString('en-US') },
+  ];
+
+  return (
+    <article className='analytics-panel analytics-results-panel'>
+      <h2>All-in EV by BB</h2>
+      <div className='analytics-results-list'>
+        {resultRows.map((row) => (
+          <div className='analytics-results-row' key={row.label}>
+            <span>{row.label}</span>
+            <strong className={`analytics-results-value${row.tone ? ` analytics-results-value--${row.tone}` : ''}`}>
+              {row.value}
+            </strong>
+          </div>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function RunStatusPanel({ diffBb, hasAllInEv }) {
+  const runStatus = getRunStatus(diffBb, hasAllInEv);
+
+  return (
+    <article className='analytics-panel analytics-run-panel'>
+      <div className={`analytics-run-card analytics-run-card--${runStatus.tone}`}>
+        <span>Luck Check</span>
+        <strong>{runStatus.label}</strong>
+        <p>{runStatus.text}</p>
+      </div>
+    </article>
+  );
+}
+
+function PlayerStylePanel({ profile, isLoading }) {
+  const styleProfile = getPlayerStyleProfile(profile);
+  const vpipText = styleProfile.vpip === null ? 'N/A' : `${styleProfile.vpip}%`;
+  const aggressionText =
+    styleProfile.aggressionFactor === null
+      ? 'N/A'
+      : styleProfile.aggressionFactor.toLocaleString('en-US', {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        });
+
+  return (
+    <article className='analytics-panel analytics-player-style-panel'>
+      <div className='analytics-player-style-head'>
+        <div>
+          <h2>Player Type</h2>
+          <p>{styleProfile.note}</p>
+        </div>
+        <strong>{styleProfile.label}</strong>
+      </div>
+      <div className={`analytics-style-frame${isLoading ? ' analytics-style-frame--loading' : ''}`}>
+        <div className='analytics-style-stats'>
+          <div>
+            <span>VPIP</span>
+            <strong>{vpipText}</strong>
+            <small>Tight to loose</small>
+          </div>
+          <div>
+            <span>AF</span>
+            <strong>{aggressionText}</strong>
+            <small>Passive to aggressive</small>
+          </div>
+        </div>
+        <div className='analytics-style-map' aria-label={`Player type: ${styleProfile.label}`}>
+          <span className='analytics-style-quadrant analytics-style-quadrant--top-left'>Tight Aggressive</span>
+          <span className='analytics-style-quadrant analytics-style-quadrant--top-right'>Loose Aggressive</span>
+          <span className='analytics-style-quadrant analytics-style-quadrant--bottom-left'>Tight Passive</span>
+          <span className='analytics-style-quadrant analytics-style-quadrant--bottom-right'>Loose Passive</span>
+          <span
+            className='analytics-style-dot'
+            style={{ left: `${styleProfile.x}%`, bottom: `${styleProfile.y}%` }}
+          />
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function PositionRatePanel({ title, stats, activePosition, isLoading }) {
-  const openRaiseValues = stats.filter((stat) => stat.position !== 'BB').map((stat) => stat.pfr).filter(isNumber);
+  const openRaiseValues = stats
+    .filter((stat) => stat.position !== 'BB')
+    .map((stat) => stat.pfr)
+    .filter(isNumber);
   const maxOpenRaise = openRaiseValues.length ? Math.max(...openRaiseValues) : 0;
   const progressMax = Math.max(1, Math.ceil(maxOpenRaise * 1.15));
 
@@ -786,9 +1103,9 @@ function PositionRatePanel({ title, stats, activePosition, isLoading }) {
       <h2>{title}</h2>
       <ChartLoadingFrame isLoading={isLoading}>
         <div className='analytics-position-rate-list'>
-          {stats.map((stat) => {
+          {stats.filter((stat) => stat.position !== 'BB').map((stat) => {
             const isMuted = activePosition !== 'Overall' && stat.position !== activePosition;
-            const hasOpenRaise = stat.position !== 'BB' && isNumber(stat.pfr);
+            const hasOpenRaise = isNumber(stat.pfr);
 
             return (
               <div

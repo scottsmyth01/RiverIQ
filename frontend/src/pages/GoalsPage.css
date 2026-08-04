@@ -70,7 +70,7 @@
 
 .goals-summary-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
 }
 
@@ -343,6 +343,32 @@
   background: var(--surface-row-hover);
 }
 
+.goal-row--dragging {
+  opacity: 0.55;
+}
+
+.goals-drag-preview-table {
+  position: fixed;
+  z-index: -1;
+  top: -1000px;
+  left: -1000px;
+  border-collapse: collapse;
+  pointer-events: none;
+}
+
+.goal-row--drag-preview {
+  overflow: hidden;
+  opacity: 0.72;
+  background: var(--surface-row-hover);
+  border: 1px solid var(--accent-green-border-strong);
+  border-radius: 8px;
+  box-shadow: 0 18px 42px var(--accent-green-glow-soft);
+}
+
+.goal-row--drag-preview td {
+  background: color-mix(in srgb, var(--surface-row-hover) 82%, transparent);
+}
+
 .goals-table tbody tr:last-child td {
   border-bottom: 0;
 }
@@ -354,7 +380,6 @@
 }
 
 .goal-title-cell strong,
-.goal-progress-cell strong,
 .goal-date-cell span {
   display: block;
   color: var(--text-white);
@@ -362,7 +387,6 @@
 }
 
 .goal-title-cell small,
-.goal-progress-cell small,
 .goal-date-cell small {
   display: block;
   margin-top: 4px;
@@ -410,43 +434,17 @@
   background: rgba(148, 163, 184, 0.12);
 }
 
-.goal-progress-cell {
-  display: grid;
-  gap: 6px;
+.goal-description-cell {
+  max-width: 320px;
+  margin: 0;
+  color: var(--text-muted-light);
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.45;
 }
 
-.goal-progress-track {
-  width: 100%;
-  height: 4px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: var(--surface-chart-muted);
-}
-
-.goal-progress-fill {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-}
-
-.goal-progress-fill--green {
-  background: var(--color-primary-hover);
-}
-
-.goal-progress-fill--purple {
-  background: #b266ff;
-}
-
-.goal-progress-fill--blue {
-  background: #4b9dff;
-}
-
-.goal-progress-fill--orange {
-  background: #ff7c1c;
-}
-
-.goal-progress-fill--gray {
-  background: var(--text-table-muted);
+.goal-description-cell:empty {
+  color: var(--text-table-muted);
 }
 
 .goal-status {
@@ -531,6 +529,35 @@
 .goal-actions-cell {
   position: relative;
   display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.goal-drag-button {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--text-table-muted);
+  background: var(--surface-control-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 6px;
+  cursor: grab;
+  transition:
+    color var(--transition),
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.goal-drag-button:hover,
+.goal-drag-button:focus-visible {
+  color: var(--color-primary);
+  background: var(--surface-row-hover);
+  border-color: var(--accent-green-border-strong);
+}
+
+.goal-drag-button:active {
+  cursor: grabbing;
 }
 
 .goal-row-menu {
@@ -895,25 +922,7 @@
   }
 
   .goals-summary-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .goals-summary-card {
-    min-height: 78px;
-    align-items: center;
-    padding: 14px;
-  }
-
-  .goals-summary-card strong {
-    display: inline-block;
-    margin-top: 6px;
-    margin-right: 8px;
-    font-size: 1.35rem;
-  }
-
-  .goals-summary-card small {
-    display: inline-block;
-    margin-top: 0;
+    display: none;
   }
 
   .goals-table-card {
@@ -1021,7 +1030,7 @@
   }
 
   .goals-table td:nth-child(3)::before {
-    content: 'Progress';
+    content: 'Description';
   }
 
   .goals-table td:nth-child(4)::before {
@@ -1070,8 +1079,8 @@
     height: 38px;
   }
 
-  .goal-progress-cell {
-    width: 100%;
+  .goal-description-cell {
+    max-width: none;
   }
 
   .goal-status {
@@ -1100,10 +1109,6 @@
 @media (max-width: 480px) {
   .goals-page {
     padding: 10px;
-  }
-
-  .goals-summary-grid {
-    display: none;
   }
 
   .goals-table td {
@@ -1168,7 +1173,6 @@
 :root[data-theme='light'] .goals-summary-card strong,
 :root[data-theme='light'] .goals-tabs button.active,
 :root[data-theme='light'] .goal-title-cell strong,
-:root[data-theme='light'] .goal-progress-cell strong,
 :root[data-theme='light'] .goal-date-cell span,
 :root[data-theme='light'] .goal-modal-header h2 {
   color: #0f172a;
@@ -1180,13 +1184,16 @@
 :root[data-theme='light'] .goals-result-count,
 :root[data-theme='light'] .goals-table th,
 :root[data-theme='light'] .goal-title-cell small,
-:root[data-theme='light'] .goal-progress-cell small,
 :root[data-theme='light'] .goal-date-cell small,
 :root[data-theme='light'] .goal-date-cell svg,
 :root[data-theme='light'] .goal-more-button,
 :root[data-theme='light'] .goal-modal-header p,
 :root[data-theme='light'] .goal-modal label span {
   color: #475569;
+}
+
+:root[data-theme='light'] .goal-description-cell {
+  color: #334155;
 }
 
 :root[data-theme='light'] .goals-summary-card,
@@ -1246,10 +1253,6 @@
 :root[data-theme='light'] .goal-row-menu button {
   border-color: #e2e8f0;
   color: #1e293b;
-}
-
-:root[data-theme='light'] .goal-progress-track {
-  background: #e2e8f0;
 }
 
 :root[data-theme='light'] .goal-status--green {

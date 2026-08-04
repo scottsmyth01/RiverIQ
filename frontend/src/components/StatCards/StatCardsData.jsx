@@ -25,6 +25,7 @@ export const getStatCards = (sessions = []) => {
 
   return [
     {
+      id: 'total-profit',
       title: 'Total Profit',
       value: totalProfit,
       formatValue: (value) => `$${value.toFixed(2)}`,
@@ -32,6 +33,7 @@ export const getStatCards = (sessions = []) => {
       iconColor: '#00ff37',
     },
     {
+      id: 'win-rate',
       title: 'Win Rate',
       value: bb100,
       formatValue: (value) => `${value.toFixed(2)} bb/100`,
@@ -39,6 +41,7 @@ export const getStatCards = (sessions = []) => {
       iconColor: '#3b82f6',
     },
     {
+      id: 'hands',
       title: 'Hands',
       value: totalHands,
       formatValue: (value) => value,
@@ -46,6 +49,7 @@ export const getStatCards = (sessions = []) => {
       iconColor: '#7b00ff',
     },
     {
+      id: 'sessions',
       title: 'Sessions',
       value: totalSessions,
       formatValue: (value) => value,
@@ -62,5 +66,5 @@ function parseBigBlind(stakes) {
     .match(/\d+(?:\.\d+)?/g)
     ?.map(Number)
     .filter((amount) => Number.isFinite(amount));
-  return amounts?.length ? amounts.at(-1) : null;
+  return amounts?.length >= 2 ? amounts[1] : amounts?.[0] ?? null;
 }

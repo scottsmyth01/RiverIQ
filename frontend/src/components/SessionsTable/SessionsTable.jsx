@@ -5,14 +5,20 @@ import { BarChart3, ChevronLeft, ChevronRight, ExternalLink, Lock, MoreVertical,
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import SessionToolbar from './SessionToolbar';
-import { applySorting, applyDateFilter, numTables as tables, finish as applyFinish } from './sessionTableFilters';
+import {
+  applySorting,
+  applyDateFilter,
+  tableSize as applyTableSize,
+  finish as applyFinish,
+} from './sessionTableFilters';
 import { useAuth } from '../../hooks/useAuth';
 import { useDeleteSession } from '../../hooks/useSessions';
 import { getPeriodFromDefaultTimeFilter } from '../../utils/dateRangePreferences';
 import pokerStarsLogo from '../../assets/pokerstars-logo.svg';
-import ggPokerLogo from '../../assets/gg-poker-logo.svg';
+import ggPokerMark from '../../assets/gg-poker-mark.svg';
 import coinPokerLogo from '../../assets/coinpoker-logo.svg';
 import poker888Logo from '../../assets/888-poker-logo.svg';
+import partyPokerLogo from '../../assets/partypoker-diamond-logo.svg';
 
 const pokerSiteDetails = {
   pokerstars: {
@@ -20,10 +26,16 @@ const pokerSiteDetails = {
     logo: pokerStarsLogo,
     fallback: 'PS',
   },
+  fanduel: {
+    label: 'FanDuel',
+    logo: null,
+    fallback: 'FD',
+  },
   ggpoker: {
     label: 'GGPoker',
-    logo: ggPokerLogo,
+    logo: ggPokerMark,
     fallback: 'GG',
+    className: 'sessions-site-logo--ggpoker',
   },
   coinpoker: {
     label: 'CoinPoker',
@@ -37,13 +49,8 @@ const pokerSiteDetails = {
   },
   partypoker: {
     label: 'partypoker',
-    logo: null,
+    logo: partyPokerLogo,
     fallback: 'PP',
-  },
-  bovada: {
-    label: 'Bovada',
-    logo: null,
-    fallback: 'BV',
   },
 };
 
@@ -51,11 +58,11 @@ function getPokerSiteDetail(session) {
   const siteKey = String(session.pokerSite || session.site || session.game || '').toLowerCase();
 
   if (siteKey.includes('pokerstars')) return pokerSiteDetails.pokerstars;
+  if (siteKey.includes('fanduel') || siteKey.includes('fan duel')) return pokerSiteDetails.fanduel;
   if (siteKey.includes('ggpoker') || siteKey.includes('gg poker')) return pokerSiteDetails.ggpoker;
   if (siteKey.includes('coinpoker') || siteKey.includes('coin poker')) return pokerSiteDetails.coinpoker;
   if (siteKey.includes('888')) return pokerSiteDetails['888poker'];
   if (siteKey.includes('party')) return pokerSiteDetails.partypoker;
-  if (siteKey.includes('bovada') || siteKey.includes('ignition') || siteKey.includes('bodog')) return pokerSiteDetails.bovada;
 
   return {
     label: session.pokerSite || session.site || 'Unknown site',
@@ -64,33 +71,40 @@ function getPokerSiteDetail(session) {
   };
 }
 
+// SessionsTable
+// │
+// ├── SessionToolbar
+// ├── Table
+// ├── Pagination
+// └── Delete Modal
+
 const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const hasProMembership = user?.subscription === 'pro';
-  const { mutateAsync: deleteSession, isPending: isDeletingSession } = useDeleteSession();
-  const defaultDateRange = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
-  const [dateRange, setDateRange] = useState(defaultDateRange);
-  const [sortBy, setSortBy] = useState('newest');
-  const [numTables, setNumTables] = useState('all');
-  const [finish, setFinish] = useState('all');
-  const [openActionMenuId, setOpenActionMenuId] = useState(null);
-  const [sessionPendingDelete, setSessionPendingDelete] = useState(null);
+  const { user } = useAuth(); // Get the current user from the authentication context
+  const hasProMembership = user?.subscription === 'pro'; // Check if the user has a Pro membership
+  const { mutateAsync: deleteSession, isPending: isDeletingSession } = useDeleteSession(); // Custom hook to handle session deletion
+  const defaultDateRange = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter); // Get the default date range based on user preferences
+  const [dateRange, setDateRange] = useState(defaultDateRange); // State to manage the selected date range for filtering sessions
+  const [sortBy, setSortBy] = useState('newest'); // State to manage the selected sorting option for sessions
+  const [tableSize, setTableSize] = useState('all'); // State to manage the selected table size option for displaying sessions
+  const [finish, setFinish] = useState('all'); // State to manage the selected finish option for filtering sessions (e.g., all, finished, unfinished)
+  const [openActionMenuId, setOpenActionMenuId] = useState(null); // State to manage the ID of the session for which the action menu is currently open
+  const [sessionPendingDelete, setSessionPendingDelete] = useState(null); // State to manage the session that is pending deletion (used for the delete confirmation modal)
 
   const filteredSessions = useMemo(() => {
     let result = [...sessions];
     const activeDateRange = variant === 'sessions-page' ? dateRange : 'all-time';
     // 1) APPLY DATE RANGE
     result = applyDateFilter(activeDateRange, result);
-    // 2) APPLY # TABLES
-    result = tables(numTables, result);
+    // 2) APPLY TABLE SIZE
+    result = applyTableSize(tableSize, result);
     // 3) APPLY SORT
     result = applySorting(sortBy, result);
     // 4) APPLY RESULT
     result = applyFinish(finish, result);
 
     return result;
-  }, [sessions, dateRange, numTables, sortBy, finish, variant]);
+  }, [sessions, dateRange, tableSize, sortBy, finish, variant]);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -99,7 +113,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [dateRange, numTables, sortBy, finish, sessionsPerPage]);
+  }, [dateRange, tableSize, sortBy, finish, sessionsPerPage]);
 
   useEffect(() => {
     setDateRange(defaultDateRange);
@@ -141,9 +155,13 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
     if (typeof session.winRate === 'number') return session.winRate;
 
     const profit = Number(session.profit) || 0;
-    const hands = Number(session.hands) || 0;
+    const hands = getSessionHands(session);
 
     return hands > 0 ? (profit / 0.1 / hands) * 100 : 0;
+  }
+
+  function getSessionHands(session) {
+    return Number(session.hands) || Number(session.handsPlayed) || Number(session.stats?.handsPlayed) || 0;
   }
 
   function openDeleteModal(event, session) {
@@ -187,8 +205,8 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
           setDateRange={setDateRange}
           sortBy={sortBy}
           setSortBy={setSortBy}
-          numTables={numTables}
-          setNumTables={setNumTables}
+          tableSize={tableSize}
+          setTableSize={setTableSize}
           finish={finish}
           setFinish={setFinish}
         />
@@ -203,6 +221,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
               <th scope='col'>Stakes</th>
               <th scope='col'>Profit</th>
               <th scope='col'>Win Rate</th>
+              <th scope='col'>Hands</th>
               <th scope='col'>Duration</th>
               <th scope='col' aria-label='Session actions'></th>
             </tr>
@@ -225,6 +244,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
               const hasDuration = Number.isFinite(duration);
               const profit = Number(session.profit) || 0;
               const winRate = getSessionWinRate(session);
+              const hands = getSessionHands(session);
               const hours = hasDuration ? Math.floor(duration / 60) : 0;
               const minutes = hasDuration ? duration % 60 : 0;
               const profitIsPositive = profit >= 0;
@@ -234,31 +254,38 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
 
               return (
                 <tr className='sessions-table__row' key={sessionId}>
-                  <td>
+                  <td data-label='Date'>
                     <span className='session-date-desktop'>{formattedDate}</span>
                     <span className='session-date-mobile'>{mobileFormattedDate}</span>
                   </td>
-                  <td>
+                  <td data-label='Game'>
                     <div className='sessions-site-cell'>
-                      <span className='sessions-site-logo' aria-label={pokerSite.label} title={pokerSite.label}>
+                      <span
+                        className={`sessions-site-logo${pokerSite.className ? ` ${pokerSite.className}` : ''}`}
+                        aria-label={pokerSite.label}
+                        title={pokerSite.label}
+                      >
                         {pokerSite.logo ? <img src={pokerSite.logo} alt='' /> : pokerSite.fallback}
                       </span>
                       <span className='sessions-game-name'>{session.game}</span>
                     </div>
                   </td>
-                  <td>{session.stakes}</td>
+                  <td data-label='Stakes'>{session.stakes}</td>
                   <td
+                    data-label='Profit'
                     className={`session-result ${profitIsPositive ? 'session-result--positive' : 'session-result--negative'}`}
                   >
                     {profitIsPositive ? '+' : '-'}${Math.abs(profit).toFixed(2)}
                   </td>
                   <td
+                    data-label='Win Rate'
                     className={`session-result ${winRateIsPositive ? 'session-result--positive' : 'session-result--negative'}`}
                   >
                     {winRate.toFixed(2)} BB/100
                   </td>
-                  <td>{hasDuration ? `${hours}h ${minutes}m` : 'N/A'}</td>
-                  <td className='sessions-actions-cell' onClick={(event) => event.stopPropagation()}>
+                  <td data-label='Hands'>{hands.toLocaleString('en-US')}</td>
+                  <td data-label='Duration'>{hasDuration ? `${hours}h ${minutes}m` : 'N/A'}</td>
+                  <td data-label='Actions' className='sessions-actions-cell' onClick={(event) => event.stopPropagation()}>
                     <div className='sessions-row-actions'>
                       <button
                         className={`sessions-stats-button${hasProMembership ? '' : ' sessions-stats-button--locked'}`}
@@ -270,7 +297,9 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                         }
                         title={hasProMembership ? 'View stats' : 'Upgrade to Pro to view stats'}
                         onClick={() =>
-                          navigate(hasProMembership ? `/dashboard/sessions/${sessionId}/stats` : '/subscription/payment')
+                          navigate(
+                            hasProMembership ? `/dashboard/sessions/${sessionId}/stats` : '/subscription/payment',
+                          )
                         }
                       >
                         {hasProMembership ? <BarChart3 aria-hidden='true' /> : <Lock aria-hidden='true' />}
@@ -300,7 +329,11 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                           <Pencil aria-hidden='true' />
                           <span>Edit</span>
                         </button>
-                        <button type='button' disabled={isDeletingSession} onClick={(event) => openDeleteModal(event, session)}>
+                        <button
+                          type='button'
+                          disabled={isDeletingSession}
+                          onClick={(event) => openDeleteModal(event, session)}
+                        >
                           <Trash2 aria-hidden='true' />
                           <span>{isDeletingSession ? 'Deleting...' : 'Delete'}</span>
                         </button>

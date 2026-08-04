@@ -1,0 +1,83 @@
+.feature-upload-gate {
+  min-height: min(620px, 100%);
+  padding: clamp(24px, 5vw, 56px);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 18px;
+  color: var(--text-primary);
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 20%, var(--accent-green-glow-soft), transparent 34%),
+    var(--surface-chart);
+  border: 1px solid var(--theme-border-card);
+  border-radius: 14px;
+}
+
+.feature-upload-gate__icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  color: var(--color-primary);
+  background: var(--surface-control-deep);
+  border: 1px solid var(--accent-green-border);
+  border-radius: 12px;
+  box-shadow: 0 0 24px var(--accent-green-glow-soft);
+}
+
+.feature-upload-gate__icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.feature-upload-gate__copy {
+  max-width: 520px;
+}
+
+.feature-upload-gate__copy span {
+  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.feature-upload-gate__copy h1 {
+  margin: 8px 0;
+  color: var(--text-white);
+  font-size: clamp(1.45rem, 4vw, 2.2rem);
+  line-height: 1.05;
+}
+
+.feature-upload-gate__copy p {
+  margin: 0;
+  color: var(--text-muted-light);
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  line-height: 1.55;
+}
+
+.feature-upload-gate__button {
+  min-height: 42px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-on-primary);
+  background: var(--success-bright);
+  border: 1px solid var(--success-bright);
+  border-radius: 7px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--success-bright) 20%, transparent);
+}
+
+.feature-upload-gate__button:hover {
+  filter: brightness(1.06);
+}
+
+.feature-upload-gate__button svg {
+  width: 17px;
+  height: 17px;
+}

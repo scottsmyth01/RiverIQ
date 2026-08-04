@@ -16,7 +16,6 @@ import './UserAuthPage.css';
 import { useAuth } from '../hooks/useAuth';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 
 const UserAuthPage = () => {
   const modeByPath = {
@@ -29,7 +28,6 @@ const UserAuthPage = () => {
   const [resetLinkSent, setResetLinkSent] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [isRegisterSubmitting, setIsRegisterSubmitting] = useState(false);
-  const [showSuccessLoader, setShowSuccessLoader] = useState(false);
 
   const { register: registerUser, login, loginGoogle, forgotPassword, loginLoading, googleLoginLoading } = useAuth();
   const {
@@ -77,7 +75,6 @@ const UserAuthPage = () => {
     if (authMode === 'login') {
       try {
         const data = await login({ email, password });
-        setShowSuccessLoader(true);
         navigate(data.user?.isEmailVerified ? '/dashboard' : '/verify-email', { replace: true });
       } catch (error) {
         setError(error.field || 'form', {
@@ -111,7 +108,6 @@ const UserAuthPage = () => {
 
     try {
       const data = await loginGoogle(credentialResponse.credential);
-      setShowSuccessLoader(true);
       navigate(data.user?.isEmailVerified ? '/dashboard' : '/verify-email', { replace: true });
     } catch (error) {
       setError('form', {
@@ -130,7 +126,6 @@ const UserAuthPage = () => {
 
   return (
     <main className='user-auth-page'>
-      {showSuccessLoader && <LoadingScreen />}
       <div className='user-auth-layout'>
         <section className='auth-showcase'>
           <div className='auth-showcase-copy'>

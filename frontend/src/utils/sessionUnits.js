@@ -6,7 +6,7 @@ export function parseBigBlind(stakes) {
     ?.map(Number)
     .filter((amount) => Number.isFinite(amount));
 
-  return amounts?.length ? amounts.at(-1) : null;
+  return amounts?.length >= 2 ? amounts[1] : amounts?.[0] ?? null;
 }
 
 export function getSessionBigBlind(session = {}) {
@@ -31,4 +31,18 @@ export function getSessionBbWon(session) {
   const bb100 = Number(session.bb100);
 
   return hands > 0 && Number.isFinite(bb100) ? (bb100 * hands) / 100 : null;
+}
+
+export function formatCurrency(value) {
+  return `${value < 0 ? '-' : ''}$${Math.abs(value).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+export function formatSigned(value, digits) {
+  return `${value > 0 ? '+' : ''}${value.toLocaleString('en-US', {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  })}`;
 }

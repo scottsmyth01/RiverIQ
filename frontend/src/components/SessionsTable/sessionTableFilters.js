@@ -8,6 +8,18 @@ splice()  mutates
 */
 
 export function applySorting(filter, sessions) {
+  const getTime = (value) => {
+    const time = new Date(value).getTime();
+    return Number.isNaN(time) ? null : time;
+  };
+  const getSessionDateTime = (session) => getTime(session.date) ?? 0;
+  const getSessionDayTime = (session) => {
+    const date = new Date(session.date);
+    if (Number.isNaN(date.getTime())) return 0;
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  };
+  const getAddedTime = (session) =>
+    getTime(session.createdAt) ?? getTime(session.updatedAt) ?? getSessionDateTime(session);
   const getProfit = (session) => Number(session.profit) || Number(session.stats?.profit) || 0;
   const getDuration = (session) => {
     const duration = Number(session.duration);
@@ -16,12 +28,15 @@ export function applySorting(filter, sessions) {
   const getHands = (session) => Number(session.hands) || Number(session.stats?.handsPlayed) || 0;
 
   switch (filter) {
-    // FILTER DROPDOWN 1
     case 'newest':
-      return [...sessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+      return [...sessions].sort(
+        (a, b) => getSessionDayTime(b) - getSessionDayTime(a) || getAddedTime(b) - getAddedTime(a),
+      );
 
     case 'oldest':
-      return [...sessions].sort((a, b) => new Date(a.date) - new Date(b.date));
+      return [...sessions].sort(
+        (a, b) => getSessionDayTime(a) - getSessionDayTime(b) || getAddedTime(a) - getAddedTime(b),
+      );
 
     case 'profit-high':
       return [...sessions].sort((a, b) => getProfit(b) - getProfit(a));
@@ -63,6 +78,48 @@ export function applyDateFilter(dateFilter, sessions) {
     const sessionDate = new Date(session.date);
     return !Number.isNaN(sessionDate.getTime()) && sessionDate >= cutoffDate && sessionDate <= today;
   });
+}
+
+function normalizeTableSize(value) {
+  if (value === null || value === undefined || value === '') return null;
+  if (typeof value === 'string') {
+    const match = value.match(/\d+/);
+    return match ? `${match[0]}-Max` : value;
+  }
+
+  const size = Number(value);
+  return Number.isFinite(size) && size > 0 ? `${size}-Max` : null;
+}
+
+function getByPositionCount(byPosition) {
+  if (!byPosition) return 0;
+  if (byPosition instanceof Map) return byPosition.size;
+  if (typeof byPosition === 'object') return Object.keys(byPosition).length;
+  return 0;
+}
+
+function getSessionTableSize(session) {
+  const stats = session.stats || {};
+  const explicitTableSize =
+    normalizeTableSize(session.tableSize) ||
+    normalizeTableSize(session.tableSizeMax) ||
+    normalizeTableSize(session.maxPlayers) ||
+    normalizeTableSize(session.numPlayers) ||
+    normalizeTableSize(stats.tableSize) ||
+    normalizeTableSize(stats.maxPlayers);
+
+  if (explicitTableSize) return explicitTableSize;
+
+  const positionCount = getByPositionCount(stats.byPosition);
+  return positionCount ? `${positionCount}-Max` : null;
+}
+
+export function tableSize(filter, sessions) {
+  if (filter === 'all') {
+    return sessions;
+  }
+
+  return sessions.filter((session) => getSessionTableSize(session) === filter);
 }
 
 export function numTables(tables, sessions) {

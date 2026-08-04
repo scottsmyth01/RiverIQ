@@ -1,11 +1,12 @@
 import Session from '../models/Session.js';
 import { parse888Poker } from '../utils/parsers/888poker/wrapper.js';
-import { parseBovada } from '../utils/parsers/bovada/wrapper.js';
 import { parseCoinPoker } from '../utils/parsers/coinpoker/wrapper.js';
 import { parsePartyPoker } from '../utils/parsers/partypoker/wrapper.js';
 import { parsePokerStars } from '../utils/parsers/pokerstars/wrapper.js';
+import { parseFanDuel } from '../utils/parsers/fanduel/wrapper.js';
 import { parseGGPoker } from '../utils/parsers/ggpoker/wrapper.js';
 import { calculateStats } from '../utils/parsers/stats/calculateStats.js';
+import { getHandProfit } from '../utils/parsers/stats/getProfit.js';
 
 const FREE_SESSION_LIMIT = 20;
 const SESSION_SPLIT_GAP_MINUTES = 60;
@@ -40,12 +41,10 @@ function normalizeTags(tags) {
 }
 
 function detectPokerSite(fileText) {
+  if (fileText.includes('FanDuel')) return 'fanduel';
   if (fileText.includes('PokerStars')) return 'pokerstars';
   if (fileText.includes('GGPoker')) return 'ggpoker';
   if (fileText.includes('CoinPoker')) return 'coinpoker';
-  if (fileText.includes('Bovada Hand #') || fileText.includes('Ignition Hand #') || fileText.includes('Bodog Hand #')) {
-    return 'bovada';
-  }
   if (fileText.includes('888poker') || fileText.includes('888.pt Hand History') || fileText.includes('Pacific Poker')) {
     return '888poker';
   }
@@ -53,6 +52,10 @@ function detectPokerSite(fileText) {
     return 'partypoker';
   }
   return null;
+}
+
+function sitesMatch(detectedSite, selectedSite) {
+  return detectedSite.toLocaleLowerCase() === selectedSite.toLocaleLowerCase();
 }
 
 function getSessionDuration(hands) {
@@ -104,6 +107,19 @@ function splitHandsIntoSessions(hands, gapMinutes = SESSION_SPLIT_GAP_MINUTES) {
   return groups.length ? groups : [hands];
 }
 
+function parseHandsForSite(site, fileText) {
+  const normalizedSite = site.toLocaleLowerCase();
+
+  if (normalizedSite === 'pokerstars') return parsePokerStars(fileText);
+  if (normalizedSite === 'fanduel') return parseFanDuel(fileText);
+  if (normalizedSite === 'ggpoker') return parseGGPoker(fileText);
+  if (normalizedSite === 'coinpoker') return parseCoinPoker(fileText);
+  if (normalizedSite === '888poker') return parse888Poker(fileText);
+  if (normalizedSite === 'partypoker') return parsePartyPoker(fileText);
+
+  return [];
+}
+
 function getSessionName({ sessionName, originalFileName, sessionIndex, totalSessions }) {
   const baseName = sessionName || originalFileName;
 
@@ -114,7 +130,34 @@ function getSessionName({ sessionName, originalFileName, sessionIndex, totalSess
   return `${baseName} - Session ${sessionIndex + 1}`;
 }
 
-function buildSessionPayload({ req, pokerSite, sessionName, notes, tags, hands, sessionIndex, totalSessions }) {
+function buildHandResults(hands) {
+  let cumulativeProfit = 0;
+
+  return hands.map((hand) => {
+    const profit = getHandProfit(hand);
+    cumulativeProfit = Number((cumulativeProfit + profit).toFixed(2));
+
+    return {
+      handNumber: hand.handNumber ? String(hand.handNumber) : undefined,
+      date: hand.date,
+      profit,
+      cumulativeProfit,
+    };
+  });
+}
+
+function buildSessionPayload({
+  req,
+  pokerSite,
+  sessionName,
+  notes,
+  tags,
+  hands,
+  sessionIndex,
+  totalSessions,
+  file,
+  handHistory,
+}) {
   const parsedStats = calculateStats(hands);
   const firstHand = hands[0];
   const table = firstHand?.table || {};
@@ -123,7 +166,7 @@ function buildSessionPayload({ req, pokerSite, sessionName, notes, tags, hands, 
     user: req.user._id,
     sessionName: getSessionName({
       sessionName,
-      originalFileName: req.file.originalname,
+      originalFileName: file.originalname,
       sessionIndex,
       totalSessions,
     }),
@@ -136,12 +179,13 @@ function buildSessionPayload({ req, pokerSite, sessionName, notes, tags, hands, 
     duration: getSessionDuration(hands),
     notes,
     tags: normalizeTags(tags),
-    handHistory: req.handHistory || {
-      originalFileName: req.file.originalname,
-      fileSize: req.file.size,
-      contentType: req.file.mimetype,
+    handHistory: handHistory || {
+      originalFileName: file.originalname,
+      fileSize: file.size,
+      contentType: file.mimetype,
       uploadedAt: new Date(),
     },
+    handResults: buildHandResults(hands),
     stats: parsedStats,
   };
 }
@@ -150,6 +194,10 @@ function formatGameType(gameType) {
   if (!gameType) return undefined;
 
   const normalizedGameType = String(gameType).trim();
+
+  if (/^NLH$/i.test(normalizedGameType)) {
+    return 'NL Holdem';
+  }
 
   if (/hold'?em no limit/i.test(normalizedGameType)) {
     return 'NL Holdem';
@@ -183,12 +231,15 @@ function formatBlindAmount(amount) {
 function formatStakes(table = {}) {
   const smallBlind = formatBlindAmount(table.smallBlind);
   const bigBlind = formatBlindAmount(table.bigBlind);
+  const ante = formatBlindAmount(table.ante);
 
   if (!smallBlind || !bigBlind) return undefined;
 
   const currencySymbol = getCurrencySymbol(table.currency);
 
-  return `${currencySymbol}${smallBlind}/${currencySymbol}${bigBlind}`;
+  const stakes = `${currencySymbol}${smallBlind}/${currencySymbol}${bigBlind}`;
+
+  return ante ? `${stakes} (${currencySymbol}${ante})` : stakes;
 }
 
 export const enforceFreeSessionLimit = async (req, res, next) => {
@@ -258,55 +309,50 @@ export const addSession = async (req, res, next) => {
       });
     }
 
-    if (!req.file) {
+    const files = req.files?.length ? req.files : req.file ? [req.file] : [];
+
+    if (!files.length) {
       return res.status(400).json({
         message: 'Please upload a hand history file',
       });
     }
-    const fileText = req.file.buffer.toString('utf8');
+    const uploadGroups = files.map((file, fileIndex) => {
+      const fileText = file.buffer.toString('utf8');
+      const fileLabel = files.length > 1 ? ` ${file.originalname}` : '';
 
-    const detectedSite = detectPokerSite(fileText);
-    if (!detectedSite) {
-      return res.status(400).json({
-        message: 'We could not detect a supported poker site from this file.',
-      });
-    }
-    if (detectedSite.toLocaleLowerCase() !== pokerSite.toLocaleLowerCase()) {
-      return res.status(400).json({
-        message: `This file looks like ${detectedSite}, but you selected ${pokerSite}.`,
-      });
-    }
-    if (!fileText.trim()) {
-      return res.status(400).json({
-        message: 'The uploaded file is empty',
-      });
-    }
-    let hands;
-    if (detectedSite.toLocaleLowerCase() === 'pokerstars') {
-      hands = parsePokerStars(fileText);
-    }
-    if (detectedSite.toLocaleLowerCase() === 'ggpoker') {
-      hands = parseGGPoker(fileText);
-    }
-    if (detectedSite.toLocaleLowerCase() === 'coinpoker') {
-      hands = parseCoinPoker(fileText);
-    }
-    if (detectedSite.toLocaleLowerCase() === 'bovada') {
-      hands = parseBovada(fileText);
-    }
-    if (detectedSite.toLocaleLowerCase() === '888poker') {
-      hands = parse888Poker(fileText);
-    }
-    if (detectedSite.toLocaleLowerCase() === 'partypoker') {
-      hands = parsePartyPoker(fileText);
-    }
-    if (!hands?.length) {
-      return res.status(400).json({
-        message: 'No hands could be parsed from this file',
-      });
-    }
+      if (!fileText.trim()) {
+        const error = new Error(`The uploaded file${fileLabel} is empty`);
+        error.statusCode = 400;
+        throw error;
+      }
 
-    const handGroups = splitHandsIntoSessions(hands);
+      const detectedSite = detectPokerSite(fileText);
+      if (!detectedSite) {
+        const error = new Error(`We could not detect a supported poker site from this file${fileLabel}.`);
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (!sitesMatch(detectedSite, pokerSite)) {
+        const error = new Error(`This file${fileLabel} looks like ${detectedSite}, but you selected ${pokerSite}.`);
+        error.statusCode = 400;
+        throw error;
+      }
+
+      const hands = parseHandsForSite(pokerSite, fileText);
+      if (!hands?.length) {
+        const error = new Error(`No hands could be parsed from this file${fileLabel}`);
+        error.statusCode = 400;
+        throw error;
+      }
+
+      return splitHandsIntoSessions(hands).map((handGroup) => ({
+        file,
+        handHistory: req.handHistories?.[fileIndex] || (fileIndex === 0 ? req.handHistory : undefined),
+        hands: handGroup,
+      }));
+    });
+    const handGroups = uploadGroups.flat();
 
     if (req.user.subscription !== 'pro') {
       const sessionCount = await Session.countDocuments({ user: req.user._id });
@@ -318,16 +364,18 @@ export const addSession = async (req, res, next) => {
       }
     }
 
-    const sessionPayloads = handGroups.map((handGroup, sessionIndex) =>
+    const sessionPayloads = handGroups.map(({ file, handHistory, hands }, sessionIndex) =>
       buildSessionPayload({
         req,
         pokerSite,
         sessionName,
         notes,
         tags,
-        hands: handGroup,
+        hands,
         sessionIndex,
         totalSessions: handGroups.length,
+        file,
+        handHistory,
       }),
     );
     const sessions = await Session.create(sessionPayloads);

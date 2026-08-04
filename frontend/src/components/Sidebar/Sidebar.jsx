@@ -5,12 +5,13 @@ import { Link, NavLink } from 'react-router';
 import { useSessions } from '../../hooks/useSessions';
 import { useAuth } from '../../hooks/useAuth';
 
-const lockedItemTitles = new Set(['Analytics', 'Reports', 'Goals', 'Hand Charts']);
+const lockedItemTitles = new Set(['Analytics', 'Reports', 'Hand Charts']);
 
 const Sidebar = () => {
   const { data: sessions = [] } = useSessions();
   const { user } = useAuth();
-  const hasUnlockedInsights = user?.subscription === 'pro';
+  const hasProMembership = user?.subscription === 'pro';
+  const hasUploadedSession = sessions.length > 0;
   const navigationItems = SidebarData.filter((item) => item.title !== 'Settings');
   const settingsItem = SidebarData.find((item) => item.title === 'Settings');
 
@@ -19,9 +20,11 @@ const Sidebar = () => {
       <nav className='sidebar__nav' aria-label='Dashboard sections'>
         {navigationItems.map((item) => {
           const isSessionsLocked = item.title === 'Sessions' && sessions.length < 1;
-          const isInsightsLocked = lockedItemTitles.has(item.title) && !hasUnlockedInsights;
+          const isInsightsLocked = lockedItemTitles.has(item.title) && (!hasProMembership || !hasUploadedSession);
           const isLocked = isSessionsLocked || isInsightsLocked;
-          const sessionsNeeded = isSessionsLocked ? 1 : Math.max(5 - sessions.length, 0);
+          const lockTitle = !hasProMembership
+            ? `Upgrade to Pro to unlock ${item.title}`
+            : `Upload your first session to unlock ${item.title}`;
 
           if (isLocked) {
             return (
@@ -29,7 +32,7 @@ const Sidebar = () => {
                 className='sidebar__item sidebar__item--locked'
                 disabled
                 key={item.title}
-                title={`Upload ${sessionsNeeded} more session${sessionsNeeded === 1 ? '' : 's'} to unlock ${item.title}`}
+                title={isSessionsLocked ? 'Upload your first session to unlock Sessions' : lockTitle}
                 type='button'
               >
                 <span className='sidebar__icon'>{item.icon}</span>
@@ -55,14 +58,14 @@ const Sidebar = () => {
         })}
       </nav>
 
-      {user?.subscription === 'pro' ? (
+      {hasProMembership ? (
         <Link className='sidebar-pro-card sidebar-pro-status-card' to='/dashboard/settings' aria-label='View Pro billing'>
           <span className='sidebar-pro-card__icon sidebar-pro-status-card__icon'>
             <Crown aria-hidden='true' />
           </span>
           <span className='sidebar-pro-card__copy'>
             <strong>RiverIQ Pro</strong>
-            <span>All features active.</span>
+            <span>{hasUploadedSession ? 'All features active.' : 'Upload a session to activate tools.'}</span>
           </span>
         </Link>
       ) : (

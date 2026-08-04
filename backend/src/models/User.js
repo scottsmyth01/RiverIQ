@@ -71,7 +71,7 @@ const userSchema = new mongoose.Schema(
       defaultTimeFilter: {
         type: String,
         enum: ['7d', '30d', '90d', 'all'],
-        default: '30d',
+        default: 'all',
       },
       defaultTableSize: {
         type: String,

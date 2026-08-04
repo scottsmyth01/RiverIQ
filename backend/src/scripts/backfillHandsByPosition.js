@@ -2,9 +2,9 @@ import 'dotenv/config';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import mongoose from 'mongoose';
 import Session from '../models/Session.js';
-import { parseBovada } from '../utils/parsers/bovada/wrapper.js';
 import { parseCoinPoker } from '../utils/parsers/coinpoker/wrapper.js';
 import { parsePokerStars } from '../utils/parsers/pokerstars/wrapper.js';
+import { parseFanDuel } from '../utils/parsers/fanduel/wrapper.js';
 import { parseGGPoker } from '../utils/parsers/ggpoker/wrapper.js';
 import { getHandsByPosition } from '../utils/parsers/stats/getHandsByPosition.js';
 
@@ -42,16 +42,14 @@ function parseHands(session, fileText) {
   const pokerSite = session.pokerSite?.toLowerCase() || '';
 
   if (pokerSite.includes('pokerstars')) return parsePokerStars(fileText);
+  if (pokerSite.includes('fanduel')) return parseFanDuel(fileText);
   if (pokerSite.includes('ggpoker')) return parseGGPoker(fileText);
   if (pokerSite.includes('coinpoker')) return parseCoinPoker(fileText);
-  if (pokerSite.includes('bovada')) return parseBovada(fileText);
 
   if (fileText.includes('PokerStars')) return parsePokerStars(fileText);
+  if (fileText.includes('FanDuel')) return parseFanDuel(fileText);
   if (fileText.includes('GGPoker')) return parseGGPoker(fileText);
   if (fileText.includes('CoinPoker')) return parseCoinPoker(fileText);
-  if (fileText.includes('Bovada Hand #') || fileText.includes('Ignition Hand #') || fileText.includes('Bodog Hand #')) {
-    return parseBovada(fileText);
-  }
 
   return [];
 }

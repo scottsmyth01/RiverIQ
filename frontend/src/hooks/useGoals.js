@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createGoal, deleteGoal, getGoals, updateGoal } from '../api/goalApi.js';
+import { createGoal, deleteGoal, getGoals, reorderGoals, updateGoal } from '../api/goalApi.js';
 
 export const goalsQueryKey = ['goals'];
 
@@ -42,6 +42,18 @@ export function useDeleteGoal() {
     mutationFn: deleteGoal,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: goalsQueryKey });
+    },
+  });
+}
+
+export function useReorderGoals() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['goals', 'reorder'],
+    mutationFn: reorderGoals,
+    onSuccess: (goals) => {
+      queryClient.setQueryData(goalsQueryKey, goals);
     },
   });
 }

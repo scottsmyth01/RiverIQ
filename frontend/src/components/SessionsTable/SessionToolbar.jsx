@@ -1,6 +1,6 @@
 import { ChevronDown } from 'lucide-react';
 
-const SessionToolbar = ({ dateRange, setDateRange, sortBy, setSortBy, numTables, setNumTables, finish, setFinish }) => {
+const SessionToolbar = ({ dateRange, setDateRange, sortBy, setSortBy, tableSize, setTableSize, finish, setFinish }) => {
   return (
     <div className='sessions-toolbar' aria-label='Session table controls'>
       <div className='sessions-filter-group'>
@@ -31,15 +31,14 @@ const SessionToolbar = ({ dateRange, setDateRange, sortBy, setSortBy, numTables,
         </label>
 
         <label>
-          <span># Tables</span>
+          <span>Table Size</span>
           <span className='sessions-select-shell'>
-            <select value={numTables} onChange={(e) => setNumTables(e.target.value)}>
-              <option value='all'>All</option>
-              <option value='one'>1</option>
-              <option value='two'>2</option>
-              <option value='three'>3</option>
-              <option value='four'>4</option>
-              <option value='five-or-more'>5+</option>
+            <select value={tableSize} onChange={(e) => setTableSize(e.target.value)}>
+              <option value='all'>All Table Sizes</option>
+              <option value='6-Max'>6-Max</option>
+              <option value='7-Max'>7-Max</option>
+              <option value='8-Max'>8-Max</option>
+              <option value='9-Max'>9-Max</option>
             </select>
             <ChevronDown aria-hidden='true' />
           </span>

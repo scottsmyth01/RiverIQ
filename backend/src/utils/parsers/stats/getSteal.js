@@ -1,21 +1,26 @@
+const STEAL_POSITIONS = new Set(['CO', 'BTN', 'SB']);
+const VOLUNTARY_ACTIONS = new Set(['call', 'raise']);
+const DECISION_ACTIONS = new Set(['call', 'raise', 'fold', 'check']);
+
 export function getSteal(hands) {
   let opportunities = 0;
   let steals = 0;
 
   for (const hand of hands) {
-    const hero = hand.hero.name;
+    const hero = hand.hero?.name;
+    const position = hand.hero?.position || hand.position || hand.players?.find((player) => player.name === hero)?.position;
 
-    const heroPlayer = hand.players.find((player) => player.name === hero);
-
-    const position = heroPlayer.position;
-
-    if (position !== 'CO' && position !== 'BTN' && position !== 'SB') {
+    if (!hero || !STEAL_POSITIONS.has(position)) {
       continue;
     }
 
     let someoneEnteredPot = false;
 
-    for (const action of hand.preflop.actions) {
+    for (const action of hand.preflop?.actions || []) {
+      if (!DECISION_ACTIONS.has(action.action)) {
+        continue;
+      }
+
       if (action.player === hero) {
         opportunities++;
 
@@ -26,7 +31,7 @@ export function getSteal(hands) {
         break;
       }
 
-      if (action.action === 'call' || action.action === 'raise') {
+      if (VOLUNTARY_ACTIONS.has(action.action)) {
         someoneEnteredPot = true;
       }
 

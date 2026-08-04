@@ -36,30 +36,38 @@ export async function uploadToR2(file, userId) {
 
 export async function uploadHandHistoryToR2(req, res, next) {
   try {
-    if (!req.file) {
+    const files = req.files?.length ? req.files : req.file ? [req.file] : [];
+
+    if (!files.length) {
       return res.status(400).json({ message: 'Please upload a hand history file' });
     }
 
     if (process.env.NODE_ENV === 'test') {
-      req.handHistory = {
-        originalFileName: req.file.originalname,
-        r2Key: `test-hand-histories/${req.user._id}/${req.file.originalname}`,
-        fileSize: req.file.size,
-        contentType: req.file.mimetype,
+      req.handHistories = files.map((file) => ({
+        originalFileName: file.originalname,
+        r2Key: `test-hand-histories/${req.user._id}/${file.originalname}`,
+        fileSize: file.size,
+        contentType: file.mimetype,
         uploadedAt: new Date(),
-      };
+      }));
+      req.handHistory = req.handHistories[0];
       return next();
     }
 
-    const r2Key = await uploadToR2(req.file, req.user._id);
+    req.handHistories = await Promise.all(
+      files.map(async (file) => {
+        const r2Key = await uploadToR2(file, req.user._id);
 
-    req.handHistory = {
-      originalFileName: req.file.originalname,
-      r2Key,
-      fileSize: req.file.size,
-      contentType: req.file.mimetype,
-      uploadedAt: new Date(),
-    };
+        return {
+          originalFileName: file.originalname,
+          r2Key,
+          fileSize: file.size,
+          contentType: file.mimetype,
+          uploadedAt: new Date(),
+        };
+      }),
+    );
+    req.handHistory = req.handHistories[0];
     next();
   } catch (error) {
     return next(error);

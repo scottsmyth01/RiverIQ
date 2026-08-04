@@ -26,6 +26,10 @@ function formatGameType(gameType) {
 
   const normalizedGameType = String(gameType).trim();
 
+  if (/^NLH$/i.test(normalizedGameType)) {
+    return 'NL Holdem';
+  }
+
   if (/hold'?em no limit/i.test(normalizedGameType)) {
     return 'NL Holdem';
   }
@@ -77,14 +81,16 @@ function normalizeStakes(stakes, currency) {
 
   const smallBlind = formatBlindAmount(amounts[0]);
   const bigBlind = formatBlindAmount(amounts[1]);
+  const ante = formatBlindAmount(amounts[2]);
 
   if (!smallBlind || !bigBlind) {
     return stakes;
   }
 
   const currencySymbol = getStakesCurrencySymbol(stakes, currency);
+  const normalizedStakes = `${currencySymbol}${smallBlind}/${currencySymbol}${bigBlind}`;
 
-  return `${currencySymbol}${smallBlind}/${currencySymbol}${bigBlind}`;
+  return ante ? `${normalizedStakes} (${currencySymbol}${ante})` : normalizedStakes;
 }
 
 function normalizeSession(session = {}) {
@@ -99,6 +105,15 @@ function normalizeSession(session = {}) {
   const duration = session.duration ?? stats.duration;
   const tableSize = session.tableSize ?? stats.tableSize ?? session.maxPlayers ?? session.numPlayers;
   const gameType = formatGameType(session.gameType || session.game || session.pokerSite);
+  const handResults = Array.isArray(session.handResults)
+    ? session.handResults.map((point, index) => ({
+        handNumber: point.handNumber ? String(point.handNumber) : undefined,
+        date: point.date,
+        profit: Number(point.profit ?? 0),
+        cumulativeProfit: Number(point.cumulativeProfit ?? 0),
+        handIndex: index + 1,
+      }))
+    : [];
 
   return {
     ...session,
@@ -111,6 +126,7 @@ function normalizeSession(session = {}) {
     allInWinPercentage,
     allInWinSampleSize,
     bb100,
+    handResults,
     winRate: Number(session.winRate ?? bb100),
     duration: duration === null || duration === undefined || duration === '' ? null : Number(duration),
     tableSize: tableSize === null || tableSize === undefined || tableSize === '' ? null : tableSize,

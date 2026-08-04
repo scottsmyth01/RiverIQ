@@ -13,7 +13,13 @@ export function parseCoinPoker(fileText) {
   const hands = [];
 
   for (const handText of handTexts) {
-    hands.push(parseHand(handText, REGEX));
+    const hand = parseHand(handText, REGEX);
+
+    if (hand.table?.game === 'NLH') {
+      hand.table.game = 'NL Holdem';
+    }
+
+    hands.push(hand);
   }
 
   return hands;

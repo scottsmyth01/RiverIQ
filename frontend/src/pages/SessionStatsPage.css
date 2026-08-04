@@ -5,7 +5,7 @@
   max-height: 100%;
   min-width: 0;
   padding: 10px;
-  padding-bottom: 28px;
+  padding-bottom: 44px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -78,7 +78,7 @@
 
 .session-stats-kpis {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -106,8 +106,7 @@
   color: var(--color-primary);
 }
 
-.session-stats-kpi span,
-.session-stats-stat-list span {
+.session-stats-kpi span {
   color: var(--text-table-muted);
   font-size: 0.68rem;
   font-weight: 850;
@@ -121,20 +120,9 @@
   line-height: 1.1;
 }
 
-.session-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-  gap: 14px;
-}
-
-.session-stats-grid--mixed {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .session-stats-panel {
   padding: 18px 20px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .session-stats-position-panel {
@@ -152,107 +140,6 @@
   letter-spacing: 0;
 }
 
-.session-stats-chart {
-  position: relative;
-  width: 100%;
-  height: 280px;
-  margin-top: 16px;
-}
-
-.session-stats-chart canvas,
-.session-stats-donut canvas {
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
-}
-
-.session-stats-donut-layout {
-  display: grid;
-  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
-  gap: 16px;
-  align-items: start;
-  margin-top: 16px;
-}
-
-.session-stats-donut {
-  position: relative;
-  height: 230px;
-}
-
-.session-stats-donut-center {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-content: center;
-  gap: 4px;
-  text-align: center;
-}
-
-.session-stats-donut-center span {
-  color: var(--text-table-muted);
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.session-stats-donut-center strong {
-  color: var(--text-white);
-  font-size: 1.35rem;
-}
-
-.session-stats-legend {
-  align-self: start;
-  display: grid;
-  gap: 7px;
-}
-
-.session-stats-legend div {
-  display: grid;
-  grid-template-columns: 8px minmax(0, 1fr) max-content;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-control);
-  font-size: 0.78rem;
-}
-
-.session-stats-legend span {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-}
-
-.session-stats-legend p {
-  margin: 0;
-  color: var(--text-control);
-  font-weight: 750;
-}
-
-.session-stats-legend strong,
-.session-stats-stat-list strong {
-  color: var(--text-white);
-  white-space: nowrap;
-}
-
-.session-stats-stat-list {
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  overflow: hidden;
-  border: 1px solid var(--theme-border-card);
-  border-radius: 7px;
-}
-
-.session-stats-stat-list div {
-  min-height: 39px;
-  padding: 7px 10px;
-  display: grid;
-  gap: 2px;
-  background: var(--surface-control-deep);
-}
-
 .session-stats-panel-title {
   gap: 8px;
 }
@@ -261,6 +148,42 @@
   width: 18px;
   height: 18px;
   color: var(--color-primary);
+}
+
+.session-stats-preflop-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.session-stats-preflop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.session-stats-preflop-card {
+  min-height: 68px;
+  padding: 12px 14px;
+  display: grid;
+  align-content: space-between;
+  gap: 10px;
+  background: color-mix(in srgb, var(--surface-control-deep) 72%, transparent);
+  border: 1px solid var(--theme-border-card);
+  border-radius: 7px;
+}
+
+.session-stats-preflop-card span {
+  color: var(--text-table-muted);
+  font-size: 0.66rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.session-stats-preflop-card strong {
+  color: var(--text-white);
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  line-height: 1;
 }
 
 .session-stats-table-wrap {
@@ -334,13 +257,11 @@
 }
 
 @media (max-width: 1020px) {
-  .session-stats-kpis,
-  .session-stats-grid,
-  .session-stats-grid--mixed {
+  .session-stats-kpis {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .session-stats-stat-list {
+  .session-stats-preflop-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -358,9 +279,11 @@
     flex-direction: column;
   }
 
-  .session-stats-kpis,
-  .session-stats-grid,
-  .session-stats-grid--mixed {
+  .session-stats-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .session-stats-preflop-grid {
     grid-template-columns: 1fr;
   }
 
@@ -368,15 +291,4 @@
     padding: 16px;
   }
 
-  .session-stats-chart {
-    height: 240px;
-  }
-
-  .session-stats-donut-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .session-stats-stat-list {
-    grid-template-columns: 1fr;
-  }
 }

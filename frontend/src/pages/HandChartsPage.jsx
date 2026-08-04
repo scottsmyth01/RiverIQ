@@ -1102,7 +1102,7 @@ const widerRecommendedAdds = {
 };
 
 const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
-const ACTUAL_HAND_CHART_UNLOCK_HANDS = 5000;
+const ACTUAL_HAND_CHART_UNLOCK_HANDS = 10000;
 const openRaisePositionsByTableSize = Object.fromEntries(
   Object.entries(positionsByTableSize).map(([tableSize, positions]) => [
     tableSize,
@@ -1609,7 +1609,8 @@ const HandChartsPage = () => {
                   <Lock aria-hidden='true' />
                   <strong>Unlock Actual Hands Played</strong>
                   <span>
-                    5000 hands needed for hand chart, you currently have {uploadedHandCount}/{ACTUAL_HAND_CHART_UNLOCK_HANDS} at {selectedTableSize}.
+                    10,000 hands needed for hand chart, you currently have {uploadedHandCount}/
+                    {ACTUAL_HAND_CHART_UNLOCK_HANDS} at {selectedTableSize}.
                   </span>
                 </div>
               )}

@@ -37,7 +37,7 @@ const StatCards = ({ sessions = [], periods = [], selectedPeriod = 'all-time', s
       {/* iterate through the cards, which is just the array returned from line 13*/}
       <div className='stat-cards-grid'>
         {cards.map((card) => (
-          <Card key={card.title}>
+          <Card className={`stat-card stat-card--${card.id}`} key={card.id}>
             <div className='stat-card-copy'>
               <h3 className='stat-card-title'>{card.title}</h3>
 

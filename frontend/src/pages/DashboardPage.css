@@ -11,9 +11,13 @@
   overflow-y: auto;
 }
 
+.dashboard-content.dashboard-home-page {
+  padding: 8px 10px;
+}
+
 .dashboard-page-header {
   flex: 0 0 auto;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .dashboard-page-header__top {
@@ -327,7 +331,7 @@
 }
 
 @media (min-width: 761px) and (max-height: 800px) {
-  .dashboard-content {
+  .dashboard-content:not(.dashboard-home-page) {
     padding: 8px 10px;
   }
 

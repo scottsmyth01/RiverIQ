@@ -251,10 +251,20 @@ export function parseHand(handText, regex) {
   };
   hand = getPositions(hand);
   hand.preflop = getPreflop(handText, regex.preflop);
+  hand.table = {
+    ...hand.table,
+    ante: getAnte(hand.preflop),
+  };
   hand.flop = getFlop(handText, regex.flop);
   hand.turn = getTurn(handText, regex.turn);
   hand.river = getRiver(handText, regex.river);
   hand.showdown = getShowdown(handText, regex.showdown);
   hand.summary = getSummary(handText, regex.summary);
   return hand;
+}
+
+function getAnte(preflop) {
+  const anteAction = preflop?.actions?.find((action) => action.action === 'post' && action.blind === 'ante');
+
+  return anteAction?.amount ?? null;
 }

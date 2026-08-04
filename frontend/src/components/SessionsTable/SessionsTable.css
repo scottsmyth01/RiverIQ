@@ -197,7 +197,7 @@
 
 .sessions-table th,
 .sessions-table td {
-  width: calc(100% / 7);
+  width: calc(100% / 8);
 }
 
 .sessions-table th,
@@ -257,6 +257,23 @@
   height: 20px;
   display: block;
   object-fit: contain;
+}
+
+:root[data-theme='dark'] .sessions-site-logo--ggpoker {
+  background: #080808;
+}
+
+.sessions-site-logo--ggpoker {
+  width: 40px;
+  padding: 0;
+  background: #080808;
+  border-color: color-mix(in srgb, #fff 12%, transparent);
+  overflow: hidden;
+}
+
+.sessions-site-logo--ggpoker img {
+  width: 40px;
+  height: 24px;
 }
 
 .sessions-game-name {
@@ -590,6 +607,38 @@
   cursor: not-allowed;
 }
 
+:root[data-theme='light'] .session-delete-modal {
+  color: #1e293b;
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+:root[data-theme='light'] .session-delete-modal-icon {
+  color: #dc2626;
+  background: #fff1f2;
+  border-color: #fecdd3;
+}
+
+:root[data-theme='light'] .session-delete-modal h2 {
+  color: #0f172a;
+}
+
+:root[data-theme='light'] .session-delete-modal p {
+  color: #334155;
+}
+
+:root[data-theme='light'] .session-delete-modal-actions button {
+  color: #0f172a;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+:root[data-theme='light'] .session-delete-modal-actions button:last-child {
+  color: #ffffff;
+  background: linear-gradient(180deg, #ef4444, #b91c1c);
+  border-color: #b91c1c;
+}
+
 @media (min-width: 761px) and (max-height: 800px) {
   .sessions-card {
     margin-top: 8px;
@@ -635,6 +684,7 @@
 @media (max-width: 760px) {
   .sessions-card {
     border-radius: 10px;
+    overflow: visible;
   }
 
   .sessions-card-header {
@@ -661,18 +711,108 @@
     min-width: calc(50% - 4px);
   }
 
-  .sessions-table {
-    font-size: 0.7rem;
+  .sessions-table-wrapper {
+    padding: 10px;
+    overflow: visible;
   }
 
-  .sessions-table th,
+  .sessions-table {
+    display: block;
+    font-size: 0.76rem;
+  }
+
+  .sessions-table thead {
+    display: none;
+  }
+
+  .sessions-table tbody {
+    display: grid;
+    gap: 10px;
+  }
+
+  .sessions-table tbody tr {
+    position: relative;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(96px, auto);
+    gap: 10px 14px;
+    background: color-mix(in srgb, var(--surface-control-deep) 78%, transparent);
+    border: 1px solid var(--theme-border-card);
+    border-radius: 8px;
+  }
+
+  .sessions-table tbody tr:hover {
+    background: color-mix(in srgb, var(--surface-control-deep) 82%, var(--overlay-chart-hover));
+  }
+
   .sessions-table td {
-    width: 20%;
-    padding: 16px 8px;
+    width: auto;
+    min-width: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .sessions-table td::before {
+    content: attr(data-label);
+    color: var(--text-table-muted);
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .sessions-table td:nth-child(1),
+  .sessions-table td:nth-child(2),
+  .sessions-table td:nth-child(8) {
+    grid-column: 1 / -1;
+  }
+
+  .sessions-table td:nth-child(1) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--text-table-muted);
+    font-size: 0.72rem;
+  }
+
+  .sessions-table td:nth-child(1)::before {
+    content: 'Date';
+  }
+
+  .sessions-table td:nth-child(2) {
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-row-alpha);
+  }
+
+  .sessions-table td:nth-child(2)::before,
+  .sessions-table td:nth-child(8)::before {
+    display: none;
+  }
+
+  .sessions-table td:nth-child(3),
+  .sessions-table td:nth-child(4),
+  .sessions-table td:nth-child(5),
+  .sessions-table td:nth-child(6),
+  .sessions-table td:nth-child(7) {
+    padding: 9px;
+    background: var(--surface-input-deep);
+    border: 1px solid var(--theme-border-card);
+    border-radius: 7px;
+    line-height: 1.25;
+  }
+
+  .sessions-table td:nth-child(n + 3) {
+    text-align: left;
   }
 
   .sessions-site-cell {
-    gap: 6px;
+    width: 100%;
+    gap: 9px;
   }
 
   .sessions-site-logo {
@@ -688,24 +828,51 @@
     height: 17px;
   }
 
-  .sessions-table th {
-    font-size: 0.56rem;
-    letter-spacing: 0.04em;
+  .sessions-site-logo--ggpoker {
+    width: 36px;
+    flex-basis: 36px;
   }
 
-  .sessions-table th:nth-child(3),
-  .sessions-table td:nth-child(3),
-  .sessions-table th:nth-child(6),
-  .sessions-table td:nth-child(6) {
-    display: none;
+  .sessions-site-logo--ggpoker img {
+    width: 36px;
+    height: 21px;
+  }
+
+  .sessions-game-name {
+    font-size: 0.86rem;
+    font-weight: 800;
+  }
+
+  .sessions-actions-cell {
+    padding-top: 2px;
+  }
+
+  .sessions-row-actions {
+    justify-content: stretch;
+    gap: 8px;
+  }
+
+  .sessions-details-button,
+  .sessions-stats-button,
+  .sessions-actions-button {
+    width: auto;
+    min-width: 0;
+    height: 38px;
+    flex: 1 1 0;
+  }
+
+  .sessions-actions-menu {
+    top: calc(100% + 4px);
+    right: 0;
+    width: min(180px, 58vw);
   }
 
   .session-date-desktop {
-    display: none;
+    display: inline;
   }
 
   .session-date-mobile {
-    display: inline;
+    display: none;
   }
 
   .sessions-card-footer {

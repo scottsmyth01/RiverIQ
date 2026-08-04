@@ -6,6 +6,7 @@ import LoadingScreen from './components/LoadingScreen/LoadingScreen';
 import { useAuth } from './hooks/useAuth';
 import { useSessions } from './hooks/useSessions';
 import ProtectedRoute from './utils/ProtectedRoute';
+import FeatureUploadGate from './components/FeatureUploadGate/FeatureUploadGate';
 import SessionsPage from './pages/SessionsPage';
 import DashboardLayout from './components/DashboardLayout/DashboardLayout';
 import DashboardSectionPage from './pages/DashboardSectionPage';
@@ -46,7 +47,7 @@ function ScrollToTop() {
 
 function AppRoutes() {
   const { pathname } = useLocation();
-  const { isAuthenticated, isEmailVerified, loading, logoutLoading } = useAuth();
+  const { isAuthenticated, isEmailVerified, loading, loginLoading, googleLoginLoading, logoutLoading } = useAuth();
 
   const isDashboardRoute = pathname.startsWith('/dashboard');
   const isSignedOutOnlyRoute =
@@ -56,17 +57,7 @@ function AppRoutes() {
   const isPaymentRoute = pathname === '/subscription/payment';
   const isResetPasswordRoute = pathname.startsWith('/reset-password');
   const isLegalRoute = pathname === '/terms' || pathname === '/privacy';
-  const { isLoading: isSessionsLoading } = useSessions({ enabled: isDashboardRoute && isAuthenticated });
-  const isAuthRouteLoading = loading && (isDashboardRoute || isSignedOutOnlyRoute);
-  const isDashboardDataLoading = isDashboardRoute && isAuthenticated && isSessionsLoading;
-  const showGlobalLoading = logoutLoading || isAuthRouteLoading || isDashboardDataLoading;
-  const shouldRenderRouteContent = !logoutLoading && !isAuthRouteLoading;
-  const showWebsiteChrome = !loading && !isAuthenticated && !isPaymentRoute;
-
-  useEffect(() => {
-    if (loading || isAuthenticated) return;
-    document.documentElement.dataset.theme = 'dark';
-  }, [isAuthenticated, loading]);
+  const { isPending: isSessionsPending } = useSessions({ enabled: isDashboardRoute && isAuthenticated });
 
   // if user is authenticated and emailVerified then navigate the user to their dashboard
   // if the route is the pricing page then do not run this code
@@ -81,6 +72,19 @@ function AppRoutes() {
 
   // if user is authenticated, but email is not verified, then navigate to the /verify-email page
   const redirectToVerifyEmail = isAuthenticated && !isEmailVerified && !isVerifyEmailRoute && !isResetPasswordRoute;
+  const isAuthRouteLoading = loading && (isDashboardRoute || isSignedOutOnlyRoute);
+  const isLoginLoading = loginLoading || googleLoginLoading;
+  const isDashboardDataLoading = isDashboardRoute && isAuthenticated && isSessionsPending;
+  const isRedirectingAfterAuth = redirectToDashboard || redirectToVerifyEmail;
+  const showGlobalLoading =
+    logoutLoading || isLoginLoading || isAuthRouteLoading || isDashboardDataLoading || isRedirectingAfterAuth;
+  const shouldRenderRouteContent = !logoutLoading && !isAuthRouteLoading && !isDashboardDataLoading;
+  const showWebsiteChrome = !loading && !isAuthenticated && !isPaymentRoute;
+
+  useEffect(() => {
+    if (loading || isAuthenticated) return;
+    document.documentElement.dataset.theme = 'dark';
+  }, [isAuthenticated, loading]);
 
   return (
     <>
@@ -90,7 +94,7 @@ function AppRoutes() {
       {shouldRenderRouteContent && !redirectToDashboard && !redirectToVerifyEmail && (
         <>
           {showWebsiteChrome && <Navbar />}
-          <Suspense fallback={null}>
+          <Suspense fallback={<LoadingScreen />}>
             <Routes>
               <Route path='/' element={<Navigate to='/login' replace />} />
               <Route path='/features' element={<FeaturePage />} />
@@ -127,12 +131,40 @@ function AppRoutes() {
                 <Route path='sessions/:id/stats' element={<SessionStatsPage />} />
                 <Route path='sessions/:id' element={<SessionDetailPage />} />
                 <Route path='sessions/new' element={<AddSessionPage />} />
-                <Route path='analytics' element={<AnalyticsPage />} />
-                <Route path='reports' element={<SavedReportsPage />} />
-                <Route path='reports/new' element={<ReportsPage />} />
+                <Route
+                  path='analytics'
+                  element={
+                    <FeatureUploadGate featureName='Analytics'>
+                      <AnalyticsPage />
+                    </FeatureUploadGate>
+                  }
+                />
+                <Route
+                  path='reports'
+                  element={
+                    <FeatureUploadGate featureName='Reports'>
+                      <SavedReportsPage />
+                    </FeatureUploadGate>
+                  }
+                />
+                <Route
+                  path='reports/new'
+                  element={
+                    <FeatureUploadGate featureName='Reports'>
+                      <ReportsPage />
+                    </FeatureUploadGate>
+                  }
+                />
                 <Route path='reports/saved' element={<Navigate to='/dashboard/reports' replace />} />
                 <Route path='goals' element={<GoalsPage />} />
-                <Route path='hand-history' element={<HandChartsPage />} />
+                <Route
+                  path='hand-history'
+                  element={
+                    <FeatureUploadGate featureName='Hand Charts'>
+                      <HandChartsPage />
+                    </FeatureUploadGate>
+                  }
+                />
                 <Route path='help' element={<InfoPage />} />
                 <Route path='settings' element={<SettingsPage />} />
               </Route>
