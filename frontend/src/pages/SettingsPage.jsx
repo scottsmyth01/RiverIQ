@@ -33,6 +33,7 @@ const currencyOptions = [
 ];
 
 const tableSizeOptions = [
+  { label: 'Heads Up', value: 'HU' },
   { label: '6max', value: '6max' },
   { label: '7max', value: '7max' },
   { label: '8max', value: '8max' },
@@ -84,7 +85,9 @@ const SettingsPage = () => {
 
   const { username, theme, dateRange, tableSize, currency } = settingsForm;
   const selectedDateRange = dateRangeOptions.find((option) => option.value === dateRange) || dateRangeOptions[0];
-  const selectedTableSize = tableSizeOptions.find((option) => option.value === tableSize) || tableSizeOptions[3];
+  const selectedTableSize =
+    tableSizeOptions.find((option) => option.value === tableSize) ||
+    tableSizeOptions.find((option) => option.value === '9max');
   const selectedCurrency = currencyOptions.find((option) => option.value === currency) || currencyOptions[0];
   const isPro = user?.subscription === 'pro';
   const savedPreferences = user?.preferences || {};

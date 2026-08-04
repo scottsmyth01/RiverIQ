@@ -18,6 +18,19 @@ const dashboardPeriods = [
   { id: 'past-7', value: 7, label: 'Past 7 Days', chartLabel: 'Past 7 Days Profit' },
 ];
 
+function getOldestSessionAgeDays(sessions) {
+  const sessionTimes = sessions
+    .map((session) => new Date(session.date || session.createdAt).getTime())
+    .filter((time) => !Number.isNaN(time));
+
+  if (!sessionTimes.length) return 0;
+
+  const oldestSessionTime = Math.min(...sessionTimes);
+  const today = new Date();
+
+  return Math.floor((today.getTime() - oldestSessionTime) / 86400000);
+}
+
 const DashboardPage = () => {
   // STATE
   const { user } = useAuth();
@@ -33,6 +46,8 @@ const DashboardPage = () => {
 
   // MEMO: returns the period, along with availibility and session count.
   const periodsWithAvailability = useMemo(() => {
+    const oldestSessionAgeDays = getOldestSessionAgeDays(allSessions);
+
     return dashboardPeriods.map((period) => {
       // if all-time, just return the object with allSessions.length
       if (period.id === 'all-time') {
@@ -43,6 +58,7 @@ const DashboardPage = () => {
         };
       }
 
+      const hasElapsed = typeof period.value !== 'number' || period.value <= 7 || oldestSessionAgeDays >= period.value;
       // else, we need to calculate the session count by filtering the allSessions for documents in that date range
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - period.value);
@@ -56,7 +72,10 @@ const DashboardPage = () => {
 
       return {
         ...period,
-        available: sessionCount > 1,
+        available: hasElapsed && sessionCount > 1,
+        disabledReason: !hasElapsed
+          ? `${period.label} will unlock after ${period.value} days of session history`
+          : 'No sessions found for this period',
         sessionCount,
       };
     });

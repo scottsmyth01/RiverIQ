@@ -9,9 +9,10 @@
 }
 
 .website-footer__inner {
-  width: min(100% - 2rem, 1100px);
+  width: 100%;
   min-height: 58px;
-  margin: 0 auto;
+  margin: 0;
+  padding: 0 clamp(1rem, 2.5vw, 2rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -39,7 +40,7 @@
 
 @media (max-width: 640px) {
   .website-footer__inner {
-    padding: 16px 0;
+    padding: 16px clamp(1rem, 2.5vw, 2rem);
     align-items: flex-start;
     flex-direction: column;
   }

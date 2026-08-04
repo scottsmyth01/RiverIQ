@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import './AddSessionPage.css';
 
 const FREE_SESSION_LIMIT = 20;
+const HAND_HISTORY_FILE_EXTENSION = '.txt';
 
 const pokerSites = [
   { label: 'PokerStars', value: 'pokerstars' },
@@ -41,8 +42,24 @@ const AddSessionPage = () => {
     }));
   }
 
+  function getHandHistoryFiles(files) {
+    const selectedFiles = Array.from(files || []);
+    const invalidFiles = selectedFiles.filter((file) => !file.name.toLowerCase().endsWith(HAND_HISTORY_FILE_EXTENSION));
+
+    if (invalidFiles.length) {
+      toast.error('Please upload a hand history .txt file');
+    }
+
+    return selectedFiles.filter((file) => file.name.toLowerCase().endsWith(HAND_HISTORY_FILE_EXTENSION));
+  }
+
   function handleFileChange(event) {
-    setHandHistoryFiles(Array.from(event.target.files || []));
+    const validFiles = getHandHistoryFiles(event.target.files);
+    setHandHistoryFiles(validFiles);
+
+    if (!validFiles.length && fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   }
 
   function clearSelectedFiles() {
@@ -66,7 +83,12 @@ const AddSessionPage = () => {
 
     if (isPending) return;
 
-    setHandHistoryFiles(Array.from(event.dataTransfer.files || []));
+    const validFiles = getHandHistoryFiles(event.dataTransfer.files);
+    setHandHistoryFiles(validFiles);
+
+    if (!validFiles.length && fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   }
 
   async function handleSubmit(event) {
@@ -78,7 +100,7 @@ const AddSessionPage = () => {
     }
 
     if (!handHistoryFiles.length) {
-      toast.error('Please choose at least one hand history file');
+      toast.error('Please choose at least one hand history .txt file');
       return;
     }
 
@@ -171,14 +193,14 @@ const AddSessionPage = () => {
                 id='hand-history-file'
                 name='handHistory'
                 type='file'
-                accept='.txt,.hhh'
+                accept='.txt'
                 multiple
                 disabled={isPending}
                 onChange={handleFileChange}
               />
 
               <small>
-                Supports .txt and .hhh files
+                Supports .txt files
                 <br />
                 Max file size: 50MB
               </small>

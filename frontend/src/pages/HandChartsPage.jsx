@@ -3,7 +3,7 @@ import './HandChartsPage.css';
 import { ChevronDown, Info, Lock, Table2, X } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useSessions } from '../hooks/useSessions';
-import { positionsByTableSize, tableSizes } from '../utils/analytics/positions';
+import { formatTableSizeLabel, positionsByTableSize, tableSizes } from '../utils/analytics/positions';
 
 const positionTitles = {
   'UTG+2': 'UTG+2',
@@ -18,6 +18,67 @@ const positionTitles = {
 };
 
 const recommendedRanges = {
+  HU: {
+    BTN: [
+      'AA',
+      'KK',
+      'QQ',
+      'JJ',
+      'TT',
+      '99',
+      '88',
+      '77',
+      '66',
+      '55',
+      '44',
+      '33',
+      '22',
+      'AKs',
+      'AQs',
+      'AJs',
+      'ATs',
+      'A9s',
+      'A8s',
+      'A7s',
+      'A6s',
+      'A5s',
+      'A4s',
+      'A3s',
+      'A2s',
+      'KQs',
+      'KJs',
+      'KTs',
+      'K9s',
+      'K8s',
+      'K7s',
+      'QJs',
+      'QTs',
+      'Q9s',
+      'Q8s',
+      'JTs',
+      'J9s',
+      'J8s',
+      'T9s',
+      'T8s',
+      '98s',
+      '87s',
+      '76s',
+      '65s',
+      'AKo',
+      'AQo',
+      'AJo',
+      'ATo',
+      'A9o',
+      'A8o',
+      'KQo',
+      'KJo',
+      'KTo',
+      'QJo',
+      'QTo',
+      'JTo',
+    ],
+    BB: [],
+  },
   '6max': {
     UTG: [
       'AA',
@@ -831,6 +892,32 @@ const recommendedRanges = {
 };
 
 const widerRecommendedAdds = {
+  HU: {
+    BTN: [
+      'K6s',
+      'K5s',
+      'K4s',
+      'K3s',
+      'K2s',
+      'Q7s',
+      'Q6s',
+      'J7s',
+      'T7s',
+      '96s',
+      '85s',
+      '64s',
+      '53s',
+      'A7o',
+      'A6o',
+      'A5o',
+      'A4o',
+      'K9o',
+      'Q9o',
+      'J9o',
+      'T9o',
+    ],
+    BB: [],
+  },
   '6max': {
     UTG: ['66', 'A8s', 'K9s', 'Q9s', 'T9s', '98s', 'KJo'],
     HJ: ['55', '44', 'A7s', 'A6s', 'A5s', 'K9s', 'Q9s', 'J9s', '87s', 'QJo'],
@@ -1403,6 +1490,8 @@ function getSessionTableSize(session) {
   const tableSize = session.tableSize ?? session.stats?.tableSize ?? session.maxPlayers ?? session.numPlayers;
   const numericSize = Number.parseInt(tableSize, 10);
 
+  if (typeof tableSize === 'string' && /^(hu|heads[-\s]?up)$/i.test(tableSize.trim())) return 'HU';
+  if (numericSize === 2) return 'HU';
   if (Number.isFinite(numericSize)) return `${numericSize}max`;
   if (typeof tableSize === 'string') return tableSize.toLowerCase();
   return null;
@@ -1517,7 +1606,7 @@ const HandChartsPage = () => {
             >
               {tableSizes.map((tableSize) => (
                 <option value={tableSize} key={tableSize}>
-                  {tableSize}
+                  {formatTableSizeLabel(tableSize)}
                 </option>
               ))}
             </select>

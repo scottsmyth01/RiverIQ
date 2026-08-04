@@ -21,7 +21,7 @@ const StatCards = ({ sessions = [], periods = [], selectedPeriod = 'all-time', s
             className={selectedPeriod === period.id ? 'active' : ''}
             aria-pressed={selectedPeriod === period.id}
             disabled={!period.available}
-            title={!period.available ? 'No sessions found for this period' : undefined}
+            title={!period.available ? period.disabledReason || 'No sessions found for this period' : undefined}
             onClick={() => setSelectedPeriod?.(period.id)} //call setSelectedPeriod(period.id)
             key={period.id}
           >

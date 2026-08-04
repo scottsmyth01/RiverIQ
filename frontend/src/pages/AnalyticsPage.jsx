@@ -1,5 +1,5 @@
 import './AnalyticsPage.css';
-import { allPositions, positionsByTableSize, tableSizes } from '../utils/analytics/positions';
+import { allPositions, formatTableSizeLabel, positionsByTableSize, tableSizes } from '../utils/analytics/positions';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, LinearScale, Tooltip } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { CalendarDays, ChevronDown, Gauge, LoaderCircle, Table2 } from 'lucide-react';
@@ -95,6 +95,7 @@ function getPositionStatsFromSessions(sessions) {
 }
 
 function getTableSizeFromPositions(positions) {
+  if (positions.length === 2 && positions.includes('BTN') && positions.includes('BB')) return 'HU';
   if (positions.includes('UTG+2')) return '9max';
   if (positions.includes('UTG+1')) return '8max';
   if (positions.includes('LJ')) return '7max';
@@ -710,7 +711,7 @@ const AnalyticsPage = () => {
 
                 return (
                   <option value={tableSize} disabled={!isAvailable} key={tableSize}>
-                    {tableSize}
+                    {formatTableSizeLabel(tableSize)}
                     {!isAvailable ? ' (N/A)' : ''}
                   </option>
                 );

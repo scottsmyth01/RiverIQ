@@ -75,7 +75,7 @@ const userSchema = new mongoose.Schema(
       },
       defaultTableSize: {
         type: String,
-        enum: ['6max', '7max', '8max', '9max'],
+        enum: ['HU', '6max', '7max', '8max', '9max'],
         default: '9max',
       },
     },

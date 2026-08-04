@@ -35,6 +35,7 @@ const SessionToolbar = ({ dateRange, setDateRange, sortBy, setSortBy, tableSize,
           <span className='sessions-select-shell'>
             <select value={tableSize} onChange={(e) => setTableSize(e.target.value)}>
               <option value='all'>All Table Sizes</option>
+              <option value='2-Max'>Heads Up</option>
               <option value='6-Max'>6-Max</option>
               <option value='7-Max'>7-Max</option>
               <option value='8-Max'>8-Max</option>

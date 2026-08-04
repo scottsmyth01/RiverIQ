@@ -54,7 +54,7 @@ const defaultFilters = {
   tags: 'All Tags',
 };
 
-const standardTableSizes = ['6-Max', '7-Max', '8-Max', '9-Max'];
+const standardTableSizes = ['2-Max', '6-Max', '7-Max', '8-Max', '9-Max'];
 const optionalReportFilters = [
   {
     key: 'site',
@@ -132,6 +132,7 @@ function normalizeTableSize(value) {
   if (value === null || value === undefined || value === '') return null;
 
   if (typeof value === 'string') {
+    if (/^(hu|heads[-\s]?up)$/i.test(value.trim())) return '2-Max';
     const match = value.match(/\d+/);
     return match ? `${match[0]}-Max` : value;
   }

@@ -1,5 +1,6 @@
 export const allPositions = ['Overall', 'UTG', 'UTG+1', 'UTG+2', 'LJ', 'HJ', 'CO', 'BTN', 'SB', 'BB'];
 export const positionsByTableSize = {
+  HU: ['BTN', 'BB'],
   '6max': ['UTG', 'HJ', 'CO', 'BTN', 'SB', 'BB'],
   '7max': ['UTG', 'LJ', 'HJ', 'CO', 'BTN', 'SB', 'BB'],
   '8max': ['UTG', 'UTG+1', 'LJ', 'HJ', 'CO', 'BTN', 'SB', 'BB'],
@@ -7,3 +8,7 @@ export const positionsByTableSize = {
 };
 
 export const tableSizes = Object.keys(positionsByTableSize);
+
+export function formatTableSizeLabel(tableSize) {
+  return tableSize === 'HU' ? 'Heads Up' : tableSize;
+}

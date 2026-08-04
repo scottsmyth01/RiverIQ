@@ -107,14 +107,17 @@
 }
 
 .profit-period-buttons button:disabled {
-  opacity: 0.58;
+  color: color-mix(in srgb, var(--text-subtle) 72%, var(--bg-main));
+  background: color-mix(in srgb, var(--surface-control-deep) 72%, var(--bg-main));
+  border-color: color-mix(in srgb, var(--theme-border-card) 70%, transparent);
   cursor: not-allowed;
+  opacity: 0.72;
 }
 
 .profit-period-buttons button:disabled:hover {
-  color: var(--text-subtle);
-  background: var(--surface-control-deep);
-  border-color: var(--theme-border-card);
+  color: color-mix(in srgb, var(--text-subtle) 72%, var(--bg-main));
+  background: color-mix(in srgb, var(--surface-control-deep) 72%, var(--bg-main));
+  border-color: color-mix(in srgb, var(--theme-border-card) 70%, transparent);
 }
 
 .profit-period-buttons .period-unavailable {
@@ -122,8 +125,9 @@
   top: -7px;
   right: -4px;
   padding: 1px 5px;
-  color: var(--text-on-primary-strong);
-  background: var(--danger);
+  color: color-mix(in srgb, var(--text-subtle) 74%, var(--bg-main));
+  background: color-mix(in srgb, var(--surface-control-deep) 82%, var(--bg-main));
+  border: 1px solid color-mix(in srgb, var(--theme-border-card) 58%, transparent);
   border-radius: 999px;
   font-size: 0.52rem;
   font-weight: 800;

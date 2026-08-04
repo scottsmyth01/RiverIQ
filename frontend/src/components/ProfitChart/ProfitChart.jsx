@@ -602,7 +602,7 @@ export default function ProfitChart({
                 type='button'
                 aria-pressed={selectedPeriod === period.id}
                 disabled={!period.available}
-                title={!period.available ? 'No sessions found for this period' : undefined}
+                title={!period.available ? period.disabledReason || 'No sessions found for this period' : undefined}
                 onClick={() => setSelectedPeriod?.(period.id)}
                 key={period.id}
               >
