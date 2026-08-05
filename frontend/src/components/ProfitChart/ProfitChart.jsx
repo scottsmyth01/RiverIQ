@@ -14,6 +14,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './ProfitChart.css';
 import { formatCurrency } from '../../utils/sessionUnits';
+import { useAuth } from '../../hooks/useAuth';
+import { convertFromUsd, getCurrencySymbol, getPreferredCurrency } from '../../utils/currency';
 
 /*
 Whenever the component renders, it follows this sequence:
@@ -30,13 +32,13 @@ ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip,
 
 const HOURLY_PROFIT_MIN_HANDS = 250;
 
-const optionalMetrics = [
+const getOptionalMetrics = (currency) => [
   {
     key: 'hourlyProfit',
     label: 'Hourly Profit',
     color: '#ff3b4b',
     axis: 'hourlyProfit',
-    format: (value) => `${formatCurrency(value)}/hr`,
+    format: (value) => `${formatCurrency(value, currency)}/hr`,
   },
 ];
 
@@ -56,8 +58,27 @@ function getMetricValues(sessionsWithData, key) {
   return sessionsWithData.map((item) => item[key]);
 }
 
-function formatWholeCurrency(value) {
-  return `$${Math.round(Number(value) || 0).toLocaleString('en-US')}`;
+function formatAxisCurrency(value, currency) {
+  const convertedValue = convertFromUsd(value, currency);
+
+  if (!Number.isFinite(convertedValue)) return 'N/A';
+
+  const roundedValue = Math.round(convertedValue / 10) * 10;
+  const sign = roundedValue < 0 ? '-' : '';
+
+  return `${sign}${getCurrencySymbol(currency)}${Math.abs(roundedValue).toLocaleString('en-US', {
+    maximumFractionDigits: 0,
+  })}`;
+}
+
+function formatHandsAxisLabel(label) {
+  const hands = Number(String(label).replace(/,/g, ''));
+
+  if (!Number.isFinite(hands)) return label;
+
+  return (Math.round(hands / 10) * 10).toLocaleString('en-US', {
+    maximumFractionDigits: 0,
+  });
 }
 
 function getSessionTime(session) {
@@ -95,6 +116,9 @@ export default function ProfitChart({
   setSelectedPeriod, //change the selected period
   isLoading = false, //if isLoading show the loading spinner
 }) {
+  const { user } = useAuth();
+  const currency = getPreferredCurrency(user);
+  const optionalMetrics = useMemo(() => getOptionalMetrics(currency), [currency]);
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark'); // store light/dark
   const [isFullScreen, setIsFullScreen] = useState(false); //controls fullscreen graph
   const [isMobileChart, setIsMobileChart] = useState(() => window.matchMedia?.('(max-width: 760px)').matches ?? false);
@@ -366,7 +390,7 @@ export default function ProfitChart({
           metricKey: metric.key,
         })),
     ],
-    [sessionsWithData, metricFlags],
+    [sessionsWithData, metricFlags, optionalMetrics],
   );
 
   // Exactly what Chart.js expects.
@@ -454,7 +478,7 @@ export default function ProfitChart({
             },
             label: (context) => {
               const metric = optionalMetrics.find((item) => item.key === context.dataset.metricKey);
-              const formatter = metric?.format || formatCurrency;
+              const formatter = metric?.format || ((value) => formatCurrency(value, currency));
               return `${context.dataset.label}: ${formatter(Number(context.parsed.y) || 0)}`;
             },
           },
@@ -481,6 +505,9 @@ export default function ProfitChart({
             maxTicksLimit: fullScreen ? 12 : isMobileChart ? 4 : 7,
             autoSkip: true,
             maxRotation: 0,
+            callback(value) {
+              return formatHandsAxisLabel(this.getLabelForValue(value));
+            },
           },
           border: {
             color: gridColor,
@@ -506,7 +533,7 @@ export default function ProfitChart({
             maxTicksLimit: fullScreen ? 9 : isMobileChart ? 4 : 5,
             precision: 0,
             stepSize: 10,
-            callback: (value) => `$${(Math.round(Number(value) / 10) * 10).toLocaleString('en-US')}`,
+            callback: (value) => formatAxisCurrency(value, currency),
           },
           grid: {
             color: gridColor,
@@ -530,7 +557,7 @@ export default function ProfitChart({
             maxTicksLimit: fullScreen ? 9 : isMobileChart ? 4 : 5,
             precision: 0,
             stepSize: 10,
-            callback: (value) => `${formatWholeCurrency(Math.round(Number(value) / 10) * 10)}/hr`,
+            callback: (value) => `${formatAxisCurrency(value, currency)}/hr`,
           },
           border: {
             color: gridColor,
@@ -543,7 +570,7 @@ export default function ProfitChart({
 
   const options = useMemo(
     () => getChartOptions(),
-    [sessionsWithData, chartGridColor, chartTextColor, datasets.length, axesMinMax, metricFlags, isMobileChart],
+    [sessionsWithData, chartGridColor, chartTextColor, datasets.length, axesMinMax, metricFlags, isMobileChart, currency],
   );
   const fullScreenOptions = useMemo(
     () => getChartOptions({ fullScreen: true }),
@@ -555,6 +582,7 @@ export default function ProfitChart({
       axesMinMax,
       metricFlags,
       isMobileChart,
+      currency,
     ],
   );
 
@@ -577,7 +605,7 @@ export default function ProfitChart({
             <div className='profit-fullscreen__toolbar'>
               <span>Graph</span>
               <span>Hands: {runningHands.toLocaleString('en-US')}</span>
-              <span>Profit: {formatCurrency(runningProfit)}</span>
+              <span>Profit: {formatCurrency(runningProfit, currency)}</span>
             </div>
 
             <div className='profit-fullscreen__chart'>

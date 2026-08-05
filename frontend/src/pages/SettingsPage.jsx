@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   CalendarDays,
   Camera,
@@ -28,8 +29,9 @@ const dateRangeOptions = [
 const currencyOptions = [
   { label: 'USD', value: 'USD' },
   { label: 'CAD', value: 'CAD' },
-  { label: 'EUR', value: 'EUR' },
   { label: 'GBP', value: 'GBP' },
+  { label: 'JPY (Yen)', value: 'JPY' },
+  { label: 'CNY (Yuan)', value: 'CNY' },
 ];
 
 const tableSizeOptions = [
@@ -79,8 +81,10 @@ const SettingsPage = () => {
   const [settingsNotice, setSettingsNotice] = useState('');
   const [subscriptionNotice, setSubscriptionNotice] = useState('');
   const [showCancelSubscriptionModal, setShowCancelSubscriptionModal] = useState(false);
+  const [menuPosition, setMenuPosition] = useState(null);
   const avatarInputRef = useRef(null);
   const menuRef = useRef(null);
+  const activeMenuButtonRef = useRef(null);
   const savedThemeRef = useRef(user?.preferences?.theme || localStorage.getItem('theme') || 'dark');
 
   const { username, theme, dateRange, tableSize, currency } = settingsForm;
@@ -119,6 +123,7 @@ const SettingsPage = () => {
 
   function handleDateRangeChange(nextDateRange) {
     setOpenMenu(null);
+    setMenuPosition(null);
     if (nextDateRange === dateRange) return;
 
     updateSettingsField('dateRange', nextDateRange);
@@ -126,6 +131,7 @@ const SettingsPage = () => {
 
   function handleCurrencyChange(nextCurrency) {
     setOpenMenu(null);
+    setMenuPosition(null);
     if (nextCurrency === currency) return;
 
     updateSettingsField('currency', nextCurrency);
@@ -133,9 +139,64 @@ const SettingsPage = () => {
 
   function handleTableSizeChange(nextTableSize) {
     setOpenMenu(null);
+    setMenuPosition(null);
     if (nextTableSize === tableSize) return;
 
     updateSettingsField('tableSize', nextTableSize);
+  }
+
+  function positionDropdown(button) {
+    const rect = button.getBoundingClientRect();
+    setMenuPosition({
+      top: rect.bottom + 7,
+      left: rect.left,
+      width: rect.width,
+    });
+  }
+
+  function toggleSettingsMenu(menuName, event) {
+    if (openMenu === menuName) {
+      setOpenMenu(null);
+      setMenuPosition(null);
+      activeMenuButtonRef.current = null;
+      return;
+    }
+
+    activeMenuButtonRef.current = event.currentTarget;
+    positionDropdown(event.currentTarget);
+    setOpenMenu(menuName);
+  }
+
+  function renderSettingsMenu(menuName, label, options, currentValue, onSelect) {
+    if (openMenu !== menuName || !menuPosition || typeof document === 'undefined') return null;
+
+    return createPortal(
+      <div
+        className='settings-menu settings-menu--portal'
+        role='listbox'
+        aria-label={label}
+        data-settings-menu={menuName}
+        style={{
+          top: `${menuPosition.top}px`,
+          left: `${menuPosition.left}px`,
+          width: `${menuPosition.width}px`,
+        }}
+      >
+        {options.map((option) => (
+          <button
+            className={option.value === currentValue ? 'settings-menu__option active' : 'settings-menu__option'}
+            key={option.value}
+            type='button'
+            role='option'
+            aria-selected={option.value === currentValue}
+            onClick={() => onSelect(option.value)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>,
+      document.body,
+    );
   }
 
   async function handleSaveSettings() {
@@ -304,14 +365,36 @@ const SettingsPage = () => {
 
   useEffect(() => {
     const closeMenu = (event) => {
-      if (!menuRef.current?.contains(event.target)) {
+      if (!openMenu) return;
+
+      if (!event.target.closest(`[data-settings-menu="${openMenu}"]`)) {
         setOpenMenu(null);
+        setMenuPosition(null);
+      }
+    };
+    const closeMenuOnEscape = (event) => {
+      if (event.key === 'Escape') {
+        setOpenMenu(null);
+        setMenuPosition(null);
+      }
+    };
+    const updateMenuPosition = () => {
+      if (activeMenuButtonRef.current) {
+        positionDropdown(activeMenuButtonRef.current);
       }
     };
 
-    document.addEventListener('mousedown', closeMenu);
-    return () => document.removeEventListener('mousedown', closeMenu);
-  }, []);
+    document.addEventListener('pointerdown', closeMenu);
+    document.addEventListener('keydown', closeMenuOnEscape);
+    window.addEventListener('resize', updateMenuPosition);
+    window.addEventListener('scroll', updateMenuPosition, true);
+    return () => {
+      document.removeEventListener('pointerdown', closeMenu);
+      document.removeEventListener('keydown', closeMenuOnEscape);
+      window.removeEventListener('resize', updateMenuPosition);
+      window.removeEventListener('scroll', updateMenuPosition, true);
+    };
+  }, [openMenu]);
 
   useEffect(() => {
     return () => {
@@ -426,7 +509,7 @@ const SettingsPage = () => {
           </div>
         </section>
 
-        <section className='settings-card'>
+        <section className={`settings-card${openMenu ? ' settings-card--menu-open' : ''}`}>
           <div className='settings-card__header'>
             <Monitor aria-hidden='true' />
             <div>
@@ -476,127 +559,75 @@ const SettingsPage = () => {
           </div>
 
           <div className='settings-list' ref={menuRef}>
-            <div className='settings-row'>
+            <div className={`settings-row${openMenu === 'dateRange' ? ' settings-row--menu-open' : ''}`}>
               <div className='settings-row__copy'>
                 <h3>Default Date Range</h3>
                 <p>This is the default date range for dashboards and reports.</p>
               </div>
 
-              <div className='settings-select-wrap'>
+              <div className='settings-select-wrap' data-settings-menu='dateRange'>
                 <button
                   className='settings-select'
                   type='button'
                   aria-expanded={openMenu === 'dateRange'}
                   aria-haspopup='listbox'
                   disabled={isSavingSettings}
-                  onClick={() => setOpenMenu((menu) => (menu === 'dateRange' ? null : 'dateRange'))}
+                  onClick={(event) => toggleSettingsMenu('dateRange', event)}
                 >
                   <CalendarDays aria-hidden='true' />
                   <span>{selectedDateRange.label}</span>
                   <ChevronDown aria-hidden='true' />
                 </button>
-
-                {openMenu === 'dateRange' && (
-                  <div className='settings-menu' role='listbox' aria-label='Default Date Range'>
-                    {dateRangeOptions.map((option) => (
-                      <button
-                        className={
-                          option.value === dateRange ? 'settings-menu__option active' : 'settings-menu__option'
-                        }
-                        key={option.value}
-                        type='button'
-                        role='option'
-                        aria-selected={option.value === dateRange}
-                        onClick={() => handleDateRangeChange(option.value)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
 
-            <div className='settings-row'>
+            <div className={`settings-row${openMenu === 'tableSize' ? ' settings-row--menu-open' : ''}`}>
               <div className='settings-row__copy'>
                 <h3>Default Table Size</h3>
                 <p>This is the default table size for position-based analytics.</p>
               </div>
 
-              <div className='settings-select-wrap'>
+              <div className='settings-select-wrap' data-settings-menu='tableSize'>
                 <button
                   className='settings-select'
                   type='button'
                   aria-expanded={openMenu === 'tableSize'}
                   aria-haspopup='listbox'
                   disabled={isSavingSettings}
-                  onClick={() => setOpenMenu((menu) => (menu === 'tableSize' ? null : 'tableSize'))}
+                  onClick={(event) => toggleSettingsMenu('tableSize', event)}
                 >
                   <Table2 aria-hidden='true' />
                   <span>{selectedTableSize.label}</span>
                   <ChevronDown aria-hidden='true' />
                 </button>
-
-                {openMenu === 'tableSize' && (
-                  <div className='settings-menu' role='listbox' aria-label='Default Table Size'>
-                    {tableSizeOptions.map((option) => (
-                      <button
-                        className={
-                          option.value === tableSize ? 'settings-menu__option active' : 'settings-menu__option'
-                        }
-                        key={option.value}
-                        type='button'
-                        role='option'
-                        aria-selected={option.value === tableSize}
-                        onClick={() => handleTableSizeChange(option.value)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
 
-            <div className='settings-row'>
+            <div className={`settings-row${openMenu === 'currency' ? ' settings-row--menu-open' : ''}`}>
               <div className='settings-row__copy'>
                 <h3>Currency</h3>
                 <p>Choose your preferred currency.</p>
               </div>
 
-              <div className='settings-select-wrap'>
+              <div className='settings-select-wrap' data-settings-menu='currency'>
                 <button
                   className='settings-select'
                   type='button'
                   aria-expanded={openMenu === 'currency'}
                   aria-haspopup='listbox'
                   disabled={isSavingSettings}
-                  onClick={() => setOpenMenu((menu) => (menu === 'currency' ? null : 'currency'))}
+                  onClick={(event) => toggleSettingsMenu('currency', event)}
                 >
                   <DollarSign aria-hidden='true' />
                   <span>{selectedCurrency.label}</span>
                   <ChevronDown aria-hidden='true' />
                 </button>
-
-                {openMenu === 'currency' && (
-                  <div className='settings-menu' role='listbox' aria-label='Currency'>
-                    {currencyOptions.map((option) => (
-                      <button
-                        className={option.value === currency ? 'settings-menu__option active' : 'settings-menu__option'}
-                        key={option.value}
-                        type='button'
-                        role='option'
-                        aria-selected={option.value === currency}
-                        onClick={() => handleCurrencyChange(option.value)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           </div>
+          {renderSettingsMenu('dateRange', 'Default Date Range', dateRangeOptions, dateRange, handleDateRangeChange)}
+          {renderSettingsMenu('tableSize', 'Default Table Size', tableSizeOptions, tableSize, handleTableSizeChange)}
+          {renderSettingsMenu('currency', 'Currency', currencyOptions, currency, handleCurrencyChange)}
         </section>
 
         <section className='settings-card'>

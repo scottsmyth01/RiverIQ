@@ -11,6 +11,7 @@ import { buildHandHistoryRecords, deleteFromR2 } from '../middleware/uploadToR2M
 
 const FREE_SESSION_LIMIT = 20;
 const SESSION_SPLIT_GAP_MINUTES = 60;
+const SESSION_CURRENCIES = new Set(['USD', 'CAD', 'GBP', 'JPY', 'CNY']);
 
 const serializeUser = (user) => ({
   _id: user._id,
@@ -332,6 +333,7 @@ function buildHandResults(hands) {
 function buildSessionPayload({
   req,
   pokerSite,
+  currency,
   sessionName,
   notes,
   tags,
@@ -344,6 +346,7 @@ function buildSessionPayload({
   const parsedStats = calculateStats(hands);
   const firstHand = hands[0];
   const table = firstHand?.table || {};
+  const sessionCurrency = currency || table.currency;
 
   return {
     user: req.user._id,
@@ -356,8 +359,8 @@ function buildSessionPayload({
     date: firstHand?.date || new Date(),
     pokerSite,
     gameType: formatGameType(table.game),
-    stakes: formatStakes(table),
-    currency: table.currency,
+    stakes: formatStakes(table, sessionCurrency),
+    currency: sessionCurrency,
     tableSize: table.maxPlayers,
     duration: getSessionDuration(hands),
     notes,
@@ -393,8 +396,9 @@ function getCurrencySymbol(currency) {
   const symbols = {
     USD: '$',
     CAD: 'C$',
-    EUR: '€',
     GBP: '£',
+    JPY: '¥',
+    CNY: 'CN¥',
     USDT: '₮',
   };
 
@@ -411,14 +415,14 @@ function formatBlindAmount(amount) {
   return numericAmount.toFixed(2).replace(/0$/, '');
 }
 
-function formatStakes(table = {}) {
+function formatStakes(table = {}, currency) {
   const smallBlind = formatBlindAmount(table.smallBlind);
   const bigBlind = formatBlindAmount(table.bigBlind);
   const ante = formatBlindAmount(table.ante);
 
   if (!smallBlind || !bigBlind) return undefined;
 
-  const currencySymbol = getCurrencySymbol(table.currency);
+  const currencySymbol = getCurrencySymbol(currency || table.currency);
 
   const stakes = `${currencySymbol}${smallBlind}/${currencySymbol}${bigBlind}`;
 
@@ -485,10 +489,17 @@ export const getSessions = async (req, res) => {
 export const addSession = async (req, res, next) => {
   try {
     const { pokerSite, notes, tags } = req.body;
+    const currency = typeof req.body.currency === 'string' ? req.body.currency.trim().toUpperCase() : 'USD';
     const sessionName = typeof req.body.sessionName === 'string' ? req.body.sessionName.trim() : '';
     if (!pokerSite) {
       return res.status(400).json({
         message: 'Please select a poker site',
+      });
+    }
+
+    if (!SESSION_CURRENCIES.has(currency)) {
+      return res.status(400).json({
+        message: 'Please select a supported session currency',
       });
     }
 
@@ -554,6 +565,7 @@ export const addSession = async (req, res, next) => {
         buildSessionPayload({
           req,
           pokerSite,
+          currency,
           sessionName,
           notes,
           tags,

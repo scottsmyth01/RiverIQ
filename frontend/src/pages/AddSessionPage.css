@@ -317,7 +317,8 @@
   height: 17px;
 }
 
-.compatible-sites-card {
+.compatible-sites-card,
+.session-currency-card {
   padding: clamp(1rem, 2vw, 1.35rem) clamp(1rem, 2vw, 1.5rem);
   display: flex;
   align-items: center;
@@ -325,12 +326,20 @@
   gap: 1rem;
 }
 
-.compatible-sites-card h2 {
+.compatible-sites-card h2,
+.session-currency-card h2 {
   font-size: var(--font-size-lg);
   line-height: 1.25;
 }
 
-.compatible-sites-list {
+.session-currency-card p {
+  margin-top: 0.25rem;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.compatible-sites-list,
+.session-currency-list {
   display: flex;
   flex-wrap: nowrap;
   justify-content: flex-end;
@@ -340,15 +349,18 @@
   scrollbar-width: none;
 }
 
-.compatible-sites-list::-webkit-scrollbar {
+.compatible-sites-list::-webkit-scrollbar,
+.session-currency-list::-webkit-scrollbar {
   display: none;
 }
 
-.compatible-site-option {
+.compatible-site-option,
+.session-currency-option {
   cursor: pointer;
 }
 
-.compatible-site-option input {
+.compatible-site-option input,
+.session-currency-option input {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -356,7 +368,8 @@
   clip: rect(0 0 0 0);
 }
 
-.compatible-site-option span {
+.compatible-site-option span,
+.session-currency-option span {
   min-height: 34px;
   padding: 0 0.62rem;
   display: inline-flex;
@@ -376,11 +389,14 @@
 }
 
 .compatible-site-option:hover span,
-.compatible-site-option input:focus-visible + span {
+.compatible-site-option input:focus-visible + span,
+.session-currency-option:hover span,
+.session-currency-option input:focus-visible + span {
   border-color: var(--accent-green-border-strong);
 }
 
-.compatible-site-option--active span {
+.compatible-site-option--active span,
+.session-currency-option--active span {
   color: var(--color-primary);
   background: var(--overlay-success-weak);
   border-color: var(--accent-green-border);
@@ -452,6 +468,7 @@
 }
 
 .compatible-site-option input:disabled + span,
+.session-currency-option input:disabled + span,
 .session-fields input:disabled,
 .session-fields textarea:disabled,
 .selected-file button:disabled,
@@ -529,12 +546,14 @@
     min-height: 260px;
   }
 
-  .compatible-sites-card {
+  .compatible-sites-card,
+  .session-currency-card {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .compatible-sites-list {
+  .compatible-sites-list,
+  .session-currency-list {
     justify-content: flex-start;
     width: 100%;
   }

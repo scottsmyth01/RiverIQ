@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ChevronRight, CircleHelp, CloudUpload, FileText, X } from 'lucide-react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useAddSession, useSessions } from '../hooks/useSessions';
 import { useAuth } from '../hooks/useAuth';
+import { getPreferredCurrency } from '../utils/currency';
 import './AddSessionPage.css';
 
 const FREE_SESSION_LIMIT = 20;
@@ -17,6 +18,14 @@ const pokerSites = [
   { label: 'FanDuel', value: 'fanduel' },
   { label: '888poker', value: '888poker' },
   { label: 'partypoker', value: 'partypoker' },
+];
+
+const sessionCurrencies = [
+  { label: 'USD', value: 'USD' },
+  { label: 'CAD', value: 'CAD' },
+  { label: 'GBP', value: 'GBP' },
+  { label: 'Yen', value: 'JPY' },
+  { label: 'Yuan', value: 'CNY' },
 ];
 
 function showUploadErrorToast(error) {
@@ -37,6 +46,7 @@ function showUploadErrorToast(error) {
 
 const AddSessionPage = () => {
   const [selectedPokerSite, setSelectedPokerSite] = useState('pokerstars');
+  const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [sessionDetails, setSessionDetails] = useState({
     sessionName: '',
     notes: '',
@@ -49,6 +59,10 @@ const AddSessionPage = () => {
   const { data: sessions = [] } = useSessions();
   const { mutateAsync: addSession, isPending } = useAddSession();
   const hasReachedFreeSessionLimit = user?.subscription !== 'pro' && sessions.length >= FREE_SESSION_LIMIT;
+
+  useEffect(() => {
+    setSelectedCurrency(getPreferredCurrency(user));
+  }, [user]);
 
   function handleDetailsChange(event) {
     const { name, value } = event.target;
@@ -123,6 +137,7 @@ const AddSessionPage = () => {
 
     const formData = new FormData();
     formData.set('pokerSite', selectedPokerSite);
+    formData.set('currency', selectedCurrency);
     formData.set('sessionName', sessionDetails.sessionName.trim());
     formData.set('notes', sessionDetails.notes.trim());
     formData.set('tags', sessionDetails.tags.trim());
@@ -189,6 +204,30 @@ const AddSessionPage = () => {
                     onChange={() => setSelectedPokerSite(site.value)}
                   />
                   <span>{site.label}</span>
+                </label>
+              ))}
+            </div>
+          </section>
+          <section className='add-session-card session-currency-card' aria-labelledby='session-currency-heading'>
+            <div>
+              <h2 id='session-currency-heading'>Session Currency</h2>
+              <p>Choose the currency used in this hand history file.</p>
+            </div>
+            <div className='session-currency-list' role='radiogroup' aria-labelledby='session-currency-heading'>
+              {sessionCurrencies.map((currency) => (
+                <label
+                  className={`session-currency-option${selectedCurrency === currency.value ? ' session-currency-option--active' : ''}`}
+                  key={currency.value}
+                >
+                  <input
+                    type='radio'
+                    name='currency'
+                    value={currency.value}
+                    checked={selectedCurrency === currency.value}
+                    disabled={isPending}
+                    onChange={() => setSelectedCurrency(currency.value)}
+                  />
+                  <span>{currency.label}</span>
                 </label>
               ))}
             </div>

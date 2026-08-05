@@ -44,8 +44,9 @@ function getCurrencySymbol(currency) {
   const symbols = {
     USD: '$',
     CAD: 'C$',
-    EUR: '€',
     GBP: '£',
+    JPY: '¥',
+    CNY: 'CN¥',
     USDT: '₮',
   };
 
@@ -67,8 +68,9 @@ function getStakesCurrencySymbol(stakes, currency) {
 
   if (stakesText.includes('C$')) return 'C$';
   if (stakesText.includes('$')) return '$';
-  if (stakesText.includes('€')) return '€';
   if (stakesText.includes('£')) return '£';
+  if (stakesText.includes('CN¥')) return 'CN¥';
+  if (stakesText.includes('¥')) return '¥';
 
   return getCurrencySymbol(currency) || getCurrencySymbol(stakesText.match(/[A-Z]{3}/)?.[0]);
 }

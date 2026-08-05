@@ -1,5 +1,7 @@
 import Card from '../Card/Card';
 import { getStatCards } from './StatCardsData';
+import { useAuth } from '../../hooks/useAuth';
+import { getPreferredCurrency } from '../../utils/currency';
 import './StatCards.css';
 
 // PROPS
@@ -9,8 +11,10 @@ import './StatCards.css';
 // onPeriodChange =
 
 const StatCards = ({ sessions = [], periods = [], selectedPeriod = 'all-time', setSelectedPeriod }) => {
+  const { user } = useAuth();
+  const currency = getPreferredCurrency(user);
   // This function will return the data needed to populate the cards
-  const cards = getStatCards(sessions);
+  const cards = getStatCards(sessions, currency);
 
   return (
     <section className='stat-cards'>

@@ -183,7 +183,7 @@ describe('auth API integration', () => {
       .send({
         username: 'newhero',
         preferences: {
-          currency: 'CAD',
+          currency: 'CNY',
           defaultTableSize: '6max',
         },
       })
@@ -191,14 +191,14 @@ describe('auth API integration', () => {
     expect(updateResponse.body.user).toMatchObject({
       username: 'newhero',
       preferences: {
-        currency: 'CAD',
+        currency: 'CNY',
         defaultTableSize: '6max',
       },
     });
 
     const savedUser = await User.findOne({ email: validUser.email });
     expect(savedUser.username).toBe('newhero');
-    expect(savedUser.preferences.currency).toBe('CAD');
+    expect(savedUser.preferences.currency).toBe('CNY');
 
     const shortResponse = await agent.patch('/api/settings').send({ username: 'ab' }).expect(400);
     expect(shortResponse.body).toMatchObject({

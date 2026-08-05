@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { useAuth } from '../../hooks/useAuth';
 import { useSessions } from '../../hooks/useSessions';
+import { formatCurrency, getPreferredCurrency } from '../../utils/currency';
 import './Navbar.css';
 import logo from './logo.png';
 
@@ -22,13 +23,8 @@ const Navbar = () => {
   const displayName = user?.username || 'riq_user';
   const hasReachedFreeSessionLimit = user?.subscription !== 'pro' && sessions.length >= FREE_SESSION_LIMIT;
   const bankroll = Number(user?.bankroll) || 0;
-  const currency = user?.preferences?.currency || 'USD';
-  const formattedBankroll = bankroll.toLocaleString('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  const currency = getPreferredCurrency(user);
+  const formattedBankroll = formatCurrency(bankroll, currency);
   const initials = displayName
     .split(/[\s@._-]+/)
     .filter(Boolean)

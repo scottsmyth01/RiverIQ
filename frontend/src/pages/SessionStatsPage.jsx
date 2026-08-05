@@ -2,8 +2,10 @@ import './SessionStatsPage.css';
 
 import { ArrowLeft, BadgeDollarSign, Clock3, FileText, Gauge, Layers3, Pencil, Sigma } from 'lucide-react';
 import { Link, useParams } from 'react-router';
+import { useAuth } from '../hooks/useAuth';
 import { useSessions } from '../hooks/useSessions';
 import { getByPosition, toNumber } from '../utils/analytics/helpers';
+import { formatCurrency, formatStakes, getPreferredCurrency } from '../utils/currency';
 import { getSessionBigBlind } from '../utils/sessionUnits';
 
 const positionOrder = ['SB', 'BB', 'UTG', 'UTG+1', 'UTG+2', 'LJ', 'HJ', 'CO', 'BTN'];
@@ -41,14 +43,14 @@ function formatDuration(duration) {
   return `${hours}h ${minutes}m`;
 }
 
-function formatValue(value, format = 'decimal') {
+function formatValue(value, format = 'decimal', currency = 'USD') {
   if (value === null || value === undefined || value === '') return 'N/A';
 
   const number = Number(value);
 
   if (!Number.isFinite(number)) return 'N/A';
   if (format === 'integer') return number.toLocaleString('en-US');
-  if (format === 'currency') return `${number < 0 ? '-' : ''}$${Math.abs(number).toFixed(2)}`;
+  if (format === 'currency') return formatCurrency(number, currency);
   if (format === 'bigBlinds') return `${number > 0 ? '+' : ''}${number.toFixed(1)} BB`;
   if (format === 'percent') return `${number.toFixed(1)}%`;
 
@@ -163,7 +165,7 @@ function PreflopStats({ stats }) {
   );
 }
 
-function PositionBreakdown({ positionRows }) {
+function PositionBreakdown({ positionRows, currency }) {
   return (
     <section className='session-stats-panel session-stats-position-panel'>
       <div className='session-stats-panel-title'>
@@ -191,7 +193,7 @@ function PositionBreakdown({ positionRows }) {
                 <tr key={row.position}>
                   <td>{row.position}</td>
                   <td>{formatValue(row.hands, 'integer')}</td>
-                  <td className={getNumberTone(row.profit)}>{formatValue(row.profit, 'currency')}</td>
+                  <td className={getNumberTone(row.profit)}>{formatValue(row.profit, 'currency', currency)}</td>
                   <td className={getNumberTone(row.bb100)}>{formatValue(row.bb100)}</td>
                   <td>{formatValue(row.vpip, 'percent')}</td>
                   <td>{formatValue(row.pfr, 'percent')}</td>
@@ -212,6 +214,8 @@ function PositionBreakdown({ positionRows }) {
 
 const SessionStatsPage = () => {
   const { id } = useParams();
+  const { user } = useAuth();
+  const currency = getPreferredCurrency(user);
   const { data: sessions = [], isLoading, error } = useSessions();
   const session = sessions.find((item) => item._id === id || item.id === id);
 
@@ -254,7 +258,7 @@ const SessionStatsPage = () => {
   const topStats = [
     {
       label: 'Profit',
-      value: formatValue(profit, 'currency'),
+      value: formatValue(profit, 'currency', currency),
       tone: profitIsPositive ? 'positive' : 'negative',
       icon: BadgeDollarSign,
     },
@@ -283,7 +287,7 @@ const SessionStatsPage = () => {
           <h1>{session.sessionName || 'Session Stats'}</h1>
           <p>
             {formatDate(session.date)} | {session.gameType || session.game || 'Unknown game'} |{' '}
-            {session.stakes || 'N/A'}
+            {formatStakes(session.stakes, currency)}
           </p>
         </div>
         <Link to={`/dashboard/sessions/${id}`}>
@@ -308,7 +312,7 @@ const SessionStatsPage = () => {
 
       <PreflopStats stats={stats} />
 
-      <PositionBreakdown positionRows={positionRows} />
+      <PositionBreakdown positionRows={positionRows} currency={currency} />
     </main>
   );
 };

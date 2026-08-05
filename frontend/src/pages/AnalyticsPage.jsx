@@ -13,6 +13,7 @@ import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 import { useAuth } from '../hooks/useAuth';
 import { useSessions } from '../hooks/useSessions';
 import { toNumber, getStatValue, getByPosition } from '../utils/analytics/helpers';
+import { formatCurrency, getPreferredCurrency } from '../utils/currency';
 import { getSessionBigBlind, getSessionBbWon } from '../utils/sessionUnits';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip);
@@ -530,6 +531,7 @@ const positionColors = [
 
 const AnalyticsPage = () => {
   const { user } = useAuth();
+  const currency = getPreferredCurrency(user);
   const defaultPeriod = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
   const [activePosition, setActivePosition] = useState('Overall');
   const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod);
@@ -839,10 +841,7 @@ const AnalyticsPage = () => {
                 />
                 <div className='analytics-donut-center'>
                   <span>Total</span>
-                  <strong>
-                    {totalProfit < 0 ? '-' : ''}$
-                    {Math.abs(totalProfit).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                  </strong>
+                  <strong>{formatCurrency(totalProfit, currency)}</strong>
                   <span>Profit</span>
                 </div>
               </div>
@@ -854,8 +853,7 @@ const AnalyticsPage = () => {
                       {item.label} ({item.percentage}%)
                     </p>
                     <strong className={item.displayValue >= 0 ? 'positive' : 'negative'}>
-                      {item.displayValue < 0 ? '-' : ''}$
-                      {Math.abs(item.displayValue).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                      {formatCurrency(item.displayValue, currency)}
                     </strong>
                   </div>
                 ))}

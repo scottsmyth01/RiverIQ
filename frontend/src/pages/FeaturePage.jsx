@@ -3,6 +3,8 @@ import { BarChart3, Check, FileText, LockKeyhole, Plus, Spade } from 'lucide-rea
 import { Link } from 'react-router';
 import './FeaturePage.css';
 import features from '../assets/feature-grid.jsx';
+import { useAuth } from '../hooks/useAuth';
+import { convertFromUsd, formatCurrency, getCurrencySymbol, getPreferredCurrency } from '../utils/currency';
 
 const resultHighlights = [
   'Profit tracking',
@@ -32,12 +34,12 @@ const analyticsStats = [
 ];
 
 const positionBreakdown = [
-  { position: 'UTG', hands: '850', winRate: '12.35', profit: '$105.47', positive: true },
-  { position: 'MP', hands: '1,250', winRate: '18.76', profit: '$234.55', positive: true },
-  { position: 'CO', hands: '1,320', winRate: '28.91', profit: '$381.62', positive: true },
-  { position: 'BTN', hands: '1,180', winRate: '36.84', profit: '$434.71', positive: true },
-  { position: 'SB', hands: '680', winRate: '-8.23', profit: '-$55.92', positive: false },
-  { position: 'BB', hands: '1,140', winRate: '-15.72', profit: '-$179.68', positive: false },
+  { position: 'UTG', hands: '850', winRate: '12.35', profit: 105.47, positive: true },
+  { position: 'MP', hands: '1,250', winRate: '18.76', profit: 234.55, positive: true },
+  { position: 'CO', hands: '1,320', winRate: '28.91', profit: 381.62, positive: true },
+  { position: 'BTN', hands: '1,180', winRate: '36.84', profit: 434.71, positive: true },
+  { position: 'SB', hands: '680', winRate: '-8.23', profit: -55.92, positive: false },
+  { position: 'BB', hands: '1,140', winRate: '-15.72', profit: -179.68, positive: false },
 ];
 
 const detectedLeaks = [
@@ -76,7 +78,26 @@ const proFeatures = [
   'Full hand-history workflow',
 ];
 
+function formatCompactCurrency(value, currency) {
+  const convertedValue = convertFromUsd(value, currency);
+
+  if (!Number.isFinite(convertedValue)) return 'N/A';
+
+  const sign = convertedValue < 0 ? '-' : '';
+  const absValue = Math.abs(convertedValue);
+  const symbol = getCurrencySymbol(currency);
+
+  if (absValue >= 1000) {
+    return `${sign}${symbol}${Math.round(absValue / 1000).toLocaleString('en-US')}K`;
+  }
+
+  return `${sign}${symbol}${Math.round(absValue).toLocaleString('en-US')}`;
+}
+
 const FeaturePage = () => {
+  const { user } = useAuth();
+  const currency = getPreferredCurrency(user);
+
   return (
     <main className='feature-page'>
       <div className='feature-container'>
@@ -104,7 +125,7 @@ const FeaturePage = () => {
             <div className='profit-card-header'>
               <div>
                 <span className='profit-label'>Total Profit</span>
-                <strong>$3,450.75</strong>
+                <strong>{formatCurrency(3450.75, currency)}</strong>
               </div>
               <button type='button' className='time-filter'>
                 All Time <span aria-hidden='true'>⌄</span>
@@ -146,19 +167,19 @@ const FeaturePage = () => {
 
                 <g className='axis-labels'>
                   <text x='12' y='36'>
-                    $4K
+                    {formatCompactCurrency(4000, currency)}
                   </text>
                   <text x='12' y='92'>
-                    $2K
+                    {formatCompactCurrency(2000, currency)}
                   </text>
                   <text x='24' y='148'>
-                    $0
+                    {formatCompactCurrency(0, currency)}
                   </text>
                   <text x='8' y='204'>
-                    -$1K
+                    {formatCompactCurrency(-1000, currency)}
                   </text>
                   <text x='8' y='260'>
-                    -$2K
+                    {formatCompactCurrency(-2000, currency)}
                   </text>
                   <text x='55' y='276'>
                     Jan '24
@@ -178,7 +199,7 @@ const FeaturePage = () => {
                 </g>
               </svg>
 
-              <span className='chart-value'>$3,450.75</span>
+              <span className='chart-value'>{formatCurrency(3450.75, currency)}</span>
             </div>
           </div>
 
@@ -229,7 +250,7 @@ const FeaturePage = () => {
                       <td>{row.position}</td>
                       <td>{row.hands}</td>
                       <td className={row.positive ? 'positive' : 'negative'}>{row.winRate}</td>
-                      <td className={row.positive ? 'positive' : 'negative'}>{row.profit}</td>
+                      <td className={row.positive ? 'positive' : 'negative'}>{formatCurrency(row.profit, currency)}</td>
                     </tr>
                   ))}
                 </tbody>

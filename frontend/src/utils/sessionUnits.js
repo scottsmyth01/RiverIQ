@@ -1,3 +1,5 @@
+import { formatCurrency as formatConvertedCurrency } from './currency';
+
 export function parseBigBlind(stakes) {
   if (!stakes) return null;
 
@@ -33,11 +35,8 @@ export function getSessionBbWon(session) {
   return hands > 0 && Number.isFinite(bb100) ? (bb100 * hands) / 100 : null;
 }
 
-export function formatCurrency(value) {
-  return `${value < 0 ? '-' : ''}$${Math.abs(value).toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+export function formatCurrency(value, currency = 'USD') {
+  return formatConvertedCurrency(value, currency);
 }
 
 export function formatSigned(value, digits) {

@@ -1,11 +1,13 @@
+import { formatCurrency as formatConvertedCurrency, formatStakes } from '../currency';
+
 export const reportColumns = [
   { key: 'date', label: 'Session Date', type: 'text' },
   { key: 'site', label: 'Poker Site', type: 'text' },
-  { key: 'stakes', label: 'Stakes', type: 'text' },
+  { key: 'stakes', label: 'Stakes', type: 'stakes' },
   { key: 'game', label: 'Game Type', type: 'text' },
   { key: 'tableSize', label: 'Table Size', type: 'text' },
   { key: 'hands', label: 'Hands', type: 'integer' },
-  { key: 'profit', label: 'Profit ($)', type: 'currency' },
+  { key: 'profit', label: 'Profit', type: 'currency' },
   { key: 'bb100', label: 'bb/100', type: 'rate2' },
   { key: 'vpip', label: 'VPIP', type: 'rate1' },
   { key: 'pfr', label: 'PFR', type: 'rate1' },
@@ -36,14 +38,13 @@ export function formatNumber(value, digits = 1) {
   return Number.isFinite(number) ? number.toFixed(digits) : 'N/A';
 }
 
-export function formatCurrency(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 'N/A';
-  return `${number < 0 ? '-' : ''}$${Math.abs(number).toFixed(2)}`;
+export function formatCurrency(value, currency = 'USD') {
+  return formatConvertedCurrency(value, currency);
 }
 
-export function formatCell(value, type) {
-  if (type === 'currency') return formatCurrency(value);
+export function formatCell(value, type, currency = 'USD') {
+  if (type === 'currency') return formatCurrency(value, currency);
+  if (type === 'stakes') return formatStakes(value, currency);
   if (type === 'integer') return Number(value || 0).toLocaleString();
   if (type === 'rate2') return formatNumber(value, 2);
   if (type === 'rate1') return formatNumber(value, 1);

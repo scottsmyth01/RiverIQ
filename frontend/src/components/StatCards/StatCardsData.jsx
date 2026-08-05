@@ -1,8 +1,9 @@
 import { ClipboardPen, Star, TrendingUp } from 'lucide-react';
 import { IconCards } from '@tabler/icons-react';
 import { getSessionBbWon } from '../../utils/sessionUnits';
+import { formatCurrency } from '../../utils/currency';
 
-export const getStatCards = (sessions = []) => {
+export const getStatCards = (sessions = [], currency = 'USD') => {
   // profit calculation: dead simple, just iterate and add to sum
   const totalProfit = sessions.reduce((sum, session) => {
     return sum + (Number(session.profit) || 0);
@@ -28,7 +29,7 @@ export const getStatCards = (sessions = []) => {
       id: 'total-profit',
       title: 'Total Profit',
       value: totalProfit,
-      formatValue: (value) => `$${value.toFixed(2)}`,
+      formatValue: (value) => formatCurrency(value, currency),
       icon: <TrendingUp />,
       iconColor: '#00ff37',
     },

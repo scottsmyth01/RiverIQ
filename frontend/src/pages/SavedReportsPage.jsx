@@ -4,8 +4,10 @@ import './SavedReportsPage.css';
 import { ChevronLeft, ChevronRight, Download, FileText, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
+import { useAuth } from '../hooks/useAuth';
 import { useDeleteSavedReport, useSavedReports } from '../hooks/useSavedReports';
 import { useSessions } from '../hooks/useSessions';
+import { getPreferredCurrency } from '../utils/currency';
 import {
   formatCell,
   formatCurrency,
@@ -34,12 +36,12 @@ function getReportSummary(rows) {
   };
 }
 
-function downloadCsv(filename, rows, visibleColumns) {
+function downloadCsv(filename, rows, visibleColumns, currency) {
   const escapeValue = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
   const csvRows = [
     visibleColumns.map((column) => escapeValue(column.label)).join(','),
     ...rows.map((row) =>
-      visibleColumns.map((column) => escapeValue(formatCell(row[column.key], column.type))).join(','),
+      visibleColumns.map((column) => escapeValue(formatCell(row[column.key], column.type, currency))).join(','),
     ),
   ];
   const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
@@ -72,6 +74,8 @@ function getResultRows(rows, report) {
 }
 
 const SavedReportsPage = () => {
+  const { user } = useAuth();
+  const currency = getPreferredCurrency(user);
   const { data: sessions = [] } = useSessions();
   const { data: savedReports = [], isLoading, error } = useSavedReports();
   const { mutateAsync: deleteSavedReport, isPending: isDeletingReport } = useDeleteSavedReport();
@@ -168,7 +172,7 @@ const SavedReportsPage = () => {
                     className='reports-action reports-action--secondary'
                     type='button'
                     disabled={!resultRows.length}
-                    onClick={() => downloadCsv(`${activeReport.title}.csv`, resultRows, visibleColumns)}
+                    onClick={() => downloadCsv(`${activeReport.title}.csv`, resultRows, visibleColumns, currency)}
                   >
                     <Download aria-hidden='true' />
                     Export CSV
@@ -190,7 +194,7 @@ const SavedReportsPage = () => {
               <span>{resultRows.length} sessions</span>
               <span>{summary.hands.toLocaleString()} hands</span>
               <span className={summary.profit >= 0 ? 'reports-positive' : 'reports-negative'}>
-                {formatCurrency(summary.profit)}
+                {formatCurrency(summary.profit, currency)}
               </span>
               <span className={summary.bb100 >= 0 ? 'reports-positive' : 'reports-negative'}>
                 {summary.bb100.toFixed(2)} bb/100
@@ -222,7 +226,7 @@ const SavedReportsPage = () => {
                             }
                             key={column.key}
                           >
-                            {formatCell(row[column.key], column.type)}
+                            {formatCell(row[column.key], column.type, currency)}
                           </td>
                         );
                       })}
@@ -243,7 +247,7 @@ const SavedReportsPage = () => {
                         if (column.key === 'profit') {
                           return (
                             <td className={summary.profit >= 0 ? 'reports-positive' : 'reports-negative'} key={column.key}>
-                              {formatCurrency(summary.profit)}
+                              {formatCurrency(summary.profit, currency)}
                             </td>
                           );
                         }

@@ -20,17 +20,19 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
+import { useAuth } from '../hooks/useAuth';
 import { useCreateSavedReport, useUpdateSavedReport } from '../hooks/useSavedReports';
 import { useSessions } from '../hooks/useSessions';
+import { formatCurrency, formatStakes, getPreferredCurrency } from '../utils/currency';
 
 const columns = [
   { key: 'date', label: 'Session Date', type: 'text' },
   { key: 'site', label: 'Poker Site', type: 'text' },
-  { key: 'stakes', label: 'Stakes', type: 'text' },
+  { key: 'stakes', label: 'Stakes', type: 'stakes' },
   { key: 'game', label: 'Game Type', type: 'text' },
   { key: 'tableSize', label: 'Table Size', type: 'text' },
   { key: 'hands', label: 'Hands', type: 'integer' },
-  { key: 'profit', label: 'Profit ($)', type: 'currency' },
+  { key: 'profit', label: 'Profit', type: 'currency' },
   { key: 'bb100', label: 'bb/100', type: 'rate2' },
   { key: 'vpip', label: 'VPIP', type: 'rate1' },
   { key: 'pfr', label: 'PFR', type: 'rate1' },
@@ -110,14 +112,9 @@ function formatNumber(value, digits = 1) {
   return Number.isFinite(number) ? number.toFixed(digits) : 'N/A';
 }
 
-function formatCurrency(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 'N/A';
-  return `${number < 0 ? '-' : ''}$${Math.abs(number).toFixed(2)}`;
-}
-
-function formatCell(value, type) {
-  if (type === 'currency') return formatCurrency(value);
+function formatCell(value, type, currency = 'USD') {
+  if (type === 'currency') return formatCurrency(value, currency);
+  if (type === 'stakes') return formatStakes(value, currency);
   if (type === 'integer') return Number(value || 0).toLocaleString();
   if (type === 'rate2') return formatNumber(value, 2);
   if (type === 'rate1') return formatNumber(value, 1);
@@ -262,12 +259,12 @@ function getReportSummary(rows) {
   };
 }
 
-function downloadCsv(filename, rows, visibleColumns) {
+function downloadCsv(filename, rows, visibleColumns, currency) {
   const escapeValue = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
   const csvRows = [
     visibleColumns.map((column) => escapeValue(column.label)).join(','),
     ...rows.map((row) =>
-      visibleColumns.map((column) => escapeValue(formatCell(row[column.key], column.type))).join(','),
+      visibleColumns.map((column) => escapeValue(formatCell(row[column.key], column.type, currency))).join(','),
     ),
   ];
   const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
@@ -311,6 +308,8 @@ function ReportActionButton({ children, variant = 'secondary', icon: Icon, onCli
 }
 
 const ReportsPage = () => {
+  const { user } = useAuth();
+  const currency = getPreferredCurrency(user);
   const { data: sessions = [] } = useSessions();
   const createSavedReportMutation = useCreateSavedReport();
   const updateSavedReportMutation = useUpdateSavedReport();
@@ -630,7 +629,7 @@ const ReportsPage = () => {
                   role='menuitem'
                   onClick={() => {
                     setIsMobileActionsOpen(false);
-                    downloadCsv(`${reportTitle}.csv`, sortedRows, visibleColumns);
+                    downloadCsv(`${reportTitle}.csv`, sortedRows, visibleColumns, currency);
                   }}
                 >
                   <Download aria-hidden='true' />
@@ -839,7 +838,7 @@ const ReportsPage = () => {
                 <ReportActionButton
                   className='reports-export-button'
                   icon={Download}
-                  onClick={() => downloadCsv(`${reportTitle}.csv`, sortedRows, visibleColumns)}
+                  onClick={() => downloadCsv(`${reportTitle}.csv`, sortedRows, visibleColumns, currency)}
                 >
                   Export
                 </ReportActionButton>
@@ -920,7 +919,7 @@ const ReportsPage = () => {
                                       }
                                       key={column.key}
                                     >
-                                      {formatCell(row[column.key], column.type)}
+                                      {formatCell(row[column.key], column.type, currency)}
                                     </td>
                                   );
                                 })}
@@ -945,7 +944,7 @@ const ReportsPage = () => {
                                     }
                                     key={column.key}
                                   >
-                                    {formatCell(row[column.key], column.type)}
+                                    {formatCell(row[column.key], column.type, currency)}
                                   </td>
                                 );
                               })}
@@ -963,7 +962,7 @@ const ReportsPage = () => {
                                   className={summary.profit >= 0 ? 'reports-positive' : 'reports-negative'}
                                   key={column.key}
                                 >
-                                  {formatCurrency(summary.profit)}
+                                  {formatCurrency(summary.profit, currency)}
                                 </td>
                               );
                             if (column.key === 'bb100')

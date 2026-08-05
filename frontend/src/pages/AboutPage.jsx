@@ -1,6 +1,8 @@
 import React from 'react';
 import { BarChart3, Brain, Globe2, LockKeyhole, Spade, Target, TrendingUp, Users } from 'lucide-react';
 import { Link } from 'react-router';
+import { useAuth } from '../hooks/useAuth';
+import { formatCurrency, getPreferredCurrency } from '../utils/currency';
 import './AboutPage.css';
 
 const beliefs = [
@@ -33,6 +35,9 @@ const missionStats = [
 ];
 
 const AboutPage = () => {
+  const { user } = useAuth();
+  const currency = getPreferredCurrency(user);
+
   return (
     <main className='about-page'>
       <div className='about-container'>
@@ -75,7 +80,7 @@ const AboutPage = () => {
               <div className='dashboard-main'>
                 <div className='dashboard-profit'>
                   <span>Total Profit</span>
-                  <strong>$3,450.75</strong>
+                  <strong>{formatCurrency(3450.75, currency)}</strong>
                 </div>
                 <img src='/hero.png' alt='RiverIQ profit chart trending upward' />
                 <div className='about-dashboard-stats'>
@@ -121,7 +126,7 @@ const AboutPage = () => {
                 <img src='/hero.png' alt='' />
                 <div className='screen-stats'>
                   <span>Profit</span>
-                  <strong>$3,450.75</strong>
+                  <strong>{formatCurrency(3450.75, currency)}</strong>
                 </div>
               </div>
               <div className='laptop-base'></div>

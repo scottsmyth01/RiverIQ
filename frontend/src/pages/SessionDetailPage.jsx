@@ -5,6 +5,8 @@ import { ArrowLeft, BarChart3, FileText } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { toast } from 'sonner';
 import { useSessions, useUpdateSession } from '../hooks/useSessions';
+import { useAuth } from '../hooks/useAuth';
+import { formatSignedCurrency, formatStakes, getPreferredCurrency } from '../utils/currency';
 import pokerStarsLogo from '../assets/pokerstars-logo.svg';
 import ggPokerMark from '../assets/gg-poker-mark.svg';
 import coinPokerLogo from '../assets/coinpoker-logo.svg';
@@ -109,6 +111,8 @@ function getPokerSiteDetail(session) {
 
 const SessionDetailPage = () => {
   const { id } = useParams();
+  const { user } = useAuth();
+  const currency = getPreferredCurrency(user);
   const { data: sessions = [], isLoading, error } = useSessions();
   const { mutateAsync: updateSession, isPending: isUpdatingSession } = useUpdateSession();
   const [sessionTitle, setSessionTitle] = useState('');
@@ -161,12 +165,12 @@ const SessionDetailPage = () => {
   const pokerSite = getPokerSiteDetail(session);
   const metadata = [
     { label: 'Date', value: formatDate(session.date) },
-    { label: 'Profit', value: `${profitIsPositive ? '+' : '-'}$${Math.abs(profit).toFixed(2)}`, tone: profitIsPositive ? 'positive' : 'negative' },
+    { label: 'Profit', value: formatSignedCurrency(profit, currency), tone: profitIsPositive ? 'positive' : 'negative' },
     { label: 'Hands', value: hands.toLocaleString() },
     { label: 'Win Rate', value: `${winRate.toFixed(2)} BB/100`, tone: winRateIsPositive ? 'positive' : 'negative' },
     { label: 'Duration', value: formatDuration(session.duration) },
     { label: 'Game', value: session.gameType || session.game || 'Unknown' },
-    { label: 'Stakes', value: session.stakes || 'N/A' },
+    { label: 'Stakes', value: formatStakes(session.stakes, currency) },
     { label: 'Table Size', value: session.tableSize ? `${session.tableSize} max` : 'N/A' },
   ];
 

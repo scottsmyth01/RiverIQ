@@ -44,6 +44,8 @@ describe('SettingsPage', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /9max/i }));
     await userEvent.click(screen.getByRole('option', { name: '6max' }));
+    await userEvent.click(screen.getByRole('button', { name: 'USD' }));
+    await userEvent.click(screen.getByRole('option', { name: 'CNY (Yuan)' }));
 
     await waitFor(() => expect(saveButton).toBeEnabled());
 
@@ -52,10 +54,21 @@ describe('SettingsPage', () => {
     expect(updateSettings).toHaveBeenCalledWith({
       preferences: {
         theme: 'light',
-        currency: 'USD',
+        currency: 'CNY',
         defaultTimeFilter: '30d',
         defaultTableSize: '6max',
       },
     });
+  });
+
+  test('closes an open settings dropdown when clicking outside of it', async () => {
+    renderWithRouter(<SettingsPage />);
+
+    await userEvent.click(screen.getByRole('button', { name: /past 30 days/i }));
+    expect(screen.getByRole('listbox', { name: /default date range/i })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByText(/manage your account and preferences/i));
+
+    expect(screen.queryByRole('listbox', { name: /default date range/i })).not.toBeInTheDocument();
   });
 });
