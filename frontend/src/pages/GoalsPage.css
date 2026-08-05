@@ -621,6 +621,25 @@
   text-align: center;
 }
 
+.goals-loading-state {
+  font-weight: var(--font-weight-medium);
+}
+
+.goals-loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: goals-loading-spin 0.75s linear infinite;
+}
+
+@keyframes goals-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .goals-empty-state__icon {
   width: 62px;
   height: 62px;

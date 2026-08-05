@@ -4,6 +4,19 @@
   height: 100vh;
   margin: 0 auto;
   overflow: hidden;
+  animation: dashboard-page-enter 260ms ease-out both;
+}
+
+@keyframes dashboard-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dashboard-layout {
@@ -60,5 +73,11 @@
   .main-container {
     border-inline: 1px solid var(--border);
     box-shadow: 0 0 72px color-mix(in srgb, var(--shadow-strong) 45%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-container {
+    animation: none;
   }
 }

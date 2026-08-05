@@ -21,7 +21,6 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 import { useCreateGoal, useDeleteGoal, useGoals, useReorderGoals, useUpdateGoal } from '../hooks/useGoals';
 
 const tabs = ['All Goals', 'Not Started', 'Active', 'Needs Attention', 'Completed'];
@@ -425,7 +424,14 @@ const GoalsPage = () => {
   }
 
   if (isLoading) {
-    return <LoadingScreen />;
+    return (
+      <main className='goals-page'>
+        <div className='goals-empty-state goals-loading-state'>
+          <span>Loading goals...</span>
+          <span className='goals-loading-spinner' aria-hidden='true' />
+        </div>
+      </main>
+    );
   }
 
   if (error) {
