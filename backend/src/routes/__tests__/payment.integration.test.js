@@ -12,6 +12,9 @@ const mockStripe = {
     list: jest.fn(),
     cancel: jest.fn(),
   },
+  webhooks: {
+    constructEvent: jest.fn(),
+  },
 };
 
 jest.unstable_mockModule('../../config/stripe.js', () => ({
@@ -23,6 +26,7 @@ const { default: User } = await import('../../models/User.js');
 
 const originalStripePriceId = process.env.STRIPE_PRICE_ID;
 const originalStripeYearlyPriceId = process.env.STRIPE_YEARLY_PRICE_ID;
+const originalStripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const validUser = {
   username: 'payhero',
   email: 'payhero@riveriq.test',
@@ -48,6 +52,7 @@ async function createLoggedInAgent(overrides = {}) {
 beforeEach(() => {
   process.env.STRIPE_PRICE_ID = 'price_riveriq_pro_test';
   process.env.STRIPE_YEARLY_PRICE_ID = 'price_riveriq_pro_yearly_test';
+  process.env.STRIPE_WEBHOOK_SECRET = 'whsec_riveriq_test';
   jest.clearAllMocks();
 });
 
@@ -62,6 +67,12 @@ afterAll(() => {
     delete process.env.STRIPE_YEARLY_PRICE_ID;
   } else {
     process.env.STRIPE_YEARLY_PRICE_ID = originalStripeYearlyPriceId;
+  }
+
+  if (originalStripeWebhookSecret === undefined) {
+    delete process.env.STRIPE_WEBHOOK_SECRET;
+  } else {
+    process.env.STRIPE_WEBHOOK_SECRET = originalStripeWebhookSecret;
   }
 });
 
@@ -314,5 +325,107 @@ describe('payment API integration', () => {
 
     const savedUser = await User.findOne({ email: validUser.email });
     expect(savedUser.subscription).toBe('free');
+  });
+
+  test('syncs active subscription status from a signed Stripe webhook', async () => {
+    await User.create({
+      username: 'webhookhero',
+      email: 'webhookhero@riveriq.test',
+      password: 'Password123',
+      isEmailVerified: true,
+      stripeCustomerId: 'cus_webhook_123',
+    });
+
+    mockStripe.webhooks.constructEvent.mockReturnValue({
+      type: 'customer.subscription.updated',
+      data: {
+        object: {
+          id: 'sub_webhook_123',
+          customer: 'cus_webhook_123',
+          status: 'active',
+        },
+      },
+    });
+
+    const response = await request(app)
+      .post('/api/payments/webhook')
+      .set('stripe-signature', 'signed_test_payload')
+      .set('content-type', 'application/json')
+      .send(Buffer.from(JSON.stringify({ id: 'evt_webhook_123' })))
+      .expect(200);
+
+    expect(response.body).toEqual({ received: true });
+    expect(mockStripe.webhooks.constructEvent).toHaveBeenCalledWith(
+      expect.any(Buffer),
+      'signed_test_payload',
+      'whsec_riveriq_test',
+    );
+
+    const savedUser = await User.findOne({ email: 'webhookhero@riveriq.test' });
+    expect(savedUser.subscription).toBe('pro');
+    expect(savedUser.stripeSubscriptionId).toBe('sub_webhook_123');
+  });
+
+  test('downgrades subscription status from a Stripe deleted webhook', async () => {
+    await User.create({
+      username: 'deletedsubhero',
+      email: 'deletedsubhero@riveriq.test',
+      password: 'Password123',
+      isEmailVerified: true,
+      subscription: 'pro',
+      stripeCustomerId: 'cus_deleted_123',
+      stripeSubscriptionId: 'sub_deleted_123',
+    });
+
+    mockStripe.webhooks.constructEvent.mockReturnValue({
+      type: 'customer.subscription.deleted',
+      data: {
+        object: {
+          id: 'sub_deleted_123',
+          customer: 'cus_deleted_123',
+          status: 'canceled',
+        },
+      },
+    });
+
+    await request(app)
+      .post('/api/payments/webhook')
+      .set('stripe-signature', 'signed_delete_payload')
+      .set('content-type', 'application/json')
+      .send(Buffer.from(JSON.stringify({ id: 'evt_deleted_123' })))
+      .expect(200);
+
+    const savedUser = await User.findOne({ email: 'deletedsubhero@riveriq.test' });
+    expect(savedUser.subscription).toBe('free');
+    expect(savedUser.stripeSubscriptionId).toBeUndefined();
+  });
+
+  test('rejects Stripe webhooks with invalid signatures', async () => {
+    mockStripe.webhooks.constructEvent.mockImplementation(() => {
+      throw new Error('No signatures found matching the expected signature for payload');
+    });
+
+    const response = await request(app)
+      .post('/api/payments/webhook')
+      .set('stripe-signature', 'bad_signature')
+      .set('content-type', 'application/json')
+      .send(Buffer.from(JSON.stringify({ id: 'evt_bad_signature' })))
+      .expect(400);
+
+    expect(response.body.message).toMatch(/signature verification failed/i);
+  });
+
+  test('returns a setup error when the Stripe webhook secret is missing', async () => {
+    delete process.env.STRIPE_WEBHOOK_SECRET;
+
+    const response = await request(app)
+      .post('/api/payments/webhook')
+      .set('stripe-signature', 'signed_test_payload')
+      .set('content-type', 'application/json')
+      .send(Buffer.from(JSON.stringify({ id: 'evt_missing_secret' })))
+      .expect(500);
+
+    expect(response.body.message).toBe('Missing STRIPE_WEBHOOK_SECRET');
+    expect(mockStripe.webhooks.constructEvent).not.toHaveBeenCalled();
   });
 });

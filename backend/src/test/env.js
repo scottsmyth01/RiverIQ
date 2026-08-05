@@ -9,3 +9,4 @@ process.env.R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || 'https://assets.test';
 process.env.STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || 'sk_test_riveriq';
 process.env.STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || 'price_riveriq_pro_test';
 process.env.STRIPE_YEARLY_PRICE_ID = process.env.STRIPE_YEARLY_PRICE_ID || 'price_riveriq_pro_yearly_test';
+process.env.STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_test_riveriq';

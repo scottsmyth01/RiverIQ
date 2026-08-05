@@ -1,4 +1,5 @@
 import stripe from '../config/stripe.js';
+import User from '../models/User.js';
 
 function getUserPayload(user) {
   return {
@@ -62,6 +63,73 @@ function getSubscriptionPriceId(billingInterval = 'monthly') {
     billingInterval: 'monthly',
   };
 }
+
+function getSubscriptionCustomerId(subscription) {
+  return typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.id;
+}
+
+async function syncUserSubscriptionFromStripe(subscription) {
+  const stripeCustomerId = getSubscriptionCustomerId(subscription);
+
+  if (!stripeCustomerId) {
+    return null;
+  }
+
+  const isProSubscription = ['active', 'trialing'].includes(subscription.status);
+  const isFreeSubscription = ['canceled', 'incomplete_expired', 'unpaid'].includes(subscription.status);
+
+  if (!isProSubscription && !isFreeSubscription) {
+    return null;
+  }
+
+  return User.findOneAndUpdate(
+    {
+      $or: [
+        { stripeCustomerId },
+        { stripeSubscriptionId: subscription.id },
+      ],
+    },
+    {
+      $set: {
+        subscription: isProSubscription ? 'pro' : 'free',
+        stripeCustomerId,
+        ...(isProSubscription ? { stripeSubscriptionId: subscription.id } : {}),
+      },
+      ...(isFreeSubscription ? { $unset: { stripeSubscriptionId: '' } } : {}),
+    },
+    { returnDocument: 'after' },
+  );
+}
+
+export const handleStripeWebhook = async (req, res) => {
+  const signature = req.headers['stripe-signature'];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!webhookSecret) {
+    return res.status(500).json({ message: 'Missing STRIPE_WEBHOOK_SECRET' });
+  }
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
+  } catch (error) {
+    return res.status(400).json({ message: `Webhook signature verification failed: ${error.message}` });
+  }
+
+  try {
+    if (
+      ['customer.subscription.created', 'customer.subscription.updated', 'customer.subscription.deleted'].includes(
+        event.type,
+      )
+    ) {
+      await syncUserSubscriptionFromStripe(event.data.object);
+    }
+
+    return res.status(200).json({ received: true });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 export const createSubscription = async (req, res) => {
   try {

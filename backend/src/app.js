@@ -8,6 +8,7 @@ import goalRoutes from './routes/goalRoutes.js';
 import savedReportRoutes from './routes/savedReportRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
 import { globalErrorHandler, notFound } from './middleware/errorMiddleware.js';
+import { handleStripeWebhook } from './controllers/paymentController.js';
 
 const app = express();
 
@@ -28,6 +29,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 app.use(express.json());
 app.use(cookieParser());
 
