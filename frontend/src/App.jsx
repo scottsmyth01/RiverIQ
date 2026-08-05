@@ -1,10 +1,13 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
 import Navbar from './components/Navbar/Navbar';
 import WebsiteFooter from './components/WebsiteFooter/WebsiteFooter';
 import LoadingScreen from './components/LoadingScreen/LoadingScreen';
 import { useAuth } from './hooks/useAuth';
+import { goalsQueryKey } from './hooks/useGoals';
 import { useSessions } from './hooks/useSessions';
+import { getGoals } from './api/goalApi';
 import ProtectedRoute from './utils/ProtectedRoute';
 import FeatureUploadGate from './components/FeatureUploadGate/FeatureUploadGate';
 import SessionsPage from './pages/SessionsPage';
@@ -45,24 +48,10 @@ function ScrollToTop() {
   return null;
 }
 
-function didReloadDashboardSubpage() {
-  if (typeof window === 'undefined') return false;
-
-  const navigationEntry = performance.getEntriesByType?.('navigation')?.[0];
-  const isReload = navigationEntry?.type === 'reload' || performance.navigation?.type === 1;
-
-  return (
-    isReload &&
-    window.location.pathname.startsWith('/dashboard/') &&
-    window.location.pathname !== '/dashboard' &&
-    window.location.pathname !== '/dashboard/settings'
-  );
-}
-
 function AppRoutes() {
   const { pathname } = useLocation();
+  const queryClient = useQueryClient();
   const { isAuthenticated, isEmailVerified, loading, loginLoading, googleLoginLoading, logoutLoading } = useAuth();
-  const [shouldRedirectDashboardReload, setShouldRedirectDashboardReload] = useState(didReloadDashboardSubpage);
 
   const isDashboardRoute = pathname.startsWith('/dashboard');
   const isSignedOutOnlyRoute =
@@ -89,17 +78,14 @@ function AppRoutes() {
   const redirectToVerifyEmail = isAuthenticated && !isEmailVerified && !isVerifyEmailRoute && !isResetPasswordRoute;
   const isAuthRouteLoading = loading && (isDashboardRoute || isSignedOutOnlyRoute);
   const isLoginLoading = loginLoading || googleLoginLoading;
-  const isDashboardDataLoading = isDashboardRoute && isAuthenticated && isSessionsPending;
+  const isDashboardDataLoading = pathname === '/dashboard' && isAuthenticated && isSessionsPending;
   const isRedirectingAfterAuth = redirectToDashboard || redirectToVerifyEmail;
-  const redirectReloadToDashboard =
-    shouldRedirectDashboardReload && isAuthenticated && isEmailVerified && pathname !== '/dashboard';
   const showGlobalLoading =
     logoutLoading ||
     isLoginLoading ||
     isAuthRouteLoading ||
     isDashboardDataLoading ||
-    isRedirectingAfterAuth ||
-    redirectReloadToDashboard;
+    isRedirectingAfterAuth;
   const shouldRenderRouteContent = !logoutLoading && !isAuthRouteLoading && !isDashboardDataLoading;
   const showWebsiteChrome = !showGlobalLoading && !loading && !isAuthenticated && !isPaymentRoute;
 
@@ -109,15 +95,18 @@ function AppRoutes() {
   }, [isAuthenticated, loading]);
 
   useEffect(() => {
-    if (pathname === '/dashboard') {
-      setShouldRedirectDashboardReload(false);
-    }
-  }, [pathname]);
+    if (!isAuthenticated || !isEmailVerified || !isDashboardRoute) return;
+
+    queryClient.prefetchQuery({
+      queryKey: goalsQueryKey,
+      queryFn: getGoals,
+      staleTime: 5 * 60 * 1000,
+    });
+  }, [isAuthenticated, isDashboardRoute, isEmailVerified, queryClient]);
 
   return (
     <>
       <LoadingScreen visible={showGlobalLoading} />
-      {shouldRenderRouteContent && redirectReloadToDashboard && <Navigate to='/dashboard' replace />}
       {shouldRenderRouteContent && redirectToDashboard && <Navigate to='/dashboard' replace />}
       {shouldRenderRouteContent && redirectToVerifyEmail && <Navigate to='/verify-email' replace />}
       {shouldRenderRouteContent && !redirectToDashboard && !redirectToVerifyEmail && (

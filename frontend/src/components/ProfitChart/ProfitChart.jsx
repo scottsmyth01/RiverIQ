@@ -12,6 +12,7 @@ import { Maximize2, X } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router';
 import './ProfitChart.css';
 import { formatCurrency } from '../../utils/sessionUnits';
 import { useAuth } from '../../hooks/useAuth';
@@ -119,6 +120,10 @@ export default function ProfitChart({
   const { user } = useAuth();
   const currency = getPreferredCurrency(user);
   const optionalMetrics = useMemo(() => getOptionalMetrics(currency), [currency]);
+  const metricToggles = useMemo(
+    () => [{ key: 'profit', label: 'Total Profit', color: '#39ff64', locked: true }, ...optionalMetrics],
+    [optionalMetrics],
+  );
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark'); // store light/dark
   const [isFullScreen, setIsFullScreen] = useState(false); //controls fullscreen graph
   const [isMobileChart, setIsMobileChart] = useState(() => window.matchMedia?.('(max-width: 760px)').matches ?? false);
@@ -276,12 +281,22 @@ export default function ProfitChart({
       sessionsCount: sortedSessions.length, //length of sessions (sorted array)
     };
   }, [sessions]); // when the sessions mutates, run this memo
+  const hasChartData = sessionsCount > 0 && sessionsWithData.length > 0;
+  const chartPoints = useMemo(() => {
+    if (!isMobileChart || sessionsWithData.length <= 3) {
+      return sessionsWithData;
+    }
 
-  // MEMO: get min/max axes values while keeping both y-axis zero lines aligned.
+    return sessionsWithData.filter(
+      (_, index, points) => index === 0 || index === points.length - 1 || index % 2 === 0,
+    );
+  }, [isMobileChart, sessionsWithData]);
+
+  // Keep each y-axis close to the values drawn on that axis.
   const axesMinMax = useMemo(() => {
     function getAxisValues(keys) {
       const values = keys
-        .flatMap((key) => sessionsWithData.map((item) => Number(item[key])))
+        .flatMap((key) => chartPoints.map((item) => Number(item[key])))
         .filter((value) => Number.isFinite(value));
 
       if (!values.length) {
@@ -294,43 +309,28 @@ export default function ProfitChart({
       };
     }
 
-    function getAxesMinMax(range, alignAroundZero, paddingRatio = 0.38) {
+    function getAxesMinMax(range) {
       if (!Number.isFinite(range.min) || !Number.isFinite(range.max)) {
         return {};
       }
 
       const min = range.min;
       const max = range.max;
-      const span = Math.max(max - min, Math.abs(max), Math.abs(min), 1);
-      const padding = span * paddingRatio;
-
-      if (alignAroundZero) {
-        const limit = Math.max(Math.abs(min), Math.abs(max), 1) + padding;
-
-        return {
-          min: -limit,
-          max: limit,
-        };
-      }
 
       return {
-        min: min < 0 ? min - padding : 0,
-        max: max > 0 ? max + padding : 0,
+        min: min < 0 ? Math.floor(min / 10) * 10 : 0,
+        max: max > 0 ? Math.ceil(max / 10) * 10 : 0,
       };
     }
 
     const profitRange = getAxisValues(['profit']);
     const hourlyProfitRange = getAxisValues(['hourlyProfit']);
-    const ranges = [profitRange, hourlyProfitRange];
-    const hasNegative = ranges.some((range) => Number.isFinite(range.min) && range.min < 0);
-    const hasPositive = ranges.some((range) => Number.isFinite(range.max) && range.max > 0);
-    const alignAroundZero = hasNegative && hasPositive;
 
     return {
-      profit: getAxesMinMax(profitRange, alignAroundZero),
-      hourlyProfit: getAxesMinMax(hourlyProfitRange, alignAroundZero),
+      profit: getAxesMinMax(profitRange),
+      hourlyProfit: getAxesMinMax(hourlyProfitRange),
     };
-  }, [sessionsWithData]);
+  }, [chartPoints]);
 
   /*
   example dataset:
@@ -343,22 +343,11 @@ export default function ProfitChart({
     () => [
       {
         label: 'Total Profit', //main title
-        data: getMetricValues(sessionsWithData, 'profit'), //get the profit values from sessionsWithData
+        data: getMetricValues(chartPoints, 'profit'),
         yAxisID: 'money', //axes ID
         borderColor: '#39ff64', //color of the line
-        backgroundColor: (context) => {
-          //add color underneath the line
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-          if (!chartArea) return null;
-          // more color code
-          const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-          gradient.addColorStop(0, 'rgba(9, 255, 0, 0.344)');
-          gradient.addColorStop(1, 'rgba(57, 255, 100, 0)');
-          return gradient;
-        },
-        // misc settings to make graph pop
-        fill: true,
+        backgroundColor: 'transparent',
+        fill: false,
         tension: 0,
         pointRadius: 0,
         pointHoverRadius: 5,
@@ -366,14 +355,14 @@ export default function ProfitChart({
         pointHoverBackgroundColor: '#39ff64',
         pointHoverBorderColor: '#ffffff',
         pointHoverBorderWidth: 2,
-        borderWidth: 2,
+        borderWidth: 1.5,
         metricKey: 'profit',
       },
       ...optionalMetrics
         .filter((metric) => metricFlags[metric.key])
         .map((metric) => ({
           label: metric.label,
-          data: sessionsWithData.map((item) => (item.handsPlayed > 0 ? item[metric.key] : null)),
+          data: chartPoints.map((item) => (item.handsPlayed > 0 ? item[metric.key] : null)),
           yAxisID: metric.axis,
           borderColor: metric.color,
           backgroundColor: `${metric.color}26`,
@@ -385,12 +374,12 @@ export default function ProfitChart({
           pointHoverBackgroundColor: metric.color,
           pointHoverBorderColor: '#ffffff',
           pointHoverBorderWidth: 2,
-          borderWidth: 2,
+          borderWidth: 1.5,
           spanGaps: false,
           metricKey: metric.key,
         })),
     ],
-    [sessionsWithData, metricFlags, optionalMetrics],
+    [chartPoints, metricFlags, optionalMetrics],
   );
 
   // Exactly what Chart.js expects.
@@ -398,10 +387,10 @@ export default function ProfitChart({
   // Datasets provides the data for each line
   const data = useMemo(
     () => ({
-      labels: sessionsWithData.map((item) => item.xLabel),
+      labels: chartPoints.map((item) => item.xLabel),
       datasets,
     }),
-    [sessionsWithData, datasets],
+    [chartPoints, datasets],
   );
 
   //Same as the above MEMO but data for fullscreen mode
@@ -414,7 +403,7 @@ export default function ProfitChart({
         // fullscreen options
         backgroundColor: 'transparent',
         fill: false,
-        borderWidth: dataset.metricKey === 'profit' ? 2.5 : 2,
+        borderWidth: dataset.metricKey === 'profit' ? 2 : 1.5,
         pointRadius: 0,
         pointHoverRadius: 4,
       })),
@@ -437,7 +426,7 @@ export default function ProfitChart({
 
       plugins: {
         legend: {
-          display: !isMobileChart && datasets.length > 1,
+          display: false,
           align: 'start',
           labels: {
             color: textColor,
@@ -458,11 +447,11 @@ export default function ProfitChart({
           displayColors: true,
           callbacks: {
             title: (items) => {
-              const item = sessionsWithData[items[0]?.dataIndex];
+              const item = chartPoints[items[0]?.dataIndex];
               return item ? formatChartDate(item.timestamp, { year: 'numeric' }) : '';
             },
             afterTitle: (items) => {
-              const item = sessionsWithData[items[0]?.dataIndex];
+              const item = chartPoints[items[0]?.dataIndex];
 
               if (!item) {
                 return '';
@@ -570,12 +559,12 @@ export default function ProfitChart({
 
   const options = useMemo(
     () => getChartOptions(),
-    [sessionsWithData, chartGridColor, chartTextColor, datasets.length, axesMinMax, metricFlags, isMobileChart, currency],
+    [chartPoints, chartGridColor, chartTextColor, datasets.length, axesMinMax, metricFlags, isMobileChart, currency],
   );
   const fullScreenOptions = useMemo(
     () => getChartOptions({ fullScreen: true }),
     [
-      sessionsWithData,
+      chartPoints,
       datasets.length,
       fullScreenGridColor,
       fullScreenTextColor,
@@ -620,10 +609,32 @@ export default function ProfitChart({
   return (
     <div className='profit-card'>
       <div className='profit-header'>
-        <h2>{activePeriod?.chartLabel || 'Total Profit'}</h2>
+        <div className='profit-metric-toggles' aria-label='Profit chart metrics'>
+          {metricToggles.map((metric) => (
+            <label
+              className={metric.locked ? 'profit-metric-toggle--locked' : undefined}
+              style={{ '--metric-color': metric.color }}
+              key={metric.key}
+            >
+              <input
+                type='checkbox'
+                checked={metric.locked ? true : metricFlags[metric.key]}
+                disabled={metric.locked}
+                onChange={(event) =>
+                  !metric.locked &&
+                  setMetricFlags((prev) => ({
+                    ...prev,
+                    [metric.key]: event.target.checked,
+                  }))
+                }
+              />
+              <span className='metric-check' aria-hidden='true'></span>
+              <span className='metric-label'>{metric.label}</span>
+            </label>
+          ))}
+        </div>
         <div className='profit-header-actions'>
           <div className='profit-period-buttons' aria-label='Profit chart period'>
-            {/* Same code as in the stat cards, date range buttons/availability*/}
             {periods.map((period) => (
               <button
                 className={selectedPeriod === period.id ? 'active' : ''}
@@ -639,11 +650,11 @@ export default function ProfitChart({
               </button>
             ))}
           </div>
-          {/* button to expand the graph to full screen */}
           <button
             className='profit-expand-button'
             type='button'
             aria-label='Open graph full page'
+            disabled={!hasChartData}
             onClick={() => setIsFullScreen(true)}
           >
             <Maximize2 aria-hidden='true' />
@@ -651,27 +662,16 @@ export default function ProfitChart({
         </div>
       </div>
 
-      <div className='profit-metric-toggles' aria-label='Profit chart metrics'>
-        {optionalMetrics.map((metric) => (
-          <label style={{ '--metric-color': metric.color }} key={metric.key}>
-            <input
-              type='checkbox'
-              checked={metricFlags[metric.key]}
-              onChange={(event) =>
-                setMetricFlags((prev) => ({
-                  ...prev,
-                  [metric.key]: event.target.checked,
-                }))
-              }
-            />
-            <span className='metric-check' aria-hidden='true'></span>
-            <span className='metric-label'>{metric.label}</span>
-          </label>
-        ))}
-      </div>
-
       <div className='chart-wrapper' aria-busy={isLoading}>
-        <Line data={data} options={options} />
+        {hasChartData ? (
+          <Line data={data} options={options} />
+        ) : (
+          <div className='profit-chart-empty'>
+            <strong>No profit data for this period</strong>
+            <span>Upload a session or choose a wider date range to populate the chart.</span>
+            <Link to='/dashboard/sessions/new'>Upload Session</Link>
+          </div>
+        )}
         {isLoading && (
           <div className='profit-chart-loading' role='status' aria-live='polite'>
             <span aria-hidden='true'></span>

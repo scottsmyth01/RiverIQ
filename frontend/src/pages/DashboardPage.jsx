@@ -1,7 +1,6 @@
 import './DashboardPage.css';
 import { filterSessions } from '../utils/filterSessions';
 import { getPeriodFromDefaultTimeFilter } from '../utils/dateRangePreferences';
-import { Link } from 'react-router';
 import { NewUserPage } from './NewUserPage';
 import { useAuth } from '../hooks/useAuth';
 import { useEffect, useMemo, useState } from 'react';
@@ -10,7 +9,6 @@ import ProfitChart from '../components/ProfitChart/ProfitChart';
 import SessionsTable from '../components/SessionsTable/SessionsTable';
 import StatCards from '../components/StatCards/StatCards';
 
-// data
 const dashboardPeriods = [
   { id: 'all-time', value: 'all', label: 'All Time', chartLabel: 'Total Profit' },
   { id: 'past-90', value: 90, label: 'Past 90 Days', chartLabel: 'Past 90 Days Profit' },
@@ -31,25 +29,36 @@ function getOldestSessionAgeDays(sessions) {
   return Math.floor((today.getTime() - oldestSessionTime) / 86400000);
 }
 
+function formatLastSessionDate(sessions) {
+  const latestSessionTime = sessions
+    .map((session) => new Date(session.date || session.createdAt).getTime())
+    .filter((time) => !Number.isNaN(time))
+    .sort((a, b) => b - a)[0];
+
+  if (!latestSessionTime) return 'No sessions yet';
+
+  return new Date(latestSessionTime).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 const DashboardPage = () => {
-  // STATE
   const { user } = useAuth();
   const { data: allSessions = [], isLoading: isAllSessionsLoading } = useSessions();
   const defaultPeriod = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
   const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod);
   const username = user?.username || user?.name;
 
-  // UE: get default time period (edit in settings) and update when changed
   useEffect(() => {
     setSelectedPeriod(defaultPeriod);
   }, [defaultPeriod]);
 
-  // MEMO: returns the period, along with availibility and session count.
   const periodsWithAvailability = useMemo(() => {
     const oldestSessionAgeDays = getOldestSessionAgeDays(allSessions);
 
     return dashboardPeriods.map((period) => {
-      // if all-time, just return the object with allSessions.length
       if (period.id === 'all-time') {
         return {
           ...period,
@@ -59,7 +68,6 @@ const DashboardPage = () => {
       }
 
       const hasElapsed = typeof period.value !== 'number' || period.value <= 7 || oldestSessionAgeDays >= period.value;
-      // else, we need to calculate the session count by filtering the allSessions for documents in that date range
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - period.value);
 
@@ -81,10 +89,9 @@ const DashboardPage = () => {
     });
   }, [allSessions]);
 
-  // MEMO: filter the allSessions into a new array that contains documents in the specified date range.
   const sessions = useMemo(() => filterSessions(allSessions, selectedPeriod), [allSessions, selectedPeriod]);
+  const lastSessionDate = useMemo(() => formatLastSessionDate(allSessions), [allSessions]);
 
-  // UE: if the time period is not available (< 2 sessions) then set the period to 'all time'
   useEffect(() => {
     const activePeriod = periodsWithAvailability.find((period) => period.id === selectedPeriod);
 
@@ -104,35 +111,44 @@ const DashboardPage = () => {
     );
   }
 
-  return (
-    <>
-      {allSessions.length <= 2 && <NewUserPage sessions={allSessions} />}
-      {/* ^^ If there are less than 3 sessions for a given user, then render the NewUserPage */}
+  if (allSessions.length <= 2) {
+    return <NewUserPage sessions={allSessions} />;
+  }
 
-      <section className='dashboard-content dashboard-home-page'>
-        <header className='dashboard-page-header'>
-          <div className='dashboard-page-header__top'>
-            <div>
-              <h1>Dashboard</h1>
-              <p>Welcome back, {username}! Here is your poker performance review.</p>
-            </div>
+  return (
+    <section className='dashboard-content dashboard-home-page'>
+      <header className='dashboard-page-header'>
+        <div className='dashboard-page-header__top'>
+          <div>
+            <h1>Dashboard</h1>
+            <p>Welcome back, {username}! Here is your poker performance review.</p>
           </div>
-        </header>
-        <StatCards
-          sessions={sessions} //filtered session array
-          periods={periodsWithAvailability} //all periods and availability
-          selectedPeriod={selectedPeriod} //selected period (via buttons)
-          setSelectedPeriod={setSelectedPeriod} //call this function when clicking a new time period (pass up period.id)
-        />
-        <ProfitChart
-          sessions={sessions} //filtered session array
-          periods={periodsWithAvailability} //all periods and availibility
-          selectedPeriod={selectedPeriod} //selected period (via buttons)
-          setSelectedPeriod={setSelectedPeriod} //call this function when clicking a new time period (pass up period.id)
-        />
-        <SessionsTable sessions={sessions} sessionsPerPage={5} variant='home-page' />
-      </section>
-    </>
+          <div className='dashboard-header-meta' aria-label='Dashboard summary'>
+            <span>
+              <strong>{sessions.length}</strong>
+              Sessions
+            </span>
+            <span>
+              <strong>{lastSessionDate}</strong>
+              Last session
+            </span>
+          </div>
+        </div>
+      </header>
+      <StatCards
+        sessions={sessions}
+        periods={periodsWithAvailability}
+        selectedPeriod={selectedPeriod}
+        setSelectedPeriod={setSelectedPeriod}
+      />
+      <ProfitChart
+        sessions={sessions}
+        periods={periodsWithAvailability}
+        selectedPeriod={selectedPeriod}
+        setSelectedPeriod={setSelectedPeriod}
+      />
+      <SessionsTable sessions={sessions} sessionsPerPage={5} variant='home-page' />
+    </section>
   );
 };
 

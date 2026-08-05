@@ -2,11 +2,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createGoal, deleteGoal, getGoals, reorderGoals, updateGoal } from '../api/goalApi.js';
 
 export const goalsQueryKey = ['goals'];
+const GOALS_STALE_TIME_MS = 5 * 60 * 1000;
 
 export function useGoals() {
   return useQuery({
     queryKey: goalsQueryKey,
     queryFn: getGoals,
+    placeholderData: (previousGoals) => previousGoals,
+    refetchOnWindowFocus: false,
+    staleTime: GOALS_STALE_TIME_MS,
   });
 }
 

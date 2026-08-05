@@ -99,7 +99,7 @@ function getByPositionCount(byPosition) {
   return 0;
 }
 
-function getSessionTableSize(session) {
+export function getSessionTableSize(session) {
   const stats = session.stats || {};
   const explicitTableSize =
     normalizeTableSize(session.tableSize) ||

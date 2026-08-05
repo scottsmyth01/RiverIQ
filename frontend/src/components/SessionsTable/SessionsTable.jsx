@@ -2,7 +2,7 @@ import './SessionsTable.css';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { BarChart3, ChevronLeft, ChevronRight, ExternalLink, Lock, MoreVertical, Pencil, Trash2 } from 'lucide-react';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import SessionToolbar from './SessionToolbar';
 import {
@@ -10,6 +10,7 @@ import {
   applyDateFilter,
   tableSize as applyTableSize,
   finish as applyFinish,
+  getSessionTableSize,
 } from './sessionTableFilters';
 import { useAuth } from '../../hooks/useAuth';
 import { useDeleteSession } from '../../hooks/useSessions';
@@ -71,25 +72,23 @@ function getPokerSiteDetail(session) {
   };
 }
 
-// SessionsTable
-// │
-// ├── SessionToolbar
-// ├── Table
-// ├── Pagination
-// └── Delete Modal
+function formatSessionTableSize(session) {
+  const sessionTableSize = getSessionTableSize(session);
+  return sessionTableSize === '2-Max' ? 'Heads Up' : sessionTableSize || 'N/A';
+}
 
 const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
   const navigate = useNavigate();
-  const { user } = useAuth(); // Get the current user from the authentication context
-  const hasProMembership = user?.subscription === 'pro'; // Check if the user has a Pro membership
-  const { mutateAsync: deleteSession, isPending: isDeletingSession } = useDeleteSession(); // Custom hook to handle session deletion
-  const defaultDateRange = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter); // Get the default date range based on user preferences
-  const [dateRange, setDateRange] = useState(defaultDateRange); // State to manage the selected date range for filtering sessions
-  const [sortBy, setSortBy] = useState('newest'); // State to manage the selected sorting option for sessions
-  const [tableSize, setTableSize] = useState('all'); // State to manage the selected table size option for displaying sessions
-  const [finish, setFinish] = useState('all'); // State to manage the selected finish option for filtering sessions (e.g., all, finished, unfinished)
-  const [openActionMenuId, setOpenActionMenuId] = useState(null); // State to manage the ID of the session for which the action menu is currently open
-  const [sessionPendingDelete, setSessionPendingDelete] = useState(null); // State to manage the session that is pending deletion (used for the delete confirmation modal)
+  const { user } = useAuth();
+  const hasProMembership = user?.subscription === 'pro';
+  const { mutateAsync: deleteSession, isPending: isDeletingSession } = useDeleteSession();
+  const defaultDateRange = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
+  const [dateRange, setDateRange] = useState(defaultDateRange);
+  const [sortBy, setSortBy] = useState('newest');
+  const [tableSize, setTableSize] = useState('all');
+  const [finish, setFinish] = useState('all');
+  const [openActionMenuId, setOpenActionMenuId] = useState(null);
+  const [sessionPendingDelete, setSessionPendingDelete] = useState(null);
 
   const filteredSessions = useMemo(() => {
     let result = [...sessions];
@@ -197,6 +196,14 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
           <span>Session history</span>
           {variant === 'home-page' && <h2>Recent Sessions</h2>}
         </div>
+        {variant === 'home-page' && (
+          <div className='sessions-card-header__actions'>
+            <small>{filteredSessions.length} total</small>
+            <Link className='sessions-view-all-link' to='/dashboard/sessions'>
+              View all
+            </Link>
+          </div>
+        )}
       </div>
 
       {variant === 'sessions-page' && (
@@ -219,6 +226,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
               <th scope='col'>Date</th>
               <th scope='col'>Game</th>
               <th scope='col'>Stakes</th>
+              <th scope='col'>Table Size</th>
               <th scope='col'>Profit</th>
               <th scope='col'>Win Rate</th>
               <th scope='col'>Hands</th>
@@ -251,6 +259,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
               const winRateIsPositive = winRate >= 0;
               const sessionId = session._id || session.id;
               const pokerSite = getPokerSiteDetail(session);
+              const sessionTableSize = formatSessionTableSize(session);
 
               return (
                 <tr className='sessions-table__row' key={sessionId}>
@@ -271,6 +280,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                     </div>
                   </td>
                   <td data-label='Stakes'>{session.stakes}</td>
+                  <td data-label='Table Size'>{sessionTableSize}</td>
                   <td
                     data-label='Profit'
                     className={`session-result ${profitIsPositive ? 'session-result--positive' : 'session-result--negative'}`}
@@ -343,61 +353,80 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                 </tr>
               );
             })}
+            {currentSessions.length === 0 && (
+              <tr>
+                <td colSpan={9}>
+                  <div className='sessions-empty-state'>
+                    <strong>No sessions found</strong>
+                    <span>
+                      {variant === 'home-page'
+                        ? 'Upload a session to start filling out your dashboard.'
+                        : 'Try changing your filters or upload a new session.'}
+                    </span>
+                    <Link to='/dashboard/sessions/new'>Upload Session</Link>
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
         <div className='sessions-card-footer'>
           <p>
-            Showing {firstVisibleSession}-{lastVisibleSession} of {filteredSessions.length} sessions
+            {filteredSessions.length > 0
+              ? `Showing ${firstVisibleSession}-${lastVisibleSession} of ${filteredSessions.length} sessions`
+              : 'No sessions to show'}
           </p>
-          <nav className='sessions-pagination' aria-label='Sessions pagination'>
-            <button
-              type='button'
-              aria-label='Previous page'
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-            >
-              <ChevronLeft aria-hidden='true' />
-            </button>
-            {visiblePages[0] > 2 && (
-              <>
-                <button type='button' onClick={() => setCurrentPage(1)} aria-label='Go to page 1'>
-                  1
-                </button>
-                <span aria-hidden='true'>...</span>
-              </>
-            )}
-            {visiblePages.map((page) => (
+          {filteredSessions.length > 0 && (
+            <nav className='sessions-pagination' aria-label='Sessions pagination'>
               <button
-                key={page}
                 type='button'
-                onClick={() => setCurrentPage(page)}
-                className={currentPage === page ? 'active' : ''}
-                aria-current={currentPage === page ? 'page' : undefined}
+                aria-label='Previous page'
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
               >
-                {page}
+                <ChevronLeft aria-hidden='true' />
               </button>
-            ))}
-            {visiblePages.at(-1) < totalPages && (
-              <>
-                <span aria-hidden='true'>...</span>
+              {visiblePages[0] > 2 && (
+                <>
+                  <button type='button' onClick={() => setCurrentPage(1)} aria-label='Go to page 1'>
+                    1
+                  </button>
+                  <span aria-hidden='true'>...</span>
+                </>
+              )}
+              {visiblePages.map((page) => (
                 <button
+                  key={page}
                   type='button'
-                  onClick={() => setCurrentPage(totalPages)}
-                  aria-label={`Go to page ${totalPages}`}
+                  onClick={() => setCurrentPage(page)}
+                  className={currentPage === page ? 'active' : ''}
+                  aria-current={currentPage === page ? 'page' : undefined}
                 >
-                  {totalPages}
+                  {page}
                 </button>
-              </>
-            )}
-            <button
-              disabled={currentPage >= totalPages}
-              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
-              type='button'
-              aria-label='Next page'
-            >
-              <ChevronRight aria-hidden='true' />
-            </button>
-          </nav>
+              ))}
+              {visiblePages.at(-1) < totalPages && (
+                <>
+                  <span aria-hidden='true'>...</span>
+                  <button
+                    type='button'
+                    onClick={() => setCurrentPage(totalPages)}
+                    aria-label={`Go to page ${totalPages}`}
+                  >
+                    {totalPages}
+                  </button>
+                </>
+              )}
+              <button
+                disabled={currentPage >= totalPages}
+                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                type='button'
+                aria-label='Next page'
+              >
+                <ChevronRight aria-hidden='true' />
+              </button>
+            </nav>
+          )}
         </div>
       </div>
 

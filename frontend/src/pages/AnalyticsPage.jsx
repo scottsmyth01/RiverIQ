@@ -117,18 +117,21 @@ function getAvailableTableSizes(sessions) {
   }, new Set());
 }
 
-function getMatrixColor(value, max) {
-  if (!isNumber(value)) return 'var(--analytics-empty-cell)';
-  const percentage = Number(value) / max;
+const threeBetHeatBuckets = [
+  { label: '0-6%', min: 0, max: 6, color: '#fde047' },
+  { label: '7-11%', min: 6, max: 11, color: '#f97316' },
+  { label: '12%+', min: 11, max: Infinity, color: '#ef4444' },
+];
 
-  if (percentage < 0.25) return '#243244';
-  if (percentage < 0.5) return '#0f766e';
-  if (percentage < 0.75) return '#34d399';
-  return '#bef264';
+function getMatrixColor(value, isPossibleCell = true) {
+  if (!isPossibleCell) return '#172234';
+  if (!isNumber(value)) return '#243244';
+
+  return threeBetHeatBuckets.find((bucket) => value >= bucket.min && value <= bucket.max)?.color || '#ef4444';
 }
 
-function getMatrixTextColor(value, max) {
-  if (!isNumber(value)) return undefined;
+function getMatrixTextColor(value) {
+  if (!isNumber(value)) return '#a8b3c2';
   return '#ffffff';
 }
 
@@ -588,15 +591,6 @@ const AnalyticsPage = () => {
   }));
   const totalProfit = currentPositionStats.reduce((sum, stat) => sum + stat.netWon, 0);
   const threeBetMatrix = getThreeBetMatrixFromSessions(currentTableSessions);
-  const threeBetMatrixMax = Math.max(
-    1,
-    ...positionNames.flatMap((rowPosition) =>
-      positionNames
-        .filter((columnPosition) => canThreeBetOpener(rowPosition, columnPosition, positionNames))
-        .map((columnPosition) => threeBetMatrix[rowPosition]?.[columnPosition])
-        .filter(isNumber),
-    ),
-  );
   const leakPageSize = 4;
   const leakPageCount = Math.ceil(selectedLeakCards.length / leakPageSize);
   const visibleLeakCards = selectedLeakCards.slice(leakPage * leakPageSize, leakPage * leakPageSize + leakPageSize);
@@ -778,7 +772,7 @@ const AnalyticsPage = () => {
         />
 
         <article className='analytics-panel analytics-position-chart'>
-          <h2>{selectedTableSize} Position Win Rate (bb/100)</h2>
+          <h2>Win Rate by Position (bb/100)</h2>
           <ChartLoadingFrame isLoading={isLoading}>
             <div className='analytics-bar-chart'>
               <Bar
@@ -818,8 +812,7 @@ const AnalyticsPage = () => {
           isLoading={isLoading}
         />
         <MatrixPanel
-          title={`${selectedTableSize} 3Bet vs Open by Position`}
-          max={threeBetMatrixMax}
+          title='3Bet vs Open'
           matrix={threeBetMatrix}
           positionNames={positionNames}
           isLoading={isLoading}
@@ -1012,7 +1005,7 @@ function ResultsPanel({ actualBb, allInEvBb, allInHands, diffBb, hands, hasAllIn
 
   return (
     <article className='analytics-panel analytics-results-panel'>
-      <h2>All-in EV by BB</h2>
+      <h2>All-in EV (BB)</h2>
       <div className='analytics-results-list'>
         {resultRows.map((row) => (
           <div className='analytics-results-row' key={row.label}>
@@ -1125,7 +1118,7 @@ function PositionRatePanel({ title, stats, activePosition, isLoading }) {
   );
 }
 
-function MatrixPanel({ title, max, matrix, positionNames, isLoading }) {
+function MatrixPanel({ title, matrix, positionNames, isLoading }) {
   const hasMatrixData = positionNames.some((rowPosition) =>
     positionNames.some(
       (columnPosition) =>
@@ -1163,7 +1156,10 @@ function MatrixPanel({ title, max, matrix, positionNames, isLoading }) {
                     return (
                       <span
                         className={!isNumber(value) ? 'empty' : ''}
-                        style={{ background: getMatrixColor(value, max), color: getMatrixTextColor(value, max) }}
+                        style={{
+                          background: getMatrixColor(value, isPossibleCell),
+                          color: getMatrixTextColor(value),
+                        }}
                         key={`${rowPosition}-${columnPosition}`}
                       >
                         {isNumber(value) ? `${value}%` : 'N/A'}
@@ -1172,11 +1168,6 @@ function MatrixPanel({ title, max, matrix, positionNames, isLoading }) {
                   })}
                 </Fragment>
               ))}
-            </div>
-            <div className='analytics-matrix-scale'>
-              <span>0%</span>
-              <div />
-              <span>{max.toFixed(1)}%</span>
             </div>
           </>
         )}

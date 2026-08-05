@@ -1558,11 +1558,6 @@ const HandChartsPage = () => {
   const remainingHandsToUnlock = Math.max(0, ACTUAL_HAND_CHART_UNLOCK_HANDS - uploadedHandCount);
   const selectedHandStats = hasUnlockedActualHands && selectedHand ? actualActions[selectedHand] : null;
   const totalHands = 169;
-  const actualRangeCount = Object.keys(actualActions).length;
-  const actualRaiseCount = Object.values(actualActions).reduce((total, stats) => total + Number(stats.raised || 0), 0);
-  const actualLimpCount = Object.values(actualActions).reduce((total, stats) => total + Number(stats.limped || 0), 0);
-  const actualFoldCount = Object.values(actualActions).reduce((total, stats) => total + Number(stats.folded || 0), 0);
-  const actualDecisionCount = actualRaiseCount + actualLimpCount + actualFoldCount;
 
   useEffect(() => {
     if (visiblePositions.some((item) => item.id === selectedPosition)) return;
@@ -1715,47 +1710,7 @@ const HandChartsPage = () => {
             onClose={() => setSelectedHand('')}
           />
         </div>
-
-        <div className='hand-chart-range-strip'>
-          <div>
-            <span>Recommended opens</span>
-            <strong>
-              {position.raise.length}/{totalHands}
-            </strong>
-          </div>
-          <div>
-            <span>Hands in sample</span>
-            <strong>
-              {actualRangeCount}/{totalHands}
-            </strong>
-          </div>
-          <div>
-            <span>Raise frequency</span>
-            <strong>
-              {actualDecisionCount ? `${Math.round((actualRaiseCount / actualDecisionCount) * 100)}%` : 'N/A'}
-            </strong>
-          </div>
-          <div>
-            <span>Limp/call frequency</span>
-            <strong>
-              {actualDecisionCount ? `${Math.round((actualLimpCount / actualDecisionCount) * 100)}%` : 'N/A'}
-            </strong>
-          </div>
-          <div>
-            <span>Fold frequency</span>
-            <strong>
-              {actualDecisionCount ? `${Math.round((actualFoldCount / actualDecisionCount) * 100)}%` : 'N/A'}
-            </strong>
-          </div>
-        </div>
       </section>
-
-      <footer className='hand-chart-footer'>
-        <span>
-          {selectedTableSize} · {position.id} · {actualCount.toLocaleString()} played hands
-        </span>
-        <span>Actual hands show open raise, limp/call, and fold frequency by color share.</span>
-      </footer>
     </main>
   );
 };

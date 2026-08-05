@@ -8,9 +8,11 @@
 .stat-cards .card-container {
   box-sizing: border-box;
   overflow: hidden;
-  background: var(--surface-chart);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-chart) 96%, var(--surface-white)), var(--surface-chart));
   border: 1px solid var(--theme-border-card);
-  border-radius: 14px;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 var(--overlay-white-hairline);
 }
 
 .stat-card-title {
@@ -68,9 +70,9 @@
 }
 
 .icon-background {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,19 +103,25 @@
 }
 
 .stat-period-buttons {
-  width: min(520px, 100%);
-  margin-bottom: 10px;
+  width: min(620px, 100%);
+  min-height: 38px;
+  margin-bottom: 12px;
+  padding: 4px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 4px;
+  background: var(--surface-control-deep);
+  border: 1px solid var(--theme-border-card);
+  border-radius: 8px;
 }
 
 .stat-period-buttons button {
   position: relative;
   min-width: 0;
-  padding: 6px 2px;
+  min-height: 30px;
+  padding: 6px 8px;
   color: var(--text-subtle);
-  background: var(--bg-main);
+  background: transparent;
   border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
@@ -129,7 +137,7 @@
 
 .stat-period-buttons button:disabled {
   color: color-mix(in srgb, var(--text-subtle) 72%, var(--bg-main));
-  background: color-mix(in srgb, var(--bg-main) 88%, #000);
+  background: transparent;
   border-color: color-mix(in srgb, var(--theme-card-border) 42%, transparent);
   cursor: not-allowed;
   opacity: 0.72;
@@ -150,9 +158,11 @@
 
 .stat-period-buttons button.active {
   color: var(--text-on-primary);
-  background: var(--color-primary);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--success-bright) 88%, var(--surface-white)), var(--color-primary));
   border-color: var(--color-primary);
   font-weight: 700;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
 .stat-period-buttons button:focus-visible {

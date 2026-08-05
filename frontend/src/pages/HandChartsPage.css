@@ -219,10 +219,10 @@
   min-height: 0;
   padding: 7px;
   display: flex;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   flex-direction: column;
   gap: 5px;
-  overflow: visible;
+  overflow: hidden;
   border: 1px solid var(--theme-border-card);
   border-radius: 8px;
   background: linear-gradient(
@@ -247,12 +247,12 @@
 }
 
 .hand-chart-matrix-pair {
-  min-height: 364px;
+  min-height: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  align-items: stretch;
-  overflow: visible;
+  gap: 1px;
+  align-items: start;
+  overflow: hidden;
 }
 
 .hand-chart-workspace {
@@ -260,8 +260,9 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 8px;
-  flex: 1 1 auto;
-  overflow: visible;
+  flex: 0 0 auto;
+  align-items: stretch;
+  overflow: hidden;
 }
 
 .hand-chart-workspace--with-panel {
@@ -273,7 +274,7 @@
   width: 100%;
   max-width: none;
   justify-self: stretch;
-  overflow: visible;
+  overflow: hidden;
   border: 1px solid var(--theme-border-card);
   border-radius: 0;
   background:
@@ -304,7 +305,6 @@
 }
 
 .starting-hand-card:last-child {
-  margin-left: -1px;
   border-radius: 0 8px 8px 0;
 }
 
@@ -313,8 +313,7 @@
   min-width: 0;
   min-height: 0;
   display: flex;
-  margin-left: -1px;
-  overflow: visible;
+  overflow: hidden;
   border-radius: 0 8px 8px 0;
 }
 
@@ -576,6 +575,7 @@
 
 .hand-detail-panel {
   min-height: 0;
+  height: 100%;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -734,44 +734,6 @@
   color: var(--text-control);
 }
 
-.hand-chart-range-strip {
-  min-height: 54px;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 6px;
-  flex: 0 0 auto;
-}
-
-.hand-chart-range-strip > div {
-  min-width: 0;
-  padding: 8px 10px;
-  display: grid;
-  align-content: center;
-  gap: 3px;
-  border: 1px solid var(--theme-border-card);
-  border-radius: 7px;
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--surface-control-deep) 76%, transparent),
-    color-mix(in srgb, var(--surface-panel-deep) 94%, transparent)
-  );
-}
-
-.hand-chart-range-strip span {
-  overflow: hidden;
-  color: var(--text-table-muted);
-  font-size: 0.54rem;
-  font-weight: 850;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.hand-chart-range-strip strong {
-  color: var(--text-white);
-  font-size: 0.86rem;
-  line-height: 1.1;
-}
-
 .hand-detail-panel--empty {
   display: grid;
   place-items: center;
@@ -810,31 +772,6 @@
   line-height: 1.45;
 }
 
-.hand-chart-footer {
-  min-height: 34px;
-  padding: 0 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex: 0 0 auto;
-  border: 1px solid var(--theme-border-card);
-  border-radius: 8px;
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--surface-chart) 92%, transparent),
-    var(--surface-panel-deep)
-  );
-  color: var(--text-table-muted);
-  font-size: 0.58rem;
-  font-weight: 850;
-  line-height: 1.25;
-}
-
-.hand-chart-footer span:first-child {
-  color: var(--text-control);
-}
-
 @media (max-width: 1180px) {
   .hand-chart-page {
     height: 100%;
@@ -845,28 +782,29 @@
 
   .hand-chart-matrix-section {
     flex: 0 0 auto;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .hand-chart-workspace,
   .hand-chart-workspace--with-panel {
     grid-template-columns: 1fr;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .hand-detail-panel {
+    height: auto;
     min-height: 180px;
   }
 }
 
 @media (max-width: 920px) {
   .hand-chart-matrix-section {
-    overflow: visible;
+    overflow: hidden;
   }
 
   .hand-chart-matrix-pair {
     grid-template-columns: 1fr;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .starting-hand-card:first-child,
@@ -885,12 +823,10 @@
   }
 
   .hand-detail-panel {
+    height: auto;
     min-height: 220px;
   }
 
-  .hand-chart-range-strip {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 680px) {
@@ -933,7 +869,7 @@
 
   .hand-chart-matrix-section {
     flex: 0 0 auto;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .hand-chart-section-header {
@@ -962,19 +898,9 @@
 
   .hand-detail-panel {
     min-height: 190px;
-    overflow: visible;
+    overflow: hidden;
   }
 
-  .hand-chart-footer {
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-    padding: 7px 10px;
-  }
-
-  .hand-chart-range-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 :root[data-theme='light'] .hand-chart-page {
@@ -986,8 +912,7 @@
 :root[data-theme='light'] .starting-hand-card__title strong,
 :root[data-theme='light'] .hand-detail-panel__header h3,
 :root[data-theme='light'] .hand-detail-panel__summary strong,
-:root[data-theme='light'] .hand-detail-row strong,
-:root[data-theme='light'] .hand-chart-range-strip strong {
+:root[data-theme='light'] .hand-detail-row strong {
   color: #0f172a;
 }
 
@@ -1004,9 +929,7 @@
 :root[data-theme='light'] .hand-detail-panel__summary span,
 :root[data-theme='light'] .hand-detail-panel__footer span,
 :root[data-theme='light'] .hand-detail-row small,
-:root[data-theme='light'] .hand-chart-range-strip span,
-:root[data-theme='light'] .hand-detail-empty-state p,
-:root[data-theme='light'] .hand-chart-footer {
+:root[data-theme='light'] .hand-detail-empty-state p {
   color: #475569;
 }
 
@@ -1023,8 +946,7 @@
 :root[data-theme='light'] .hand-chart-position-tabs,
 :root[data-theme='light'] .hand-chart-matrix-section,
 :root[data-theme='light'] .starting-hand-card,
-:root[data-theme='light'] .hand-detail-panel,
-:root[data-theme='light'] .hand-chart-footer {
+:root[data-theme='light'] .hand-detail-panel {
   border-color: #cbd5e1;
   background: linear-gradient(145deg, #ffffff, #f8fafc);
   box-shadow:
@@ -1119,8 +1041,7 @@
   color: #1e293b;
 }
 
-:root[data-theme='light'] .hand-detail-panel__summary,
-:root[data-theme='light'] .hand-chart-range-strip > div {
+:root[data-theme='light'] .hand-detail-panel__summary {
   border-color: #e2e8f0;
   background: #f8fafc;
 }
@@ -1133,7 +1054,6 @@
   border-color: #e2e8f0;
 }
 
-:root[data-theme='light'] .hand-detail-panel__footer span:first-child,
-:root[data-theme='light'] .hand-chart-footer span:first-child {
+:root[data-theme='light'] .hand-detail-panel__footer span:first-child {
   color: #1e293b;
 }
