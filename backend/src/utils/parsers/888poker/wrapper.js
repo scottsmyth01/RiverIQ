@@ -1,4 +1,5 @@
 import { parseHand } from '../parser.js';
+import { normalizeFileText } from '../helpers/normalizeFileText.js';
 import { REGEX } from './regex.js';
 
 function getCurrency(symbol) {
@@ -150,7 +151,7 @@ function normalizeHand(handText) {
 }
 
 export function splitHands(fileText) {
-  return fileText
+  return normalizeFileText(fileText)
     .split(/(?=^#Game No\s*:)/m)
     .map((handText) => handText.trim())
     .filter((handText) => /^#Game No\s*:/.test(handText));

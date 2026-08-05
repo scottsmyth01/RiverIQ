@@ -16,7 +16,10 @@ async function request(endpoint, options = {}) {
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data.message || 'Something went wrong');
+    const error = new Error(data.message || 'Something went wrong');
+    error.code = data.code;
+    error.details = data.details;
+    throw error;
   }
   return data;
 }

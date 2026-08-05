@@ -8,15 +8,32 @@ import './AddSessionPage.css';
 
 const FREE_SESSION_LIMIT = 20;
 const HAND_HISTORY_FILE_EXTENSION = '.txt';
+const PARSE_SAFETY_ERROR_PATTERN = /could not safely parse/i;
 
 const pokerSites = [
   { label: 'PokerStars', value: 'pokerstars' },
   { label: 'GGPoker', value: 'ggpoker' },
   { label: 'CoinPoker', value: 'coinpoker' },
   { label: 'FanDuel', value: 'fanduel' },
-  // { label: '888poker', value: '888poker' },
-  // { label: 'partypoker', value: 'partypoker' },
+  { label: '888poker', value: '888poker' },
+  { label: 'partypoker', value: 'partypoker' },
 ];
+
+function showUploadErrorToast(error) {
+  const message = error?.message || 'Could not upload session';
+
+  if (error?.code === 'HAND_HISTORY_PARSE_FAILED' || PARSE_SAFETY_ERROR_PATTERN.test(message)) {
+    const details = Array.isArray(error?.details) ? error.details.filter(Boolean).slice(0, 3) : [];
+
+    toast.error('Hand history could not be parsed', {
+      description: details.length ? details.join(' ') : message,
+      duration: 9000,
+    });
+    return;
+  }
+
+  toast.error(message);
+}
 
 const AddSessionPage = () => {
   const [selectedPokerSite, setSelectedPokerSite] = useState('pokerstars');
@@ -119,7 +136,7 @@ const AddSessionPage = () => {
       toast.success(createdSessions > 1 ? `${createdSessions} sessions uploaded` : 'Session uploaded');
       navigate('/dashboard/sessions');
     } catch (error) {
-      toast.error(error.message || 'Could not upload session');
+      showUploadErrorToast(error);
     }
   }
 

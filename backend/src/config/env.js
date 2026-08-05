@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 
-dotenv.config({ path: new URL('../../.env', import.meta.url) });
+if (process.env.RIVERIQ_SKIP_DOTENV !== 'true') {
+  dotenv.config({ path: new URL('../../.env', import.meta.url) });
+}
 
 const requiredProductionEnvVars = [
   'FRONTEND_URL',

@@ -1,12 +1,13 @@
 import Session from '../models/Session.js';
-import { parse888Poker } from '../utils/parsers/888poker/wrapper.js';
-import { parseCoinPoker } from '../utils/parsers/coinpoker/wrapper.js';
-import { parsePartyPoker } from '../utils/parsers/partypoker/wrapper.js';
-import { parsePokerStars } from '../utils/parsers/pokerstars/wrapper.js';
-import { parseFanDuel } from '../utils/parsers/fanduel/wrapper.js';
-import { parseGGPoker } from '../utils/parsers/ggpoker/wrapper.js';
+import { parse888Poker, splitHands as split888PokerHands } from '../utils/parsers/888poker/wrapper.js';
+import { parseCoinPoker, splitHands as splitCoinPokerHands } from '../utils/parsers/coinpoker/wrapper.js';
+import { parsePartyPoker, splitHands as splitPartyPokerHands } from '../utils/parsers/partypoker/wrapper.js';
+import { parsePokerStars, splitHands as splitPokerStarsHands } from '../utils/parsers/pokerstars/wrapper.js';
+import { parseFanDuel, splitHands as splitFanDuelHands } from '../utils/parsers/fanduel/wrapper.js';
+import { parseGGPoker, splitHands as splitGGPokerHands } from '../utils/parsers/ggpoker/wrapper.js';
 import { calculateStats } from '../utils/parsers/stats/calculateStats.js';
 import { getHandProfit } from '../utils/parsers/stats/getProfit.js';
+import { buildHandHistoryRecords, deleteFromR2 } from '../middleware/uploadToR2Middleware.js';
 
 const FREE_SESSION_LIMIT = 20;
 const SESSION_SPLIT_GAP_MINUTES = 60;
@@ -118,6 +119,188 @@ function parseHandsForSite(site, fileText) {
   if (normalizedSite === 'partypoker') return parsePartyPoker(fileText);
 
   return [];
+}
+
+function splitRawHandsForSite(site, fileText) {
+  const normalizedSite = site.toLocaleLowerCase();
+
+  if (normalizedSite === 'pokerstars') return splitPokerStarsHands(fileText);
+  if (normalizedSite === 'fanduel') return splitFanDuelHands(fileText);
+  if (normalizedSite === 'ggpoker') return splitGGPokerHands(fileText);
+  if (normalizedSite === 'coinpoker') return splitCoinPokerHands(fileText);
+  if (normalizedSite === '888poker') return split888PokerHands(fileText);
+  if (normalizedSite === 'partypoker') return splitPartyPokerHands(fileText);
+
+  return [];
+}
+
+function getInvalidParsedHandIssues(hands) {
+  const issues = hands.flatMap((hand, index) => {
+    const handLabel = hand?.handNumber ? `hand #${hand.handNumber}` : `hand ${index + 1}`;
+    const handIssues = [];
+    const handDate = new Date(hand?.date);
+    const profit = getHandProfit(hand);
+
+    if (!hand?.handNumber) handIssues.push(`${handLabel} is missing a hand number`);
+    if (!hand?.hero?.name) handIssues.push(`${handLabel} is missing hero`);
+    if (!Array.isArray(hand?.hero?.cards) || hand.hero.cards.length !== 2) {
+      handIssues.push(`${handLabel} is missing hero hole cards`);
+    }
+    if (!Array.isArray(hand?.players) || hand.players.length < 2) handIssues.push(`${handLabel} has fewer than 2 players`);
+    if (!hand?.buttonSeat) handIssues.push(`${handLabel} is missing the button seat`);
+    if (Number.isNaN(handDate.getTime())) handIssues.push(`${handLabel} has an invalid date`);
+    if (!Number.isFinite(Number(hand?.table?.smallBlind)) || !Number.isFinite(Number(hand?.table?.bigBlind))) {
+      handIssues.push(`${handLabel} is missing blind amounts`);
+    }
+    if (!Number.isFinite(Number(hand?.table?.maxPlayers))) handIssues.push(`${handLabel} is missing table size`);
+    if (!Array.isArray(hand?.preflop?.actions)) handIssues.push(`${handLabel} is missing preflop actions`);
+    if (!Array.isArray(hand?.summary?.seats) || !hand.summary.seats.some((seat) => seat.player === hand?.hero?.name)) {
+      handIssues.push(`${handLabel} is missing hero summary results`);
+    }
+    if (!Number.isFinite(profit)) handIssues.push(`${handLabel} has an invalid profit calculation`);
+
+    return handIssues;
+  });
+
+  const seenHandNumbers = new Set();
+  const duplicateHandNumbers = new Set();
+  for (const hand of hands) {
+    const handNumber = hand?.handNumber ? String(hand.handNumber) : null;
+    if (!handNumber) continue;
+    if (seenHandNumbers.has(handNumber)) {
+      duplicateHandNumbers.add(handNumber);
+    }
+    seenHandNumbers.add(handNumber);
+  }
+
+  duplicateHandNumbers.forEach((handNumber) => {
+    issues.push(`Duplicate hand #${handNumber} was found in this file`);
+  });
+
+  return issues;
+}
+
+function createParseSafetyError(fileLabel, details = []) {
+  const visibleDetails = details.slice(0, 3);
+  const error = new Error(
+    [
+      `We could not safely parse this hand history file${fileLabel}.`,
+      visibleDetails.length ? visibleDetails.join(' ') : 'Please upload a valid hand history .txt file.',
+    ].join(' '),
+  );
+  error.statusCode = 400;
+  error.code = 'HAND_HISTORY_PARSE_FAILED';
+  error.details = details;
+  return error;
+}
+
+function parseAndValidateHands({ pokerSite, fileText, fileLabel }) {
+  const rawHands = splitRawHandsForSite(pokerSite, fileText);
+
+  if (!rawHands.length) {
+    throw createParseSafetyError(fileLabel, ['No recognizable hand blocks were found.']);
+  }
+
+  let hands;
+  try {
+    hands = parseHandsForSite(pokerSite, fileText);
+  } catch (error) {
+    throw createParseSafetyError(fileLabel, [`The parser stopped on unreadable hand text: ${error.message}`]);
+  }
+
+  if (!hands?.length) {
+    throw createParseSafetyError(fileLabel, ['No hands could be parsed.']);
+  }
+
+  if (hands.length !== rawHands.length) {
+    throw createParseSafetyError(fileLabel, [
+      `Found ${rawHands.length} raw hands, but only ${hands.length} parsed successfully.`,
+    ]);
+  }
+
+  const issues = getInvalidParsedHandIssues(hands);
+  if (issues.length) {
+    throw createParseSafetyError(fileLabel, issues);
+  }
+
+  const stats = calculateStats(hands);
+  if (!Number.isFinite(stats.profit) || stats.handsPlayed !== hands.length) {
+    throw createParseSafetyError(fileLabel, ['The parsed stats did not match the parsed hand count.']);
+  }
+
+  return hands;
+}
+
+async function validateHandsAreNewForUser({ userId, pokerSite, hands }) {
+  const uploadHandCounts = new Map();
+  hands.forEach((hand) => {
+    if (!hand?.handNumber) return;
+    const handNumber = String(hand.handNumber);
+    uploadHandCounts.set(handNumber, (uploadHandCounts.get(handNumber) || 0) + 1);
+  });
+
+  const duplicateUploadHandNumbers = [...uploadHandCounts.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([handNumber]) => handNumber);
+
+  if (duplicateUploadHandNumbers.length) {
+    const duplicateList = duplicateUploadHandNumbers.slice(0, 3);
+    throw createParseSafetyError('', [
+      `This upload includes ${duplicateUploadHandNumbers.length} duplicate hand${duplicateUploadHandNumbers.length === 1 ? '' : 's'} across the selected files.`,
+      `Duplicate hand number${duplicateList.length === 1 ? '' : 's'}: ${duplicateList.join(', ')}`,
+    ]);
+  }
+
+  const handNumbers = [
+    ...uploadHandCounts.keys(),
+  ];
+
+  if (!handNumbers.length) return;
+
+  const existingSession = await Session.findOne(
+    {
+      user: userId,
+      pokerSite,
+      'handResults.handNumber': { $in: handNumbers },
+    },
+    { 'handResults.handNumber': 1 },
+  ).lean();
+
+  if (!existingSession) return;
+
+  const duplicateHandNumbers = new Set(
+    existingSession.handResults
+      ?.map((handResult) => (handResult?.handNumber ? String(handResult.handNumber) : null))
+      .filter((handNumber) => handNumbers.includes(handNumber)),
+  );
+  const duplicateList = [...duplicateHandNumbers].slice(0, 3);
+
+  throw createParseSafetyError('', [
+    `This upload includes ${duplicateHandNumbers.size} hand${duplicateHandNumbers.size === 1 ? '' : 's'} already saved in your sessions.`,
+    ...(duplicateList.length ? [`Duplicate hand number${duplicateList.length === 1 ? '' : 's'}: ${duplicateList.join(', ')}`] : []),
+  ]);
+}
+
+async function cleanupHandHistoryUploads(handHistories = []) {
+  if (process.env.NODE_ENV === 'test') return;
+
+  const r2Keys = handHistories
+    .map((handHistory) => handHistory?.r2Key)
+    .filter(Boolean);
+
+  await Promise.allSettled(
+    r2Keys.map((r2Key) => deleteFromR2(r2Key, process.env.R2_BUCKET_NAME_HH)),
+  );
+}
+
+async function restoreDeletedSession(session) {
+  if (!session?._id) return;
+
+  try {
+    await Session.create(session.toObject({ depopulate: true }));
+  } catch (restoreError) {
+    console.error('Failed to restore session after delete rollback:', restoreError);
+  }
 }
 
 function getSessionName({ sessionName, originalFileName, sessionIndex, totalSessions }) {
@@ -339,20 +522,20 @@ export const addSession = async (req, res, next) => {
         throw error;
       }
 
-      const hands = parseHandsForSite(pokerSite, fileText);
-      if (!hands?.length) {
-        const error = new Error(`No hands could be parsed from this file${fileLabel}`);
-        error.statusCode = 400;
-        throw error;
-      }
+      const hands = parseAndValidateHands({ pokerSite, fileText, fileLabel });
 
       return splitHandsIntoSessions(hands).map((handGroup) => ({
         file,
-        handHistory: req.handHistories?.[fileIndex] || (fileIndex === 0 ? req.handHistory : undefined),
+        fileIndex,
         hands: handGroup,
       }));
     });
     const handGroups = uploadGroups.flat();
+    await validateHandsAreNewForUser({
+      userId: req.user._id,
+      pokerSite,
+      hands: handGroups.flatMap((handGroup) => handGroup.hands),
+    });
 
     if (req.user.subscription !== 'pro') {
       const sessionCount = await Session.countDocuments({ user: req.user._id });
@@ -364,25 +547,35 @@ export const addSession = async (req, res, next) => {
       }
     }
 
-    const sessionPayloads = handGroups.map(({ file, handHistory, hands }, sessionIndex) =>
-      buildSessionPayload({
-        req,
-        pokerSite,
-        sessionName,
-        notes,
-        tags,
-        hands,
-        sessionIndex,
-        totalSessions: handGroups.length,
-        file,
-        handHistory,
-      }),
-    );
-    const sessions = await Session.create(sessionPayloads);
-    const sessionProfit = sessions.reduce((total, session) => total + (Number(session.stats?.profit) || 0), 0);
+    const handHistories = await buildHandHistoryRecords(files, req.user._id);
+    let sessions = [];
+    try {
+      const sessionPayloads = handGroups.map(({ file, fileIndex, hands }, sessionIndex) =>
+        buildSessionPayload({
+          req,
+          pokerSite,
+          sessionName,
+          notes,
+          tags,
+          hands,
+          sessionIndex,
+          totalSessions: handGroups.length,
+          file,
+          handHistory: handHistories[fileIndex],
+        }),
+      );
+      sessions = await Session.create(sessionPayloads);
+      const sessionProfit = sessions.reduce((total, session) => total + (Number(session.stats?.profit) || 0), 0);
 
-    req.user.bankroll = Number(((Number(req.user.bankroll) || 0) + sessionProfit).toFixed(2));
-    await req.user.save();
+      req.user.bankroll = Number(((Number(req.user.bankroll) || 0) + sessionProfit).toFixed(2));
+      await req.user.save();
+    } catch (error) {
+      if (sessions.length) {
+        await Session.deleteMany({ _id: { $in: sessions.map((session) => session._id) } });
+      }
+      await cleanupHandHistoryUploads(handHistories);
+      throw error;
+    }
 
     return res.status(201).json({
       status: 'success',
@@ -427,22 +620,38 @@ export const updateSession = async (req, res, next) => {
 };
 
 export const deleteSession = async (req, res, next) => {
+  let deletedSession = null;
+
   try {
-    const session = await Session.findOneAndDelete({
+    deletedSession = await Session.findOneAndDelete({
       _id: req.params.id,
       user: req.user._id,
     });
 
-    if (!session) {
+    if (!deletedSession) {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    const sessionProfit = Number(session.stats?.profit) || 0;
+    const sessionProfit = Number(deletedSession.stats?.profit) || 0;
     req.user.bankroll = Number(((Number(req.user.bankroll) || 0) - sessionProfit).toFixed(2));
     await req.user.save();
 
+    if (process.env.NODE_ENV !== 'test' && deletedSession.handHistory?.r2Key) {
+      const remainingReferences = await Session.countDocuments({
+        user: req.user._id,
+        'handHistory.r2Key': deletedSession.handHistory.r2Key,
+      });
+
+      if (remainingReferences === 0) {
+        deleteFromR2(deletedSession.handHistory.r2Key, process.env.R2_BUCKET_NAME_HH).catch((error) => {
+          console.error('Failed to delete hand history from R2:', error);
+        });
+      }
+    }
+
     return res.status(200).json({ message: 'Session deleted', id: req.params.id, user: serializeUser(req.user) });
   } catch (error) {
+    await restoreDeletedSession(deletedSession);
     return next(error);
   }
 };

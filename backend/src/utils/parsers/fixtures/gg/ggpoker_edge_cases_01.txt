@@ -1,0 +1,247 @@
+GGPoker Hand #990000001: Hold'em No Limit ($0.05/$0.10 USD) - 2026-08-04 12:00:00
+Table 'RiverIQ GG Edge 1' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: SmallBlindSam ($10.00 in chips)
+Seat 3: BigBlindBea ($10.00 in chips)
+Seat 4: UnderGunUma ($10.00 in chips)
+Seat 5: CutoffCat ($10.00 in chips)
+Seat 6: ButtonAce ($10.00 in chips)
+SmallBlindSam: posts small blind $0.05
+BigBlindBea: posts big blind $0.10
+*** HOLE CARDS ***
+Dealt to Hero [As Ah]
+Hero: raises $0.25 to $0.30
+SmallBlindSam: folds
+BigBlindBea: raises $0.70 to $1.00
+Hero: raises $9.70 to $10.00 and is all-in
+BigBlindBea: calls $9.00 and is all-in
+*** FLOP *** [Ad 7c 2h]
+*** TURN *** [Ad 7c 2h] [4s]
+*** RIVER *** [Ad 7c 2h 4s] [9d]
+*** SHOW DOWN ***
+Hero: shows [As Ah] (three of a kind, Aces)
+BigBlindBea: shows [Kd Kh] (a pair of Kings)
+Hero collected $20.00 from pot
+*** SUMMARY ***
+Total pot $20.00 | Rake $0.00
+Board [Ad 7c 2h 4s 9d]
+Seat 1: Hero (button) showed [As Ah] and won ($20.00) with three of a kind, Aces
+Seat 2: SmallBlindSam folded before Flop
+Seat 3: BigBlindBea showed [Kd Kh] and lost with a pair of Kings
+Seat 4: UnderGunUma folded before Flop
+Seat 5: CutoffCat folded before Flop
+Seat 6: ButtonAce folded before Flop
+
+GGPoker Hand #990000002: Hold'em No Limit ($0.05/$0.10 USD) - 2026-08-04 12:02:00
+Table 'RiverIQ GG Edge 1' 6-max Seat #2 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: SmallBlindSam ($10.00 in chips)
+Seat 3: BigBlindBea ($10.00 in chips)
+Seat 4: UnderGunUma ($10.00 in chips)
+Seat 5: CutoffCat ($10.00 in chips)
+Seat 6: ButtonAce ($10.00 in chips)
+BigBlindBea: posts small blind $0.05
+UnderGunUma: posts big blind $0.10
+*** HOLE CARDS ***
+Dealt to Hero [Qs Qh]
+Hero: raises $0.30 to $0.40
+CutoffCat: raises $1.00 to $1.40
+Hero: raises $9.60 to $10.00 and is all-in
+CutoffCat: calls $8.60 and is all-in
+*** FLOP *** [Ks Jd 8c]
+*** TURN *** [Ks Jd 8c] [2s]
+*** RIVER *** [Ks Jd 8c 2s] [3h]
+*** SHOW DOWN ***
+Hero: shows [Qs Qh] (a pair of Queens)
+CutoffCat: shows [Ad Ac] (a pair of Aces)
+CutoffCat collected $20.00 from pot
+*** SUMMARY ***
+Total pot $20.00 | Rake $0.00
+Board [Ks Jd 8c 2s 3h]
+Seat 1: Hero showed [Qs Qh] and lost with a pair of Queens
+Seat 2: SmallBlindSam folded before Flop
+Seat 3: BigBlindBea folded before Flop
+Seat 4: UnderGunUma folded before Flop
+Seat 5: CutoffCat showed [Ad Ac] and won ($20.00) with a pair of Aces
+Seat 6: ButtonAce folded before Flop
+
+GGPoker Hand #990000003: Hold'em No Limit ($0.05/$0.10 USD) - 2026-08-04 12:04:00
+Table 'RiverIQ GG Edge 1' 6-max Seat #3 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: SmallBlindSam ($10.00 in chips)
+Seat 3: BigBlindBea ($10.00 in chips)
+Seat 4: UnderGunUma ($10.00 in chips)
+Seat 5: CutoffCat ($10.00 in chips)
+Seat 6: ButtonAce ($10.00 in chips)
+UnderGunUma: posts small blind $0.05
+CutoffCat: posts big blind $0.10
+*** HOLE CARDS ***
+Dealt to Hero [Kc Qc]
+Hero: raises $0.30 to $0.40
+CutoffCat: calls $0.30
+*** FLOP *** [Kh 8d 2c]
+CutoffCat: checks
+Hero: bets $0.60
+CutoffCat: folds
+Uncalled bet ($0.60) returned to Hero
+Hero collected $0.85 from pot
+*** SUMMARY ***
+Total pot $0.85 | Rake $0.00
+Board [Kh 8d 2c]
+Seat 1: Hero collected ($0.85)
+Seat 2: SmallBlindSam folded before Flop
+Seat 3: BigBlindBea folded before Flop
+Seat 4: UnderGunUma folded before Flop
+Seat 5: CutoffCat folded on the Flop
+Seat 6: ButtonAce folded before Flop
+
+GGPoker Hand #990000004: Hold'em No Limit ($0.05/$0.10 USD) - 2026-08-04 12:06:00
+Table 'RiverIQ GG HU' 2-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: Villain ($10.00 in chips)
+Hero: posts small blind $0.05
+Villain: posts big blind $0.10
+*** HOLE CARDS ***
+Dealt to Hero [Jd Td]
+Hero: raises $0.25 to $0.30
+Villain: calls $0.20
+*** FLOP *** [Jh 6d 3c]
+Villain: checks
+Hero: bets $0.40
+Villain: folds
+Uncalled bet ($0.40) returned to Hero
+Hero collected $0.60 from pot
+*** SUMMARY ***
+Total pot $0.60 | Rake $0.00
+Board [Jh 6d 3c]
+Seat 1: Hero (button) collected ($0.60)
+Seat 2: Villain folded on the Flop
+
+GGPoker Hand #990000005: Hold'em No Limit ($0.05/$0.10 USD) - 2026-08-04 12:08:00
+Table 'RiverIQ GG Edge 1' 6-max Seat #4 is the button
+Seat 1: Hero ($5.00 in chips)
+Seat 2: SmallBlindSam ($10.00 in chips)
+Seat 3: BigBlindBea ($10.00 in chips)
+Seat 4: UnderGunUma ($10.00 in chips)
+Seat 5: CutoffCat ($10.00 in chips)
+Seat 6: ButtonAce ($10.00 in chips)
+CutoffCat: posts small blind $0.05
+ButtonAce: posts big blind $0.10
+*** HOLE CARDS ***
+Dealt to Hero [Ac Kc]
+Hero: raises $0.30 to $0.40
+SmallBlindSam: raises $4.60 to $5.00
+ButtonAce: raises $9.90 to $10.00 and is all-in
+Hero: calls $4.60 and is all-in
+SmallBlindSam: calls $5.00 and is all-in
+*** FLOP *** [Ah Ks 4d]
+*** TURN *** [Ah Ks 4d] [2c]
+*** RIVER *** [Ah Ks 4d 2c] [9h]
+*** SHOW DOWN ***
+Hero: shows [Ac Kc] (two pair, Aces and Kings)
+SmallBlindSam: shows [Qh Qd] (a pair of Queens)
+ButtonAce: shows [Ad As] (three of a kind, Aces)
+Hero collected $15.00 from main pot
+ButtonAce collected $10.00 from side pot
+*** SUMMARY ***
+Total pot $25.00 Main pot $15.00. Side pot $10.00. | Rake $0.00
+Board [Ah Ks 4d 2c 9h]
+Seat 1: Hero showed [Ac Kc] and won ($15.00) with two pair, Aces and Kings
+Seat 2: SmallBlindSam showed [Qh Qd] and lost with a pair of Queens
+Seat 3: BigBlindBea folded before Flop
+Seat 4: UnderGunUma folded before Flop
+Seat 5: CutoffCat folded before Flop
+Seat 6: ButtonAce showed [Ad As] and won ($10.00) with three of a kind, Aces
+
+GGPoker Hand #990000006: Hold'em No Limit ($0.05/$0.10 USD) - 2026-08-04 12:10:00
+Table 'RiverIQ GG Edge 1' 6-max Seat #5 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: SmallBlindSam ($10.00 in chips)
+Seat 3: BigBlindBea ($10.00 in chips)
+Seat 4: UnderGunUma ($10.00 in chips)
+Seat 5: CutoffCat ($10.00 in chips)
+Seat 6: ButtonAce ($10.00 in chips)
+ButtonAce: posts small blind $0.05
+Hero: posts big blind $0.10
+*** HOLE CARDS ***
+Dealt to Hero [Ah Qs]
+SmallBlindSam: calls $0.10
+Hero: raises $0.90 to $1.00
+SmallBlindSam: calls $0.90
+*** FLOP *** [Kc Kd Kh]
+Hero: bets $1.00
+SmallBlindSam: calls $1.00
+*** TURN *** [Kc Kd Kh] [2s]
+Hero: checks
+SmallBlindSam: checks
+*** RIVER *** [Kc Kd Kh 2s] [2d]
+Hero: checks
+SmallBlindSam: checks
+*** SHOW DOWN ***
+Hero: shows [Ah Qs] (two pair, Kings and Deuces)
+SmallBlindSam: shows [Ad Qh] (two pair, Kings and Deuces)
+Hero collected $2.00 from pot
+SmallBlindSam collected $2.00 from pot
+*** SUMMARY ***
+Total pot $4.00 | Rake $0.00
+Board [Kc Kd Kh 2s 2d]
+Seat 1: Hero showed [Ah Qs] and collected ($2.00)
+Seat 2: SmallBlindSam showed [Ad Qh] and collected ($2.00)
+Seat 3: BigBlindBea folded before Flop
+Seat 4: UnderGunUma folded before Flop
+Seat 5: CutoffCat folded before Flop
+Seat 6: ButtonAce folded before Flop
+
+GGPoker Hand #990000007: Hold'em No Limit ($0.05/$0.10 USD) - 2026-08-04 12:12:00
+Table 'RiverIQ GG Edge 1' 6-max Seat #6 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: SmallBlindSam ($10.00 in chips)
+Seat 3: BigBlindBea ($10.00 in chips)
+Seat 4: UnderGunUma ($10.00 in chips)
+Seat 5: CutoffCat ($10.00 in chips)
+Seat 6: ButtonAce ($10.00 in chips)
+ButtonAce: posts small blind $0.05
+Hero: posts big blind $0.10
+*** HOLE CARDS ***
+Dealt to Hero [7c 2d]
+ButtonAce: folds
+Uncalled bet ($0.05) returned to Hero
+Hero collected $0.10 from pot
+*** SUMMARY ***
+Total pot $0.10 | Rake $0.00
+Seat 1: Hero collected ($0.10)
+Seat 2: SmallBlindSam folded before Flop
+Seat 3: BigBlindBea folded before Flop
+Seat 4: UnderGunUma folded before Flop
+Seat 5: CutoffCat folded before Flop
+Seat 6: ButtonAce folded before Flop
+
+GGPoker Hand #990000008: Hold'em No Limit ($0.05/$0.10 USD) - 2026-08-04 12:14:00
+Table 'RiverIQ GG Edge 1' 6-max Seat #1 is the button
+Seat 1: Hero ($10.00 in chips)
+Seat 2: SmallBlindSam ($10.00 in chips)
+Seat 3: BigBlindBea ($10.00 in chips)
+Seat 4: UnderGunUma ($10.00 in chips)
+Seat 5: CutoffCat ($10.00 in chips)
+Seat 6: ButtonAce ($10.00 in chips)
+SmallBlindSam: posts small blind $0.05
+BigBlindBea: posts big blind $0.10
+*** HOLE CARDS ***
+Dealt to Hero [9s 9h]
+Hero: raises $0.30 to $0.40
+BigBlindBea: calls $0.30
+*** FLOP *** [9d 6c 2s]
+BigBlindBea: checks
+Hero: bets $0.60
+BigBlindBea: folds
+Uncalled bet ($0.60) returned to Hero
+Hero collected $0.85 from pot
+*** SUMMARY ***
+Total pot $0.85 | Rake $0.00
+Board [9d 6c 2s]
+Seat 1: Hero collected ($0.85)
+Seat 2: SmallBlindSam folded before Flop
+Seat 3: BigBlindBea folded on the Flop
+Seat 4: UnderGunUma folded before Flop
+Seat 5: CutoffCat folded before Flop
+Seat 6: ButtonAce folded before Flop

@@ -16,7 +16,7 @@ describe('environment validation', () => {
   });
 
   test('throws a clear error when production env vars are missing', async () => {
-    process.env = { NODE_ENV: 'production' };
+    process.env = { NODE_ENV: 'production', RIVERIQ_SKIP_DOTENV: 'true' };
 
     await expect(import(`../env.js?test=${Date.now()}`)).rejects.toThrow(/Missing required production env vars/);
   });
@@ -24,6 +24,7 @@ describe('environment validation', () => {
   test('passes when required production env vars are present', async () => {
     process.env = {
       NODE_ENV: 'production',
+      RIVERIQ_SKIP_DOTENV: 'true',
       FRONTEND_URL: 'https://riveriq.app',
       MONGO_URI: 'mongodb://localhost:27017/riveriq',
       JWT_SECRET: 'test-secret',

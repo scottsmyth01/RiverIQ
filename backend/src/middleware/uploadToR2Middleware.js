@@ -1,4 +1,5 @@
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import crypto from 'crypto';
 
 // Initialize R2 and form connection between backend and cloud service
 
@@ -18,8 +19,13 @@ export const r2 = new S3Client({
 // body: filer.buffer (actual file here)
 // contentType (mimetype): type of file being uploaded (.txt here); so text/plain
 
+function buildHandHistoryKey(file, userId, prefix = 'hand-histories') {
+  const safeFileName = sanitizeFileName(file.originalname);
+  return `${prefix}/${userId}/${Date.now()}-${crypto.randomUUID()}-${safeFileName}`;
+}
+
 export async function uploadToR2(file, userId) {
-  const key = `hand-histories/${userId}/${Date.now()}-${file.originalname}`;
+  const key = buildHandHistoryKey(file, userId);
 
   await r2.send(
     new PutObjectCommand({
@@ -32,46 +38,38 @@ export async function uploadToR2(file, userId) {
   return key;
 }
 
-// actual controller function that runs when a user sends POST req  to /api/sessions/addSessions
+export async function buildHandHistoryRecords(files, userId) {
+  if (process.env.NODE_ENV === 'test') {
+    return files.map((file) => ({
+      originalFileName: file.originalname,
+      r2Key: buildHandHistoryKey(file, userId, 'test-hand-histories'),
+      fileSize: file.size,
+      contentType: file.mimetype,
+      uploadedAt: new Date(),
+    }));
+  }
 
-export async function uploadHandHistoryToR2(req, res, next) {
+  const records = [];
   try {
-    const files = req.files?.length ? req.files : req.file ? [req.file] : [];
+    for (const file of files) {
+      const r2Key = await uploadToR2(file, userId);
 
-    if (!files.length) {
-      return res.status(400).json({ message: 'Please upload a hand history file' });
-    }
-
-    if (process.env.NODE_ENV === 'test') {
-      req.handHistories = files.map((file) => ({
+      records.push({
         originalFileName: file.originalname,
-        r2Key: `test-hand-histories/${req.user._id}/${file.originalname}`,
+        r2Key,
         fileSize: file.size,
         contentType: file.mimetype,
         uploadedAt: new Date(),
-      }));
-      req.handHistory = req.handHistories[0];
-      return next();
+      });
     }
-
-    req.handHistories = await Promise.all(
-      files.map(async (file) => {
-        const r2Key = await uploadToR2(file, req.user._id);
-
-        return {
-          originalFileName: file.originalname,
-          r2Key,
-          fileSize: file.size,
-          contentType: file.mimetype,
-          uploadedAt: new Date(),
-        };
-      }),
-    );
-    req.handHistory = req.handHistories[0];
-    next();
   } catch (error) {
-    return next(error);
+    await Promise.allSettled(
+      records.map((record) => deleteFromR2(record.r2Key, process.env.R2_BUCKET_NAME_HH)),
+    );
+    throw error;
   }
+
+  return records;
 }
 
 function sanitizeFileName(fileName) {

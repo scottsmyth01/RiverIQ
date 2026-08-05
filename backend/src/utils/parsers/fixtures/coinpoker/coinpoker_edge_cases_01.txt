@@ -1,0 +1,190 @@
+CoinPoker Hand #91600000001: NLH (₮0.10/₮0.25/₮0.04) 2026/08/04 13:00:00 -04
+Table 'RiverIQ Coin Edge' 6-max Seat #1 is the button
+Seat 1: Hero (₮25.00 in chips)
+Seat 2: CutoffCat (₮25.00 in chips)
+Seat 3: ButtonAce (₮25.00 in chips)
+Seat 4: SmallBlindSam (₮25.00 in chips)
+Seat 5: BigBlindBea (₮25.00 in chips)
+Seat 6: UnderGunUma (₮25.00 in chips)
+Hero: posts ante ₮0.04
+CutoffCat: posts ante ₮0.04
+ButtonAce: posts ante ₮0.04
+SmallBlindSam: posts ante ₮0.04
+BigBlindBea: posts ante ₮0.04
+UnderGunUma: posts ante ₮0.04
+CutoffCat: posts small blind ₮0.10
+ButtonAce: posts big blind ₮0.25
+*** HOLE CARDS ***
+Dealt to Hero [As Ah]
+Hero: raises ₮0.37 to ₮0.62
+ButtonAce: raises ₮1.48 to ₮2.10
+Hero: ALLIN ₮24.34
+ButtonAce: ALLIN ₮22.90
+Hero: RETURN ₮1.44
+*** FLOP *** [Ad 7c 2h]
+*** TURN *** [Ad 7c 2h] [4s]
+*** RIVER *** [Ad 7c 2h 4s] [9d]
+*** SHOWDOWN ***
+Hero: shows [As Ah] (Three of a Kind)
+Hero collected ₮50.00 from pot
+ButtonAce: shows [Kd Kh] (One Pair)
+*** SUMMARY ***
+Total pot ₮50.00 | Rake ₮0 | Splash Fee ₮0.02
+Hand was run once
+Board [ Ad 7c 2h 4s 9d ]
+Game ended: 2026/08/04 13:01:22 -04
+Seat 1: Hero showed [As Ah] and won (₮50.00) with Three of a Kind
+Seat 2: CutoffCat folded before Flop (didn't bet)
+Seat 3: ButtonAce showed [Kd Kh] and lost with One Pair
+Seat 4: SmallBlindSam folded before Flop (didn't bet)
+Seat 5: BigBlindBea folded before Flop (didn't bet)
+Seat 6: UnderGunUma folded before Flop (didn't bet)
+
+CoinPoker Hand #91600000002: NLH (₮0.10/₮0.25/₮0.04) 2026/08/04 13:03:00 -04
+Table 'RiverIQ Coin Edge' 6-max Seat #2 is the button
+Seat 1: Hero (₮25.00 in chips)
+Seat 2: CutoffCat (₮25.00 in chips)
+Seat 3: ButtonAce (₮25.00 in chips)
+Seat 4: SmallBlindSam (₮25.00 in chips)
+Seat 5: BigBlindBea (₮25.00 in chips)
+Seat 6: UnderGunUma (₮25.00 in chips)
+Hero: posts ante ₮0.04
+CutoffCat: posts ante ₮0.04
+ButtonAce: posts ante ₮0.04
+SmallBlindSam: posts ante ₮0.04
+BigBlindBea: posts ante ₮0.04
+UnderGunUma: posts ante ₮0.04
+ButtonAce: posts small blind ₮0.10
+SmallBlindSam: posts big blind ₮0.25
+*** HOLE CARDS ***
+Dealt to Hero [Qs Qh]
+CutoffCat: raises ₮0.37 to ₮0.62
+Hero: raises ₮1.48 to ₮2.10
+CutoffCat: ALLIN ₮24.34
+Hero: ALLIN ₮22.90
+*** FLOP *** [Ks Jd 8c]
+*** TURN *** [Ks Jd 8c] [2s]
+*** RIVER *** [Ks Jd 8c 2s] [3h]
+*** SHOWDOWN ***
+Hero: shows [Qs Qh] (One Pair)
+CutoffCat: shows [Ad Ac] (One Pair)
+CutoffCat collected ₮50.00 from pot
+*** SUMMARY ***
+Total pot ₮50.00 | Rake ₮0 | Splash Fee ₮0.02
+Hand was run once
+Board [ Ks Jd 8c 2s 3h ]
+Game ended: 2026/08/04 13:04:30 -04
+Seat 1: Hero showed [Qs Qh] and lost with One Pair
+Seat 2: CutoffCat showed [Ad Ac] and won (₮50.00) with One Pair
+Seat 3: ButtonAce folded before Flop (didn't bet)
+Seat 4: SmallBlindSam folded before Flop (didn't bet)
+Seat 5: BigBlindBea folded before Flop (didn't bet)
+Seat 6: UnderGunUma folded before Flop (didn't bet)
+
+CoinPoker Hand #91600000003: NLH (₮0.10/₮0.25/₮0.04) 2026/08/04 13:06:00 -04
+Table 'RiverIQ Coin Edge' 6-max Seat #3 is the button
+Seat 1: Hero (₮25.00 in chips)
+Seat 2: CutoffCat (₮25.00 in chips)
+Seat 3: ButtonAce (₮25.00 in chips)
+Seat 4: SmallBlindSam (₮25.00 in chips)
+Seat 5: BigBlindBea (₮25.00 in chips)
+Seat 6: UnderGunUma (₮25.00 in chips)
+Hero: posts ante ₮0.04
+CutoffCat: posts ante ₮0.04
+ButtonAce: posts ante ₮0.04
+SmallBlindSam: posts ante ₮0.04
+BigBlindBea: posts ante ₮0.04
+UnderGunUma: posts ante ₮0.04
+SmallBlindSam: posts small blind ₮0.10
+BigBlindBea: posts big blind ₮0.25
+*** HOLE CARDS ***
+Dealt to Hero [Kc Qc]
+Hero: raises ₮0.37 to ₮0.62
+BigBlindBea: calls ₮0.37
+*** FLOP *** [Kh 8d 2c]
+BigBlindBea: checks
+Hero: bets ₮0.72
+BigBlindBea: folds
+Hero: RETURN ₮0.72
+Hero collected ₮1.55 from pot
+*** SUMMARY ***
+Total pot ₮1.55 | Rake ₮0.05 | Splash Fee ₮0.02
+Hand was run once
+Board [ Kh 8d 2c ]
+Game ended: 2026/08/04 13:06:48 -04
+Seat 1: Hero collected (₮1.55)
+Seat 2: CutoffCat folded before Flop (didn't bet)
+Seat 3: ButtonAce folded before Flop (didn't bet)
+Seat 4: SmallBlindSam folded before Flop (didn't bet)
+Seat 5: BigBlindBea folded on the Flop
+Seat 6: UnderGunUma folded before Flop (didn't bet)
+
+CoinPoker Hand #91600000004: NLH (₮0.10/₮0.25/₮0.04) 2026/08/04 13:09:00 -04
+Table 'RiverIQ Coin HU' 2-max Seat #1 is the button
+Seat 1: Hero (₮25.00 in chips)
+Seat 2: Villain (₮25.00 in chips)
+Hero: posts ante ₮0.04
+Villain: posts ante ₮0.04
+Hero: posts small blind ₮0.10
+Villain: posts big blind ₮0.25
+*** HOLE CARDS ***
+Dealt to Hero [Jd Td]
+Hero: raises ₮0.40 to ₮0.50
+Villain: calls ₮0.25
+*** FLOP *** [Jh 6d 3c]
+Villain: checks
+Hero: bets ₮0.60
+Villain: folds
+Hero: RETURN ₮0.60
+Hero collected ₮1.08 from pot
+*** SUMMARY ***
+Total pot ₮1.08 | Rake ₮0.02 | Splash Fee ₮0.01
+Hand was run once
+Board [ Jh 6d 3c ]
+Game ended: 2026/08/04 13:09:44 -04
+Seat 1: Hero collected (₮1.08)
+Seat 2: Villain folded on the Flop
+
+CoinPoker Hand #91600000005: NLH (₮0.10/₮0.25/₮0.04) 2026/08/04 13:12:00 -04
+Table 'RiverIQ Coin Edge' 6-max Seat #4 is the button
+Seat 1: Hero (₮5.00 in chips)
+Seat 2: CutoffCat (₮25.00 in chips)
+Seat 3: ButtonAce (₮25.00 in chips)
+Seat 4: SmallBlindSam (₮25.00 in chips)
+Seat 5: BigBlindBea (₮25.00 in chips)
+Seat 6: UnderGunUma (₮25.00 in chips)
+Hero: posts ante ₮0.04
+CutoffCat: posts ante ₮0.04
+ButtonAce: posts ante ₮0.04
+SmallBlindSam: posts ante ₮0.04
+BigBlindBea: posts ante ₮0.04
+UnderGunUma: posts ante ₮0.04
+BigBlindBea: posts small blind ₮0.10
+UnderGunUma: posts big blind ₮0.25
+*** HOLE CARDS ***
+Dealt to Hero [Ac Kc]
+Hero: raises ₮0.37 to ₮0.62
+CutoffCat: raises ₮4.38 to ₮5.00
+UnderGunUma: ALLIN ₮24.71
+Hero: ALLIN ₮4.34
+CutoffCat: ALLIN ₮20.00
+*** FLOP *** [Ah Ks 4d]
+*** TURN *** [Ah Ks 4d] [2c]
+*** RIVER *** [Ah Ks 4d 2c] [9h]
+*** SHOWDOWN ***
+Hero: shows [Ac Kc] (Two Pair)
+CutoffCat: shows [Qh Qd] (One Pair)
+UnderGunUma: shows [Ad As] (Three of a Kind)
+Hero collected ₮15.00 from main pot
+UnderGunUma collected ₮40.00 from side pot
+*** SUMMARY ***
+Total pot ₮55.00 Main pot ₮15.00. Side pot ₮40.00. | Rake ₮0 | Splash Fee ₮0.02
+Hand was run once
+Board [ Ah Ks 4d 2c 9h ]
+Game ended: 2026/08/04 13:13:41 -04
+Seat 1: Hero showed [Ac Kc] and won (₮15.00) with Two Pair
+Seat 2: CutoffCat showed [Qh Qd] and lost with One Pair
+Seat 3: ButtonAce folded before Flop (didn't bet)
+Seat 4: SmallBlindSam folded before Flop (didn't bet)
+Seat 5: BigBlindBea folded before Flop (didn't bet)
+Seat 6: UnderGunUma showed [Ad As] and won (₮40.00) with Three of a Kind

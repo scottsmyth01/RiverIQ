@@ -48,7 +48,7 @@ export function getPositions(handText) {
     player.position = positions[index];
   });
   handText.players = orderedPlayers;
-  const hero = handText.players.find((player) => player.name === handText.hero.name);
+  const hero = handText.hero ? handText.players.find((player) => player.name === handText.hero.name) : null;
   handText.heroPosition = hero?.position ?? null;
   handText.position = handText.heroPosition;
 

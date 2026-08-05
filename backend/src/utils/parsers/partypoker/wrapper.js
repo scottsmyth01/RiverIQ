@@ -1,4 +1,5 @@
 import { parseHand } from '../parser.js';
+import { normalizeFileText } from '../helpers/normalizeFileText.js';
 import { REGEX } from './regex.js';
 
 const MONTHS = {
@@ -171,7 +172,7 @@ function normalizeHand(handText) {
 }
 
 export function splitHands(fileText) {
-  return fileText
+  return normalizeFileText(fileText)
     .split(/(?=^Game #\d+ starts\.)/m)
     .map((handText) => handText.trim())
     .filter((handText) => /^Game #\d+ starts\./.test(handText));

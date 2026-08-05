@@ -8,10 +8,9 @@ import {
   getSessions,
   updateSession,
 } from '../controllers/sessionController.js';
-import { upload } from '../middleware/uploadMiddleware.js';
-import { uploadHandHistoryToR2 } from '../middleware/uploadToR2Middleware.js';
+import { handHistoryUpload } from '../middleware/uploadMiddleware.js';
 
 router.get('/', protect, getSessions);
 router.route('/:id').put(protect, updateSession).delete(protect, deleteSession);
-router.post('/add-session', protect, enforceFreeSessionLimit, upload.array('handHistory', 25), uploadHandHistoryToR2, addSession);
+router.post('/add-session', protect, enforceFreeSessionLimit, handHistoryUpload.array('handHistory', 25), addSession);
 export default router;
