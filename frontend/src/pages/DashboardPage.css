@@ -55,6 +55,37 @@
   color: var(--color-primary-hover);
 }
 
+.dashboard-empty-state {
+  min-height: 300px;
+  padding: 38px 20px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  border-top: 1px solid var(--border-row-alpha);
+  color: var(--text-muted-light);
+  text-align: center;
+}
+
+.dashboard-loading-state {
+  font-weight: var(--font-weight-medium);
+}
+
+.dashboard-loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: dashboard-loading-spin 0.75s linear infinite;
+}
+
+@keyframes dashboard-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .stat-cards {
   flex: 0 0 auto;
   container: stat-cards / inline-size;

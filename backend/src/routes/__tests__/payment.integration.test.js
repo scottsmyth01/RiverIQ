@@ -11,9 +11,15 @@ const mockStripe = {
     retrieve: jest.fn(),
     list: jest.fn(),
     cancel: jest.fn(),
+    update: jest.fn(),
   },
   webhooks: {
     constructEvent: jest.fn(),
+  },
+  billingPortal: {
+    sessions: {
+      create: jest.fn(),
+    },
   },
 };
 
@@ -214,6 +220,32 @@ describe('payment API integration', () => {
     expect(noSecretResponse.body.message).toMatch(/client secret/i);
   });
 
+  test('creates a Stripe billing portal session for an existing customer', async () => {
+    const agent = await createLoggedInAgent();
+    await User.updateOne({ email: validUser.email }, { stripeCustomerId: 'cus_portal_123' });
+
+    mockStripe.billingPortal.sessions.create.mockResolvedValue({
+      url: 'https://billing.stripe.com/p/session/test_portal_123',
+    });
+
+    const response = await agent.post('/api/payments/billing-portal').expect(200);
+
+    expect(response.body.url).toBe('https://billing.stripe.com/p/session/test_portal_123');
+    expect(mockStripe.billingPortal.sessions.create).toHaveBeenCalledWith({
+      customer: 'cus_portal_123',
+      return_url: 'http://localhost:5173/dashboard/settings',
+    });
+  });
+
+  test('rejects billing portal sessions when the user has no Stripe customer', async () => {
+    const agent = await createLoggedInAgent();
+
+    const response = await agent.post('/api/payments/billing-portal').expect(400);
+
+    expect(response.body.message).toBe('No Stripe customer found for this user');
+    expect(mockStripe.billingPortal.sessions.create).not.toHaveBeenCalled();
+  });
+
   test('confirms an active Stripe subscription and upgrades the user to pro', async () => {
     const agent = await createLoggedInAgent();
     await User.updateOne({ email: validUser.email }, { stripeCustomerId: 'cus_confirm_123' });
@@ -222,6 +254,8 @@ describe('payment API integration', () => {
       id: 'sub_confirm_123',
       customer: 'cus_confirm_123',
       status: 'active',
+      cancel_at_period_end: false,
+      current_period_end: 1785974400,
     });
 
     const response = await agent
@@ -235,6 +269,9 @@ describe('payment API integration', () => {
     const savedUser = await User.findOne({ email: validUser.email });
     expect(savedUser.subscription).toBe('pro');
     expect(savedUser.stripeSubscriptionId).toBe('sub_confirm_123');
+    expect(savedUser.stripeSubscriptionStatus).toBe('active');
+    expect(savedUser.stripeCancelAtPeriodEnd).toBe(false);
+    expect(savedUser.stripeCurrentPeriodEnd).toBe(1785974400);
   });
 
   test('rejects invalid or mismatched subscription confirmation', async () => {
@@ -267,7 +304,7 @@ describe('payment API integration', () => {
     expect(incompleteResponse.body.message).toBe('Subscription is incomplete');
   });
 
-  test('cancels the current Stripe subscription and downgrades the user to free', async () => {
+  test('schedules the current Stripe subscription to cancel at period end', async () => {
     const agent = await createLoggedInAgent();
     await User.updateOne(
       { email: validUser.email },
@@ -283,24 +320,34 @@ describe('payment API integration', () => {
       customer: 'cus_cancel_123',
       status: 'active',
     });
-    mockStripe.subscriptions.cancel.mockResolvedValue({
+    mockStripe.subscriptions.update.mockResolvedValue({
       id: 'sub_cancel_123',
-      status: 'canceled',
+      customer: 'cus_cancel_123',
+      status: 'active',
+      cancel_at_period_end: true,
+      current_period_end: 1785974400,
     });
 
     const response = await agent.post('/api/payments/subscription/cancel').expect(200);
 
     expect(response.body).toMatchObject({
-      message: 'Subscription canceled',
+      message: 'Subscription will cancel at the end of the current billing period',
       stripeSubscriptionId: 'sub_cancel_123',
-      stripeSubscriptionStatus: 'canceled',
-      subscription: 'free',
+      stripeSubscriptionStatus: 'active',
+      cancelAtPeriodEnd: true,
+      currentPeriodEnd: 1785974400,
+      subscription: 'pro',
     });
-    expect(mockStripe.subscriptions.cancel).toHaveBeenCalledWith('sub_cancel_123');
+    expect(mockStripe.subscriptions.update).toHaveBeenCalledWith('sub_cancel_123', {
+      cancel_at_period_end: true,
+    });
 
     const savedUser = await User.findOne({ email: validUser.email });
-    expect(savedUser.subscription).toBe('free');
-    expect(savedUser.stripeSubscriptionId).toBeUndefined();
+    expect(savedUser.subscription).toBe('pro');
+    expect(savedUser.stripeSubscriptionId).toBe('sub_cancel_123');
+    expect(savedUser.stripeSubscriptionStatus).toBe('active');
+    expect(savedUser.stripeCancelAtPeriodEnd).toBe(true);
+    expect(savedUser.stripeCurrentPeriodEnd).toBe(1785974400);
   });
 
   test('downgrades locally when no active Stripe subscription exists', async () => {
@@ -325,6 +372,9 @@ describe('payment API integration', () => {
 
     const savedUser = await User.findOne({ email: validUser.email });
     expect(savedUser.subscription).toBe('free');
+    expect(savedUser.stripeSubscriptionStatus).toBeUndefined();
+    expect(savedUser.stripeCancelAtPeriodEnd).toBe(false);
+    expect(savedUser.stripeCurrentPeriodEnd).toBeUndefined();
   });
 
   test('syncs active subscription status from a signed Stripe webhook', async () => {
@@ -343,6 +393,15 @@ describe('payment API integration', () => {
           id: 'sub_webhook_123',
           customer: 'cus_webhook_123',
           status: 'active',
+          cancel_at_period_end: true,
+          items: {
+            data: [
+              {
+                id: 'si_webhook_123',
+                current_period_end: 1785974400,
+              },
+            ],
+          },
         },
       },
     });
@@ -364,6 +423,9 @@ describe('payment API integration', () => {
     const savedUser = await User.findOne({ email: 'webhookhero@riveriq.test' });
     expect(savedUser.subscription).toBe('pro');
     expect(savedUser.stripeSubscriptionId).toBe('sub_webhook_123');
+    expect(savedUser.stripeSubscriptionStatus).toBe('active');
+    expect(savedUser.stripeCancelAtPeriodEnd).toBe(true);
+    expect(savedUser.stripeCurrentPeriodEnd).toBe(1785974400);
   });
 
   test('downgrades subscription status from a Stripe deleted webhook', async () => {
@@ -398,6 +460,9 @@ describe('payment API integration', () => {
     const savedUser = await User.findOne({ email: 'deletedsubhero@riveriq.test' });
     expect(savedUser.subscription).toBe('free');
     expect(savedUser.stripeSubscriptionId).toBeUndefined();
+    expect(savedUser.stripeSubscriptionStatus).toBe('canceled');
+    expect(savedUser.stripeCancelAtPeriodEnd).toBe(false);
+    expect(savedUser.stripeCurrentPeriodEnd).toBeUndefined();
   });
 
   test('rejects Stripe webhooks with invalid signatures', async () => {
@@ -427,5 +492,112 @@ describe('payment API integration', () => {
 
     expect(response.body.message).toBe('Missing STRIPE_WEBHOOK_SECRET');
     expect(mockStripe.webhooks.constructEvent).not.toHaveBeenCalled();
+  });
+
+  test('keeps the full paid subscription lifecycle in sync', async () => {
+    const agent = await createLoggedInAgent({
+      username: 'lifecyclehero',
+      email: 'lifecyclehero@riveriq.test',
+    });
+
+    mockStripe.customers.create.mockResolvedValue({ id: 'cus_lifecycle_123' });
+    mockStripe.subscriptions.create.mockResolvedValue({
+      id: 'sub_lifecycle_123',
+      latest_invoice: {
+        confirmation_secret: {
+          client_secret: 'pi_lifecycle_secret',
+        },
+      },
+    });
+
+    const subscribeResponse = await agent
+      .post('/api/payments/subscribe')
+      .send({ fullName: 'Lifecycle Hero', billingInterval: 'yearly' })
+      .expect(200);
+
+    expect(subscribeResponse.body).toEqual({
+      subscriptionId: 'sub_lifecycle_123',
+      clientSecret: 'pi_lifecycle_secret',
+      billingInterval: 'yearly',
+    });
+    expect(mockStripe.subscriptions.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customer: 'cus_lifecycle_123',
+        items: [{ price: 'price_riveriq_pro_yearly_test' }],
+      }),
+    );
+
+    mockStripe.subscriptions.retrieve.mockResolvedValueOnce({
+      id: 'sub_lifecycle_123',
+      customer: 'cus_lifecycle_123',
+      status: 'active',
+    });
+
+    const confirmResponse = await agent
+      .post('/api/payments/subscription/confirm')
+      .send({ subscriptionId: 'sub_lifecycle_123' })
+      .expect(200);
+
+    expect(confirmResponse.body.subscription).toBe('pro');
+
+    mockStripe.billingPortal.sessions.create.mockResolvedValue({
+      url: 'https://billing.stripe.com/p/session/lifecycle',
+    });
+
+    const portalResponse = await agent.post('/api/payments/billing-portal').expect(200);
+    expect(portalResponse.body.url).toBe('https://billing.stripe.com/p/session/lifecycle');
+
+    mockStripe.subscriptions.retrieve.mockResolvedValueOnce({
+      id: 'sub_lifecycle_123',
+      customer: 'cus_lifecycle_123',
+      status: 'active',
+    });
+    mockStripe.subscriptions.update.mockResolvedValue({
+      id: 'sub_lifecycle_123',
+      customer: 'cus_lifecycle_123',
+      status: 'active',
+      cancel_at_period_end: true,
+      current_period_end: 1785974400,
+    });
+
+    const cancelResponse = await agent.post('/api/payments/subscription/cancel').expect(200);
+
+    expect(cancelResponse.body).toMatchObject({
+      subscription: 'pro',
+      cancelAtPeriodEnd: true,
+      currentPeriodEnd: 1785974400,
+    });
+
+    let savedUser = await User.findOne({ email: 'lifecyclehero@riveriq.test' });
+    expect(savedUser.subscription).toBe('pro');
+    expect(savedUser.stripeSubscriptionId).toBe('sub_lifecycle_123');
+    expect(savedUser.stripeSubscriptionStatus).toBe('active');
+    expect(savedUser.stripeCancelAtPeriodEnd).toBe(true);
+    expect(savedUser.stripeCurrentPeriodEnd).toBe(1785974400);
+
+    mockStripe.webhooks.constructEvent.mockReturnValue({
+      type: 'customer.subscription.deleted',
+      data: {
+        object: {
+          id: 'sub_lifecycle_123',
+          customer: 'cus_lifecycle_123',
+          status: 'canceled',
+        },
+      },
+    });
+
+    await request(app)
+      .post('/api/payments/webhook')
+      .set('stripe-signature', 'signed_lifecycle_payload')
+      .set('content-type', 'application/json')
+      .send(Buffer.from(JSON.stringify({ id: 'evt_lifecycle_deleted' })))
+      .expect(200);
+
+    savedUser = await User.findOne({ email: 'lifecyclehero@riveriq.test' });
+    expect(savedUser.subscription).toBe('free');
+    expect(savedUser.stripeSubscriptionId).toBeUndefined();
+    expect(savedUser.stripeSubscriptionStatus).toBe('canceled');
+    expect(savedUser.stripeCancelAtPeriodEnd).toBe(false);
+    expect(savedUser.stripeCurrentPeriodEnd).toBeUndefined();
   });
 });

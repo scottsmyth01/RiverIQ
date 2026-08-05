@@ -83,6 +83,12 @@ export function cancelSubscription() {
   });
 }
 
+export function createBillingPortalSession() {
+  return request('/api/payments/billing-portal', {
+    method: 'POST',
+  });
+}
+
 export function forgotPassword({ email }) {
   return request('/api/auth/forgot-password', {
     method: 'POST',

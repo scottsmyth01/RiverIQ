@@ -1,10 +1,12 @@
-import { describe, expect, test, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SettingsPage from '../SettingsPage';
 import { renderWithRouter } from '../../test/testUtils.jsx';
 
 const updateSettings = vi.fn();
+const cancelSubscription = vi.fn();
+const createBillingPortalSession = vi.fn();
 const mockUser = {
   username: 'hero',
   email: 'hero@riveriq.test',
@@ -26,14 +28,26 @@ vi.mock('../../hooks/useAuth', () => ({
     uploadAvatarLoading: false,
     deleteAvatar: vi.fn(),
     deleteAvatarLoading: false,
-    cancelSubscription: vi.fn(),
+    cancelSubscription,
     cancelSubscriptionLoading: false,
+    createBillingPortalSession,
+    billingPortalLoading: false,
     forgotPassword: vi.fn(),
     forgotPasswordLoading: false,
   }),
 }));
 
 describe('SettingsPage', () => {
+  beforeEach(() => {
+    mockUser.subscription = 'free';
+    mockUser.stripeCancelAtPeriodEnd = false;
+    mockUser.stripeCurrentPeriodEnd = undefined;
+    mockUser.stripeSubscriptionStatus = undefined;
+    updateSettings.mockReset();
+    cancelSubscription.mockReset();
+    createBillingPortalSession.mockReset();
+  });
+
   test('keeps save disabled until settings change, then saves preferences', async () => {
     updateSettings.mockResolvedValue({});
 
@@ -70,5 +84,37 @@ describe('SettingsPage', () => {
     await userEvent.click(screen.getByText(/manage your account and preferences/i));
 
     expect(screen.queryByRole('listbox', { name: /default date range/i })).not.toBeInTheDocument();
+  });
+
+  test('schedules Pro cancellation from the billing dropdown and shows the period-end notice', async () => {
+    mockUser.subscription = 'pro';
+    cancelSubscription.mockResolvedValue({ currentPeriodEnd: 1785974400 });
+
+    renderWithRouter(<SettingsPage />);
+
+    expect(screen.getByText('Pro')).toBeInTheDocument();
+    expect(screen.getByText('Manage Subscription')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /billing actions/i }));
+    await userEvent.click(screen.getByRole('menuitem', { name: /cancel subscription/i }));
+
+    const dialog = screen.getByRole('dialog', { name: /cancel your riveriq pro subscription/i });
+    expect(within(dialog).getByText(/keep pro access until the end of your current billing period/i)).toBeInTheDocument();
+
+    await userEvent.click(within(dialog).getByRole('button', { name: /cancel subscription/i }));
+
+    expect(cancelSubscription).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText(/subscription cancellation scheduled\. you will keep pro access until/i)).toBeInTheDocument();
+  });
+
+  test('shows scheduled cancellation details from the saved user subscription metadata', () => {
+    mockUser.subscription = 'pro';
+    mockUser.stripeCancelAtPeriodEnd = true;
+    mockUser.stripeCurrentPeriodEnd = 1785974400;
+
+    renderWithRouter(<SettingsPage />);
+
+    expect(screen.getByText(/cancellation scheduled\. pro access continues until/i)).toBeInTheDocument();
+    expect(screen.getByText('Cancels on')).toBeInTheDocument();
   });
 });

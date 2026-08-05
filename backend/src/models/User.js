@@ -41,6 +41,16 @@ const userSchema = new mongoose.Schema(
     stripeSubscriptionId: {
       type: String,
     },
+    stripeSubscriptionStatus: {
+      type: String,
+    },
+    stripeCancelAtPeriodEnd: {
+      type: Boolean,
+      default: false,
+    },
+    stripeCurrentPeriodEnd: {
+      type: Number,
+    },
     bankroll: {
       type: Number,
       default: 0,

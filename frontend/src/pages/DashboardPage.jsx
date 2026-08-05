@@ -94,7 +94,14 @@ const DashboardPage = () => {
   }, [periodsWithAvailability, selectedPeriod]);
 
   if (isAllSessionsLoading) {
-    return null;
+    return (
+      <section className='dashboard-content dashboard-home-page'>
+        <div className='dashboard-empty-state dashboard-loading-state' role='status' aria-live='polite'>
+          <span>Loading dashboard...</span>
+          <span className='dashboard-loading-spinner' aria-hidden='true' />
+        </div>
+      </section>
+    );
   }
 
   return (

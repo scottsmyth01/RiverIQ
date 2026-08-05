@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router';
 import Navbar from './components/Navbar/Navbar';
 import WebsiteFooter from './components/WebsiteFooter/WebsiteFooter';
@@ -45,9 +45,24 @@ function ScrollToTop() {
   return null;
 }
 
+function didReloadDashboardSubpage() {
+  if (typeof window === 'undefined') return false;
+
+  const navigationEntry = performance.getEntriesByType?.('navigation')?.[0];
+  const isReload = navigationEntry?.type === 'reload' || performance.navigation?.type === 1;
+
+  return (
+    isReload &&
+    window.location.pathname.startsWith('/dashboard/') &&
+    window.location.pathname !== '/dashboard' &&
+    window.location.pathname !== '/dashboard/settings'
+  );
+}
+
 function AppRoutes() {
   const { pathname } = useLocation();
   const { isAuthenticated, isEmailVerified, loading, loginLoading, googleLoginLoading, logoutLoading } = useAuth();
+  const [shouldRedirectDashboardReload, setShouldRedirectDashboardReload] = useState(didReloadDashboardSubpage);
 
   const isDashboardRoute = pathname.startsWith('/dashboard');
   const isSignedOutOnlyRoute =
@@ -76,8 +91,15 @@ function AppRoutes() {
   const isLoginLoading = loginLoading || googleLoginLoading;
   const isDashboardDataLoading = isDashboardRoute && isAuthenticated && isSessionsPending;
   const isRedirectingAfterAuth = redirectToDashboard || redirectToVerifyEmail;
+  const redirectReloadToDashboard =
+    shouldRedirectDashboardReload && isAuthenticated && isEmailVerified && pathname !== '/dashboard';
   const showGlobalLoading =
-    logoutLoading || isLoginLoading || isAuthRouteLoading || isDashboardDataLoading || isRedirectingAfterAuth;
+    logoutLoading ||
+    isLoginLoading ||
+    isAuthRouteLoading ||
+    isDashboardDataLoading ||
+    isRedirectingAfterAuth ||
+    redirectReloadToDashboard;
   const shouldRenderRouteContent = !logoutLoading && !isAuthRouteLoading && !isDashboardDataLoading;
   const showWebsiteChrome = !showGlobalLoading && !loading && !isAuthenticated && !isPaymentRoute;
 
@@ -86,9 +108,16 @@ function AppRoutes() {
     document.documentElement.dataset.theme = 'dark';
   }, [isAuthenticated, loading]);
 
+  useEffect(() => {
+    if (pathname === '/dashboard') {
+      setShouldRedirectDashboardReload(false);
+    }
+  }, [pathname]);
+
   return (
     <>
       <LoadingScreen visible={showGlobalLoading} />
+      {shouldRenderRouteContent && redirectReloadToDashboard && <Navigate to='/dashboard' replace />}
       {shouldRenderRouteContent && redirectToDashboard && <Navigate to='/dashboard' replace />}
       {shouldRenderRouteContent && redirectToVerifyEmail && <Navigate to='/verify-email' replace />}
       {shouldRenderRouteContent && !redirectToDashboard && !redirectToVerifyEmail && (

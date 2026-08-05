@@ -42,6 +42,16 @@ const tableSizeOptions = [
   { label: '9max', value: '9max' },
 ];
 
+function formatSubscriptionPeriodEnd(periodEnd) {
+  if (!periodEnd) return null;
+
+  return new Date(periodEnd * 1000).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 function getSettingsForm(user) {
   const preferences = user?.preferences || {};
 
@@ -64,6 +74,8 @@ const SettingsPage = () => {
     deleteAvatarLoading,
     cancelSubscription,
     cancelSubscriptionLoading,
+    createBillingPortalSession,
+    billingPortalLoading,
     forgotPassword,
     forgotPasswordLoading,
     updateSettingsLoading,
@@ -105,6 +117,8 @@ const SettingsPage = () => {
     tableSize !== (savedPreferences.defaultTableSize || '9max') ||
     currency !== (savedPreferences.currency || 'USD');
   const hasSettingsChanges = hasProfileChanges || hasPreferenceChanges;
+  const subscriptionPeriodEnd = isPro ? formatSubscriptionPeriodEnd(user?.stripeCurrentPeriodEnd) : null;
+  const scheduledCancellationDate = isPro && user?.stripeCancelAtPeriodEnd ? subscriptionPeriodEnd : null;
 
   function updateSettingsField(field, value) {
     setSettingsForm((currentForm) => ({
@@ -250,15 +264,41 @@ const SettingsPage = () => {
     setSubscriptionNotice('');
 
     try {
-      await cancelSubscription();
-      setSubscriptionNotice('Subscription canceled. Your account is now on the Free plan.');
+      const data = await cancelSubscription();
+      const periodEnd = formatSubscriptionPeriodEnd(data.currentPeriodEnd);
+
+      setSubscriptionNotice(
+        periodEnd
+          ? `Subscription cancellation scheduled. You will keep Pro access until ${periodEnd}.`
+          : 'Subscription cancellation scheduled. You will keep Pro access until the end of your billing period.',
+      );
       setShowCancelSubscriptionModal(false);
     } catch (error) {
       setSubscriptionNotice(error.message || 'Could not cancel subscription.');
     }
   }
 
+  async function openBillingPortal() {
+    setOpenMenu(null);
+    setMenuPosition(null);
+    setSubscriptionNotice('');
+
+    try {
+      const data = await createBillingPortalSession();
+
+      if (!data.url) {
+        throw new Error('Stripe did not return a billing portal link.');
+      }
+
+      window.location.assign(data.url);
+    } catch (error) {
+      setSubscriptionNotice(error.message || 'Could not open billing portal.');
+    }
+  }
+
   function openCancelSubscriptionModal() {
+    setOpenMenu(null);
+    setMenuPosition(null);
     setSubscriptionNotice('');
     setShowCancelSubscriptionModal(true);
   }
@@ -689,24 +729,35 @@ const SettingsPage = () => {
             <div className='settings-row__copy'>
               <h3>Current Subscription</h3>
               <p>
-                {isPro ? 'You have access to all RiverIQ Pro features.' : 'Upgrade to unlock every RiverIQ feature.'}
+                {scheduledCancellationDate
+                  ? `Cancellation scheduled. Pro access continues until ${scheduledCancellationDate}.`
+                  : isPro
+                    ? 'You have access to all RiverIQ Pro features.'
+                    : 'Upgrade to unlock every RiverIQ feature.'}
               </p>
             </div>
 
-            <div className='subscription-panel'>
+            <div className={`subscription-panel subscription-panel--${isPro ? 'pro' : 'free'}`}>
               <span className={`subscription-badge${isPro ? ' subscription-badge--pro' : ''}`}>
                 {isPro ? 'Pro' : 'Free'}
               </span>
 
               {isPro ? (
-                <button
-                  className='subscription-action subscription-action--secondary'
-                  type='button'
-                  disabled={cancelSubscriptionLoading}
-                  onClick={openCancelSubscriptionModal}
-                >
-                  {cancelSubscriptionLoading ? 'Canceling...' : 'Cancel Subscription'}
-                </button>
+                <div className='subscription-actions'>
+                  <button
+                    className='subscription-action subscription-menu-trigger'
+                    type='button'
+                    aria-haspopup='menu'
+                    aria-expanded={openMenu === 'billing'}
+                    disabled={billingPortalLoading || cancelSubscriptionLoading}
+                    data-settings-menu='billing'
+                    aria-label='Billing actions'
+                    onClick={(event) => toggleSettingsMenu('billing', event)}
+                  >
+                    <span>Manage Subscription</span>
+                    <ChevronDown aria-hidden='true' />
+                  </button>
+                </div>
               ) : (
                 <Link className='subscription-action subscription-action--primary' to='/subscription/payment'>
                   Go Pro Now
@@ -714,7 +765,43 @@ const SettingsPage = () => {
               )}
             </div>
           </div>
+          {isPro && subscriptionPeriodEnd && (
+            <div className='subscription-status-row'>
+              <span>{scheduledCancellationDate ? 'Cancels on' : 'Renews on'}</span>
+              <strong>{subscriptionPeriodEnd}</strong>
+            </div>
+          )}
           {subscriptionNotice && <p className='settings-inline-note'>{subscriptionNotice}</p>}
+          {openMenu === 'billing' &&
+            menuPosition &&
+            typeof document !== 'undefined' &&
+            createPortal(
+              <div
+                className='settings-menu settings-menu--portal subscription-menu'
+                role='menu'
+                aria-label='Billing actions'
+                data-settings-menu='billing'
+                style={{
+                  top: `${menuPosition.top}px`,
+                  left: `${Math.max(12, menuPosition.left + menuPosition.width - 240)}px`,
+                  width: '240px',
+                }}
+              >
+                <button type='button' role='menuitem' disabled={billingPortalLoading} onClick={openBillingPortal}>
+                  Manage Billing
+                </button>
+                <button
+                  className='subscription-menu__danger'
+                  type='button'
+                  role='menuitem'
+                  disabled={cancelSubscriptionLoading}
+                  onClick={openCancelSubscriptionModal}
+                >
+                  Cancel Subscription
+                </button>
+              </div>,
+              document.body,
+            )}
         </section>
 
         <section className='settings-card settings-card--account'>
@@ -780,7 +867,7 @@ const SettingsPage = () => {
             </div>
             <div>
               <h2 id='cancel-subscription-title'>Cancel your RiverIQ Pro subscription?</h2>
-              <p>You will lose access to Pro features and your account will move to the Free plan.</p>
+              <p>You will keep Pro access until the end of your current billing period.</p>
             </div>
             <div className='settings-confirm-modal__actions'>
               <button type='button' onClick={closeCancelSubscriptionModal} disabled={cancelSubscriptionLoading}>

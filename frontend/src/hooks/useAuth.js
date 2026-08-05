@@ -11,6 +11,7 @@ import {
   resetPassword,
   verifyEmail,
   cancelSubscription,
+  createBillingPortalSession,
 } from '../api/authApi.js';
 import {
   updateSettings,
@@ -118,6 +119,11 @@ export function useAuth() {
     },
   });
 
+  const billingPortalMutation = useMutation({
+    mutationKey: ['auth', 'billing-portal'],
+    mutationFn: createBillingPortalSession,
+  });
+
   const uploadAvatarMutation = useMutation({
     mutationKey: ['auth', 'avatar'],
     mutationFn: uploadAvatar,
@@ -175,6 +181,7 @@ export function useAuth() {
     uploadAvatar: uploadAvatarMutation.mutateAsync,
     deleteAvatar: deleteAvatarMutation.mutateAsync,
     cancelSubscription: cancelSubscriptionMutation.mutateAsync,
+    createBillingPortalSession: billingPortalMutation.mutateAsync,
     forgotPassword: forgotPasswordMutation.mutateAsync,
     resetPassword: (id, token, formData) => resetPasswordMutation.mutateAsync({ id, token, formData }),
     verifyEmail: verifyEmailMutation.mutateAsync,
@@ -188,6 +195,7 @@ export function useAuth() {
     uploadAvatarLoading: uploadAvatarMutation.isPending,
     deleteAvatarLoading: deleteAvatarMutation.isPending,
     cancelSubscriptionLoading: cancelSubscriptionMutation.isPending,
+    billingPortalLoading: billingPortalMutation.isPending,
     forgotPasswordLoading: forgotPasswordMutation.isPending,
   };
 }
