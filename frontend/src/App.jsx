@@ -79,7 +79,7 @@ function AppRoutes() {
   const showGlobalLoading =
     logoutLoading || isLoginLoading || isAuthRouteLoading || isDashboardDataLoading || isRedirectingAfterAuth;
   const shouldRenderRouteContent = !logoutLoading && !isAuthRouteLoading && !isDashboardDataLoading;
-  const showWebsiteChrome = !loading && !isAuthenticated && !isPaymentRoute;
+  const showWebsiteChrome = !showGlobalLoading && !loading && !isAuthenticated && !isPaymentRoute;
 
   useEffect(() => {
     if (loading || isAuthenticated) return;
