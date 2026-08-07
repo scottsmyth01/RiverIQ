@@ -1,0 +1,385 @@
+.support-inbox-page {
+  gap: 0;
+  color: var(--text-soft);
+}
+
+.support-inbox-header {
+  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.support-inbox-header h1 {
+  margin: 0 0 6px;
+  color: var(--text-softest);
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  line-height: 1.05;
+}
+
+.support-inbox-header p {
+  margin: 0;
+  color: var(--text-dashboard-muted);
+}
+
+.support-inbox-tabs {
+  min-height: 42px;
+  padding: 4px;
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(96px, 1fr));
+  gap: 4px;
+  background: var(--surface-input-deep);
+  border: 1px solid var(--theme-border-card);
+  border-radius: 12px;
+}
+
+.support-inbox-tab {
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-nav);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.support-inbox-tab--active {
+  background: linear-gradient(180deg, var(--success-bright), var(--success-accent));
+  color: var(--text-on-primary);
+}
+
+.support-inbox-layout {
+  min-height: min(720px, calc(100dvh - 180px));
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--gradient-dashboard-top) 92%, var(--surface-black)), var(--bg-main));
+  border: 1px solid color-mix(in srgb, var(--accent-green-border) 64%, var(--theme-border-card));
+  border-radius: 16px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.26);
+}
+
+.support-inbox-list {
+  min-width: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--theme-border-card);
+}
+
+.support-inbox-empty {
+  padding: 18px;
+  color: var(--text-dashboard-muted);
+  font-weight: 700;
+}
+
+.support-inbox-list-item {
+  width: 100%;
+  min-height: 92px;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+  border: 0;
+  border-bottom: 1px solid var(--theme-border-card);
+  background: transparent;
+  color: var(--text-nav);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.support-inbox-list-item:hover,
+.support-inbox-list-item--active {
+  background: var(--overlay-success-weak);
+}
+
+.support-inbox-list-item__topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.support-inbox-list-item strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-softest);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.support-inbox-list-item small,
+.support-inbox-list-item > span:last-child {
+  color: var(--text-dashboard-muted);
+}
+
+.support-inbox-list-item > span:last-child {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-height: 1.35;
+}
+
+.support-inbox-thread {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+.support-inbox-thread--empty {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.support-inbox-thread-header {
+  min-height: 78px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid var(--theme-border-card);
+}
+
+.support-inbox-thread-header h2 {
+  margin: 0 0 6px;
+  color: var(--text-softest);
+  font-size: 1.1rem;
+}
+
+.support-inbox-thread-header a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text-dashboard-muted);
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.support-inbox-thread-header svg {
+  width: 16px;
+  height: 16px;
+}
+
+.support-inbox-thread-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.support-inbox-thread-actions button,
+.support-inbox-reply button {
+  min-height: 38px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--accent-green-border-strong);
+  border-radius: 10px;
+  background: var(--surface-control-deep);
+  color: var(--text-soft);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.support-inbox-reply button {
+  background: linear-gradient(180deg, var(--success-bright), var(--success-accent));
+  color: var(--text-on-primary);
+}
+
+.support-inbox-thread-actions .support-inbox-delete-button {
+  border-color: var(--danger-border-strong);
+  background: var(--overlay-danger);
+  color: var(--danger-soft-text);
+}
+
+.support-inbox-thread-actions .support-inbox-delete-button:hover:not(:disabled) {
+  background: linear-gradient(180deg, var(--surface-danger), var(--surface-danger-deep));
+  color: var(--text-white);
+}
+
+.support-inbox-thread-actions button:disabled,
+.support-inbox-reply button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.support-inbox-status {
+  min-height: 32px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
+  color: var(--text-nav);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.support-inbox-status--open {
+  background: var(--overlay-success);
+  color: var(--success-bright);
+}
+
+.support-inbox-status--resolved {
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--text-dashboard-muted);
+}
+
+.support-inbox-meta {
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: 1px solid var(--theme-border-card);
+  color: var(--text-dashboard-muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.support-inbox-messages {
+  min-height: 0;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.support-inbox-message {
+  max-width: min(680px, 88%);
+  display: grid;
+  gap: 6px;
+}
+
+.support-inbox-message div {
+  padding: 11px 13px;
+  border-radius: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.support-inbox-message time {
+  color: var(--text-dashboard-muted);
+  font-size: 0.75rem;
+}
+
+.support-inbox-message--user {
+  align-self: flex-start;
+}
+
+.support-inbox-message--user div {
+  background: var(--surface-field);
+  border: 1px solid var(--theme-border-card);
+  border-bottom-left-radius: 5px;
+}
+
+.support-inbox-message--support {
+  align-self: flex-end;
+}
+
+.support-inbox-message--support div {
+  background: linear-gradient(180deg, var(--success-bright), var(--success-accent));
+  border: 1px solid var(--success-bright);
+  border-bottom-right-radius: 5px;
+  color: var(--text-on-primary);
+  font-weight: 800;
+}
+
+.support-inbox-message--support time {
+  text-align: right;
+}
+
+.support-inbox-reply {
+  padding: 14px 16px;
+  display: grid;
+  gap: 10px;
+  border-top: 1px solid var(--theme-border-card);
+}
+
+.support-inbox-reply label {
+  color: var(--text-softest);
+  font-weight: 800;
+}
+
+.support-inbox-reply textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 92px;
+  padding: 12px;
+  border: 1px solid var(--theme-border-card);
+  border-radius: 12px;
+  background: var(--surface-input-deep);
+  color: var(--text-input);
+  font: inherit;
+}
+
+.support-inbox-reply textarea:focus {
+  outline: none;
+  border-color: var(--accent-green-border-strong);
+  box-shadow: 0 0 0 3px var(--accent-green-glow);
+}
+
+.support-inbox-reply button {
+  justify-self: end;
+}
+
+.support-inbox-reply button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.support-inbox-thread-empty {
+  min-height: 100%;
+  padding: 48px 24px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  color: var(--text-dashboard-muted);
+  text-align: center;
+}
+
+.support-inbox-thread-empty svg {
+  width: 42px;
+  height: 42px;
+  color: var(--success-bright);
+}
+
+.support-inbox-thread-empty strong {
+  color: var(--text-softest);
+}
+
+@media (max-width: 980px) {
+  .support-inbox-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .support-inbox-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .support-inbox-list {
+    max-height: 260px;
+    border-right: 0;
+    border-bottom: 1px solid var(--theme-border-card);
+  }
+}
+
+@media (max-width: 620px) {
+  .support-inbox-thread-header,
+  .support-inbox-thread-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .support-inbox-thread-actions button,
+  .support-inbox-status,
+  .support-inbox-reply button {
+    width: 100%;
+  }
+}

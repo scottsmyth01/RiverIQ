@@ -13,12 +13,12 @@
 
 .dashboard-content.dashboard-home-page {
   gap: 12px;
-  padding: 12px;
+  padding-top: calc(clamp(10px, 1.5vh, 18px) - 3px);
 }
 
 .dashboard-page-header {
   flex: 0 0 auto;
-  padding: 2px 2px 0;
+  padding: 0;
 }
 
 .dashboard-page-header__top {
@@ -104,16 +104,34 @@
 }
 
 .dashboard-loading-state {
+  min-height: 420px;
+  border-top: 0;
   font-weight: var(--font-weight-medium);
 }
 
 .dashboard-loading-spinner {
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--border-light);
-  border-top-color: var(--color-primary);
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border: 3px solid color-mix(in srgb, var(--success-bright) 18%, var(--theme-border-card));
+  border-top-color: var(--success-bright);
   border-radius: 50%;
-  animation: dashboard-loading-spin 0.75s linear infinite;
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--success-bright) 6%, transparent),
+    0 0 26px color-mix(in srgb, var(--success-bright) 22%, transparent);
+  animation: dashboard-loading-spin 0.78s linear infinite;
+}
+
+.dashboard-loading-spinner::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 7px;
+  height: 7px;
+  background: var(--success-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 14px var(--success-bright);
 }
 
 @keyframes dashboard-loading-spin {
@@ -421,10 +439,6 @@
 }
 
 @media (max-width: 760px) {
-  .dashboard-content.dashboard-home-page {
-    padding: 10px;
-  }
-
   .dashboard-page-header__top {
     flex-direction: column;
   }

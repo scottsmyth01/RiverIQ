@@ -449,7 +449,6 @@ This line keeps the hand block detectable but not parseable.
     const uploadResponse = await agent
       .post('/api/sessions/add-session')
       .field('pokerSite', 'coinpoker')
-      .field('currency', 'CAD')
       .field('sessionName', 'API Integration CoinPoker')
       .attach('handHistory', 'src/utils/parsers/fixtures/coinpoker/coinpoker_single_hand.txt')
       .expect(201);
@@ -458,8 +457,8 @@ This line keeps the hand block detectable but not parseable.
     expect(session.sessionName).toBe('API Integration CoinPoker');
     expect(session.pokerSite).toBe('coinpoker');
     expect(session.gameType).toBe('NL Holdem');
-    expect(session.stakes).toBe('C$0.10/C$0.25 (C$0.04)');
-    expect(session.currency).toBe('CAD');
+    expect(session.stakes).toBe('₮0.10/₮0.25 (₮0.04)');
+    expect(session.currency).toBe('USDT');
     expect(session.tableSize).toBe(6);
     expect(session.stats.handsPlayed).toBe(1);
     expect(session.stats.profit).toBe(-29.06);

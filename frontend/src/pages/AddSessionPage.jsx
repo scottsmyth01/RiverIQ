@@ -4,12 +4,15 @@ import { Link, Navigate, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useAddSession, useSessions } from '../hooks/useSessions';
 import { useAuth } from '../hooks/useAuth';
-import { getPreferredCurrency } from '../utils/currency';
+import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
+import { openSupportChat } from '../utils/supportChat';
 import './AddSessionPage.css';
 
 const FREE_SESSION_LIMIT = 20;
 const HAND_HISTORY_FILE_EXTENSION = '.txt';
 const PARSE_SAFETY_ERROR_PATTERN = /could not safely parse/i;
+const UPLOAD_LOADING_DURATION_MS = 6000;
+const uploadLoadingSteps = ['Uploading file', 'Analyzing/parsing data', 'Deriving statistics', 'Posting session'];
 
 const pokerSites = [
   { label: 'PokerStars', value: 'pokerstars' },
@@ -18,14 +21,6 @@ const pokerSites = [
   { label: 'FanDuel', value: 'fanduel' },
   { label: '888poker', value: '888poker' },
   { label: 'partypoker', value: 'partypoker' },
-];
-
-const sessionCurrencies = [
-  { label: 'USD', value: 'USD' },
-  { label: 'CAD', value: 'CAD' },
-  { label: 'GBP', value: 'GBP' },
-  { label: 'Yen', value: 'JPY' },
-  { label: 'Yuan', value: 'CNY' },
 ];
 
 function showUploadErrorToast(error) {
@@ -44,15 +39,77 @@ function showUploadErrorToast(error) {
   toast.error(message);
 }
 
+function isParseError(error) {
+  const message = error?.message || '';
+
+  return error?.code === 'HAND_HISTORY_PARSE_FAILED' || PARSE_SAFETY_ERROR_PATTERN.test(message);
+}
+
+function wait(milliseconds) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, milliseconds);
+  });
+}
+
+function UploadLoadingScreen({ visible }) {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (!visible) {
+      setProgress(0);
+      return undefined;
+    }
+
+    const startedAt = Date.now();
+    const intervalId = window.setInterval(() => {
+      const elapsed = Date.now() - startedAt;
+      setProgress(Math.min(100, Math.round((elapsed / UPLOAD_LOADING_DURATION_MS) * 100)));
+    }, 60);
+
+    return () => window.clearInterval(intervalId);
+  }, [visible]);
+
+  const activeStepIndex = Math.min(
+    uploadLoadingSteps.length - 1,
+    Math.floor((progress / 100) * uploadLoadingSteps.length),
+  );
+
+  return (
+    <LoadingScreen visible={visible} label='Uploading hand history'>
+      <div className='upload-loading-panel'>
+        <div className='upload-loading-steps'>
+          {uploadLoadingSteps.map((step, index) => (
+            <span
+              className={[
+                'upload-loading-step',
+                index < activeStepIndex ? 'upload-loading-step--complete' : '',
+                index === activeStepIndex ? 'upload-loading-step--active' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              key={step}
+            >
+              {step}
+            </span>
+          ))}
+        </div>
+        <div className='upload-loading-progress' aria-hidden='true'>
+          <span style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+    </LoadingScreen>
+  );
+}
+
 const AddSessionPage = () => {
   const [selectedPokerSite, setSelectedPokerSite] = useState('pokerstars');
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [sessionDetails, setSessionDetails] = useState({
     sessionName: '',
     notes: '',
     tags: '',
   });
   const [handHistoryFiles, setHandHistoryFiles] = useState([]);
+  const [isUploadLoadingVisible, setIsUploadLoadingVisible] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -60,9 +117,22 @@ const AddSessionPage = () => {
   const { mutateAsync: addSession, isPending } = useAddSession();
   const hasReachedFreeSessionLimit = user?.subscription !== 'pro' && sessions.length >= FREE_SESSION_LIMIT;
 
-  useEffect(() => {
-    setSelectedCurrency(getPreferredCurrency(user));
-  }, [user]);
+  function openUploadSupport(error) {
+    openSupportChat({
+      topic: 'session-upload',
+      message: error
+        ? `A ${selectedPokerSite} hand history file failed to parse.`
+        : `I need help uploading a ${selectedPokerSite} hand history file.`,
+      sendOnOpen: Boolean(error),
+      metadata: {
+        pokerSite: selectedPokerSite,
+        selectedFileCount: handHistoryFiles.length,
+        selectedFileTypes: handHistoryFiles.map((file) => file.name.split('.').pop()?.toLowerCase()).join(', '),
+        errorCode: error?.code || '',
+        errorMessage: error?.message || '',
+      },
+    });
+  }
 
   function handleDetailsChange(event) {
     const { name, value } = event.target;
@@ -137,7 +207,6 @@ const AddSessionPage = () => {
 
     const formData = new FormData();
     formData.set('pokerSite', selectedPokerSite);
-    formData.set('currency', selectedCurrency);
     formData.set('sessionName', sessionDetails.sessionName.trim());
     formData.set('notes', sessionDetails.notes.trim());
     formData.set('tags', sessionDetails.tags.trim());
@@ -145,13 +214,41 @@ const AddSessionPage = () => {
       formData.append('handHistory', file);
     });
 
+    setIsUploadLoadingVisible(true);
+    const uploadStartedAt = Date.now();
+
     try {
       const result = await addSession(formData);
+      const elapsed = Date.now() - uploadStartedAt;
+
+      if (elapsed < UPLOAD_LOADING_DURATION_MS) {
+        await wait(UPLOAD_LOADING_DURATION_MS - elapsed);
+      }
+
       const createdSessions = Number(result.createdSessions) || 1;
       toast.success(createdSessions > 1 ? `${createdSessions} sessions uploaded` : 'Session uploaded');
       navigate('/dashboard/sessions');
     } catch (error) {
+      const elapsed = Date.now() - uploadStartedAt;
+
+      if (elapsed < UPLOAD_LOADING_DURATION_MS) {
+        await wait(UPLOAD_LOADING_DURATION_MS - elapsed);
+      }
+
       showUploadErrorToast(error);
+
+      if (isParseError(error)) {
+        toast('Want to send this to support?', {
+          description: 'Open RiverIQ support and we will tell you what to include.',
+          action: {
+            label: 'Report issue',
+            onClick: () => openUploadSupport(error),
+          },
+          duration: 12000,
+        });
+      }
+    } finally {
+      setIsUploadLoadingVisible(false);
     }
   }
 
@@ -161,6 +258,7 @@ const AddSessionPage = () => {
 
   return (
     <section className='add-session-page'>
+      <UploadLoadingScreen visible={isUploadLoadingVisible} />
       <div className='add-session-toolbar'>
         <nav className='add-session-breadcrumbs' aria-label='Breadcrumb'>
           <Link to='/dashboard/sessions'>Sessions</Link>
@@ -179,11 +277,22 @@ const AddSessionPage = () => {
           <h1>Add New Session</h1>
           <p>Upload one or more hand history files. RiverIQ will create each detected session.</p>
         </div>
-        <Link className='add-session-help-link' to='/dashboard/help#hand-history-uploads'>
-          <CircleHelp aria-hidden='true' />
-          Need help?
-        </Link>
+        <div className='add-session-heading-actions'>
+          <button
+            className='add-session-help-link'
+            type='button'
+            onClick={() => openUploadSupport()}
+          >
+            <CircleHelp aria-hidden='true' />
+            Need help?
+          </button>
+        </div>
       </header>
+
+      <div className='add-session-beta-notice' role='note'>
+        RiverIQ Beta: hand-history parsing is actively improving. If a file fails, you can send an anonymized report so
+        we can add support.
+      </div>
 
       <div className='add-session-layout'>
         <form className='add-session-primary' onSubmit={handleSubmit}>
@@ -204,30 +313,6 @@ const AddSessionPage = () => {
                     onChange={() => setSelectedPokerSite(site.value)}
                   />
                   <span>{site.label}</span>
-                </label>
-              ))}
-            </div>
-          </section>
-          <section className='add-session-card session-currency-card' aria-labelledby='session-currency-heading'>
-            <div>
-              <h2 id='session-currency-heading'>Session Currency</h2>
-              <p>Choose the currency used in this hand history file.</p>
-            </div>
-            <div className='session-currency-list' role='radiogroup' aria-labelledby='session-currency-heading'>
-              {sessionCurrencies.map((currency) => (
-                <label
-                  className={`session-currency-option${selectedCurrency === currency.value ? ' session-currency-option--active' : ''}`}
-                  key={currency.value}
-                >
-                  <input
-                    type='radio'
-                    name='currency'
-                    value={currency.value}
-                    checked={selectedCurrency === currency.value}
-                    disabled={isPending}
-                    onChange={() => setSelectedCurrency(currency.value)}
-                  />
-                  <span>{currency.label}</span>
                 </label>
               ))}
             </div>

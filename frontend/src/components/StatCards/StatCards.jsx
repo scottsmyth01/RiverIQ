@@ -2,6 +2,7 @@ import Card from '../Card/Card';
 import { getStatCards } from './StatCardsData';
 import { useAuth } from '../../hooks/useAuth';
 import { getPreferredCurrency } from '../../utils/currency';
+import { useMemo } from 'react';
 import './StatCards.css';
 
 // PROPS
@@ -14,7 +15,7 @@ const StatCards = ({ sessions = [], periods = [], selectedPeriod = 'all-time', s
   const { user } = useAuth();
   const currency = getPreferredCurrency(user);
   // This function will return the data needed to populate the cards
-  const cards = getStatCards(sessions, currency);
+  const cards = useMemo(() => getStatCards(sessions, currency), [sessions, currency]);
 
   return (
     <section className='stat-cards'>

@@ -15,6 +15,7 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { useDeleteSession } from '../../hooks/useSessions';
 import { getPeriodFromDefaultTimeFilter } from '../../utils/dateRangePreferences';
+import { getCurrencySymbol } from '../../utils/currency';
 import pokerStarsLogo from '../../assets/pokerstars-logo.svg';
 import ggPokerMark from '../../assets/gg-poker-mark.svg';
 import coinPokerLogo from '../../assets/coinpoker-logo.svg';
@@ -75,6 +76,26 @@ function getPokerSiteDetail(session) {
 function formatSessionTableSize(session) {
   const sessionTableSize = getSessionTableSize(session);
   return sessionTableSize === '2-Max' ? 'Heads Up' : sessionTableSize || 'N/A';
+}
+
+function formatNativeStakes(session) {
+  if (!session.stakes) return 'N/A';
+
+  const siteKey = String(session.pokerSite || session.site || '').toLowerCase();
+  const isCoinPoker = siteKey.includes('coinpoker') || siteKey.includes('coin poker');
+  const rawCurrency = String(session.currency || '').trim().toUpperCase();
+  const currency = isCoinPoker && (!rawCurrency || rawCurrency === 'USD' || rawCurrency === '$') ? 'USDT' : rawCurrency;
+  const symbol = getCurrencySymbol(currency);
+
+  if (!symbol) return session.stakes;
+
+  const amounts = String(session.stakes).match(/\d+(?:\.\d+)?/g);
+  if (!amounts || amounts.length < 2) return session.stakes;
+
+  const [smallBlind, bigBlind, ante] = amounts;
+  const formattedStakes = `${symbol}${smallBlind}/${symbol}${bigBlind}`;
+
+  return ante ? `${formattedStakes} (${symbol}${ante})` : formattedStakes;
 }
 
 const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
@@ -279,7 +300,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
                       <span className='sessions-game-name'>{session.game}</span>
                     </div>
                   </td>
-                  <td data-label='Stakes'>{session.stakes}</td>
+                  <td data-label='Stakes'>{formatNativeStakes(session)}</td>
                   <td data-label='Table Size'>{sessionTableSize}</td>
                   <td
                     data-label='Profit'

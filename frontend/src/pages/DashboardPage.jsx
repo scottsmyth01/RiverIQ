@@ -3,7 +3,7 @@ import { filterSessions } from '../utils/filterSessions';
 import { getPeriodFromDefaultTimeFilter } from '../utils/dateRangePreferences';
 import { NewUserPage } from './NewUserPage';
 import { useAuth } from '../hooks/useAuth';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { useSessions } from '../hooks/useSessions';
 import ProfitChart from '../components/ProfitChart/ProfitChart';
 import SessionsTable from '../components/SessionsTable/SessionsTable';
@@ -49,7 +49,17 @@ const DashboardPage = () => {
   const { data: allSessions = [], isLoading: isAllSessionsLoading } = useSessions();
   const defaultPeriod = getPeriodFromDefaultTimeFilter(user?.preferences?.defaultTimeFilter);
   const [selectedPeriod, setSelectedPeriod] = useState(defaultPeriod);
+  const [, startPeriodTransition] = useTransition();
   const username = user?.username || user?.name;
+
+  const handleSelectedPeriodChange = useCallback(
+    (period) => {
+      startPeriodTransition(() => {
+        setSelectedPeriod(period);
+      });
+    },
+    [startPeriodTransition],
+  );
 
   useEffect(() => {
     setSelectedPeriod(defaultPeriod);
@@ -104,8 +114,8 @@ const DashboardPage = () => {
     return (
       <section className='dashboard-content dashboard-home-page'>
         <div className='dashboard-empty-state dashboard-loading-state' role='status' aria-live='polite'>
-          <span>Loading dashboard...</span>
           <span className='dashboard-loading-spinner' aria-hidden='true' />
+          <span>Loading dashboard...</span>
         </div>
       </section>
     );
@@ -139,13 +149,13 @@ const DashboardPage = () => {
         sessions={sessions}
         periods={periodsWithAvailability}
         selectedPeriod={selectedPeriod}
-        setSelectedPeriod={setSelectedPeriod}
+        setSelectedPeriod={handleSelectedPeriodChange}
       />
       <ProfitChart
         sessions={sessions}
         periods={periodsWithAvailability}
         selectedPeriod={selectedPeriod}
-        setSelectedPeriod={setSelectedPeriod}
+        setSelectedPeriod={handleSelectedPeriodChange}
       />
       <SessionsTable sessions={sessions} sessionsPerPage={5} variant='home-page' />
     </section>

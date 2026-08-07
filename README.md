@@ -1,198 +1,166 @@
 # RiverIQ
 
-RiverIQ is a poker analytics platform that allows players to upload hand history files, automatically parse their sessions, calculate advanced statistics, and visualize their performance through interactive dashboards and reports. RiverIQ is fully responsive and optimized for desktop, tablet, and mobile screens/viewports.
+RiverIQ is a poker analytics platform for uploading hand-history files, parsing sessions automatically, and turning raw poker data into dashboards, reports, goals, and preflop hand-chart insights.
 
-## Tech Stack
+## Screenshots
 
-| Area     | Tools                                                                     |
-| -------- | ------------------------------------------------------------------------- |
-| Frontend | React, Vite, React Router, TanStack Query, React Hook Form, Chart.js, CSS |
-| Backend  | Node.js, Express.js, MongoDB, Mongoose                                    |
+### Performance Dashboard
 
-## Authentication
+![RiverIQ performance graph](./frontend/public/dashboard.png)
 
-| Tool     | Purpose                                        |
-| -------- | ---------------------------------------------- |
-| JWT      | Stores signed auth tokens for logged-in users. |
-| BcryptJS | Hashes and verifies user passwords.            |
+### Mobile Experience
 
-## Cloud Services
-
-| Service       | Purpose                                                    |
-| ------------- | ---------------------------------------------------------- |
-| Cloudflare R2 | Stores uploaded hand history files and user avatar images. |
-
-## Payments
-
-| Service | Purpose                                              |
-| ------- | ---------------------------------------------------- |
-| Stripe  | Handles subscription billing and payment processing. |
-
-## Dashboard Page
-
-Provides a high-level overview of the user’s poker performance with key statistics, profit trends, recent sessions, and quick insights into overall results.
-
-![Dashboard](./docs/dashboard-demo.png)
-
-## Sessions Page
-
-Displays all uploaded poker sessions in a searchable and sortable table. Users can review session details, monitor results over time, and manage their uploaded sessions.
-
-![Dashboard](./docs/sessions-demo.png)
-
-## Analytics Page
-
-Presents advanced poker statistics calculated from parsed hand histories, including VPIP, PFR, 3-Bet, C-Bet, BB/100, positional analysis, and performance trends to help identify strengths and weaknesses.
-
-![Dashboard](./docs/analytics-demo.png)
-
-## Reports Page
-
-Allows users to build custom reports by filtering sessions based on date ranges, poker site, stakes, and game type, providing deeper analysis of long-term performance.
-
-![Dashboard](./docs/reports-demo.png)
-
-## Goals Page
-
-Enables users to create and track poker improvement goals, monitor progress, and measure achievements over time.
-
-![Dashboard](./docs/goals-demo.png)
-
-## Hand Charts Page
-
-Provides recommended preflop hand ranges by position and compares them against the user’s actual hands played to highlight deviations and opportunities for improvement.
-
-![Dashboard](./docs/handcharts-demo.png)
-
-## Folder Structure
-
-### Backend
-
-| Path                                  | Purpose                                                                                   |
-| ------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `backend/.env`                        | Local backend environment variables and secrets. This file should not be committed.       |
-| `backend/src/app.js`                  | Creates the Express app, configures global middleware, and mounts API route files.        |
-| `backend/src/server.js`               | Loads environment config, connects to MongoDB, and starts the backend server.             |
-| `backend/src/config/`                 | Configuration helpers for environment variables, MongoDB, and Stripe.                     |
-| `backend/src/controllers/`            | Route handler logic for auth, sessions, payments, goals, and saved reports.               |
-| `backend/src/data/`                   | Static backend data and email templates, including welcome and password reset emails.     |
-| `backend/src/middleware/`             | Express middleware for auth protection, errors, file uploads, and Cloudflare R2 uploads.  |
-| `backend/src/models/`                 | Mongoose models for MongoDB documents such as users, sessions, goals, and saved reports.  |
-| `backend/src/routes/`                 | API endpoint definitions grouped by feature area.                                         |
-| `backend/src/scripts/`                | Utility scripts for maintenance and backfills.                                            |
-| `backend/src/utils/`                  | Shared backend utilities, including JWT creation and parser logic.                        |
-| `backend/src/utils/parsers/`          | Hand-history parser system, split by poker site with shared helpers and stat calculators. |
-| `backend/src/utils/parsers/fixtures/` | Parser fixture files used to test supported poker-site formats and stat coverage.         |
-
-### Frontend
-
-| Path                            | Purpose                                                                                                                                      |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `frontend/.env`                 | Local frontend environment variables such as API URL, Google OAuth client ID, and Stripe publishable key. This file should not be committed. |
-| `frontend/index.html`           | Vite HTML entry file where the React app is mounted.                                                                                         |
-| `frontend/package.json`         | Frontend dependencies and scripts for Vite development, builds, and previews.                                                                |
-| `frontend/public/`              | Static public assets served directly by Vite, such as logos, favicon, and hero images.                                                       |
-| `frontend/src/main.jsx`         | React entry point that creates the app root and configures providers such as TanStack Query and Google OAuth.                                |
-| `frontend/src/App.jsx`          | Main application router and top-level route protection/layout wiring.                                                                        |
-| `frontend/src/index.css`        | Global styles, CSS variables, resets, and shared theme styling.                                                                              |
-| `frontend/src/api/`             | Frontend API clients for auth, sessions, goals, saved reports, and backend requests.                                                         |
-| `frontend/src/assets/`          | App assets imported by React components, including poker-site logos and feature data.                                                        |
-| `frontend/src/components/`      | Reusable UI components such as layout, sidebar, navbar, stat cards, charts, tables, and loading screens.                                     |
-| `frontend/src/hooks/`           | Custom React hooks for auth, sessions, goals, and saved reports using TanStack Query.                                                        |
-| `frontend/src/pages/`           | Route-level page components and their page-specific CSS files.                                                                               |
-| `frontend/src/utils/`           | Shared frontend utilities, protected route logic, session filters, and date preference helpers.                                              |
-| `frontend/src/utils/analytics/` | Utility logic for analytics calculations and page data shaping.                                                                              |
-| `frontend/src/utils/reports/`   | Utility logic for report generation and report-related formatting.                                                                           |
+![RiverIQ mobile dashboard preview](./frontend/public/mobile_dashboard.png)
 
 ## Features
 
-### Secure Authentication
+- Upload and parse hand-history files from supported poker sites.
+- Track sessions with profit, hands played, duration, stakes, site, and game type.
+- Review dashboard stats, profit trends, recent sessions, and BB/100 performance.
+- Analyze advanced stats including VPIP, PFR, 3-Bet, 4-Bet, C-Bet, fold frequencies, WTSD, W$SD, AF, and steal metrics.
+- Build custom reports from filtered session data.
+- Create and manage poker improvement goals.
+- Compare actual hands played against recommended preflop ranges by position.
+- Use a responsive dark-mode interface across desktop, tablet, and mobile.
 
-Create an account and sign in securely using JWT-based authentication. User passwords are hashed before being stored, and protected routes ensure that only authenticated users can access their poker data.
+## Tech Stack
 
-### Hand History Upload
+| Area     | Tools                                                                       |
+| -------- | --------------------------------------------------------------------------- |
+| Frontend | React, Vite, React Router, TanStack Query, React Hook Form, Chart.js, CSS   |
+| Backend  | Node.js, Express, MongoDB, Mongoose                                         |
+| Auth     | JWT, BcryptJS, Google OAuth                                                 |
+| Storage  | Cloudflare R2                                                               |
+| Payments | Stripe                                                                      |
+| Testing  | Vitest, Testing Library, Playwright, Jest, Supertest, MongoDB Memory Server |
 
-Upload hand history files directly from supported poker sites. RiverIQ validates each file before processing and extracts the raw session data needed for analysis.
+## Project Structure
 
-### Automatic Hand History Parsing
+```text
+RiverIQ/
+├── backend/
+│   ├── src/
+│   │   ├── config/          # Environment, database, and Stripe config
+│   │   ├── controllers/     # Route handler logic
+│   │   ├── data/            # Email templates and fixture data
+│   │   ├── middleware/      # Auth, upload, R2, and error middleware
+│   │   ├── models/          # Mongoose models
+│   │   ├── routes/          # Express routes
+│   │   ├── scripts/         # Backfill and fixture generation scripts
+│   │   ├── test/            # Test server and DB setup
+│   │   └── utils/           # JWT helpers and hand-history parser logic
+│   └── package.json
+├── frontend/
+│   ├── public/              # Static assets and README screenshots
+│   ├── src/
+│   │   ├── api/             # API clients
+│   │   ├── assets/          # Imported app assets
+│   │   ├── components/      # Reusable UI components
+│   │   ├── data/            # Static frontend data
+│   │   ├── hooks/           # React Query/auth hooks
+│   │   ├── pages/           # Route-level views
+│   │   └── utils/           # Shared frontend utilities
+│   └── package.json
+└── README.md
+```
 
-The parser reads every hand in an uploaded session and converts unstructured text into structured data. Information such as hand number, date, stakes, positions, player actions, and results is extracted automatically.
+## Getting Started
 
-### Session Tracking
+### Prerequisites
 
-Every uploaded session is stored in your account, allowing you to view your complete playing history. Sessions include important information such as profit, hands played, duration, stakes, poker site, and game type. Further data about the session can be seen by clicking the graph icon on the session table.
+- Node.js `22.22.0` or newer
+- MongoDB connection string
+- Stripe keys for subscription billing
+- Cloudflare R2 credentials for hand-history and avatar uploads
 
-### Advanced Poker Statistics
+### Install Dependencies
 
-RiverIQ calculates a wide range of statistics from your hand histories, including:
+```bash
+cd backend
+npm install
 
-- Hands Played
-- Profit
-- BB/100
-- VPIP
-- PFR
-- 3-Bet
-- Fold to 3-Bet
-- Continuation Bet (C-Bet)
-- Fold to C-Bet
-- Steal Percentage
+cd ../frontend
+npm install
+```
 
-These statistics provide a detailed overview of your playing style and help identify strengths and weaknesses.
+### Environment Variables
 
-### Interactive Dashboard
+Create `backend/.env`:
 
-View your overall performance at a glance with a modern dashboard that summarizes key metrics, recent sessions, and long-term trends using interactive charts and visualizations.
+```env
+PORT=
+MONGO_URI=
+JWT_SECRET=
+NODE_ENV=
+BACKEND_URL=
+FRONTEND_URL=
+COOKIE_SAME_SITE=
+CLOUDFLARE_KEY=
+SUPPORT_NOTIFY_EMAIL=ssmythwilliam@gmail.com
+R2_ACCOUNT_ID=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME_HH=
+R2_BUCKET_NAME_AVATAR=
+R2_PUBLIC_URL_AVATAR=
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_PRICE_ID=
+STRIPE_YEARLY_PRICE_ID=
+GOOGLE_CLIENT_ID=
+```
 
-### Analytics
+Create `frontend/.env`:
 
-Dive deeper into your data with detailed analytics pages that break down your performance across multiple statistics, helping you understand where you are improving and where leaks may exist.
+```env
+VITE_API_URL=
+VITE_STRIPE_PUBLISHABLE_KEY=
+VITE_GOOGLE_CLIENT_ID=
+```
 
-### Reports
+### Run Locally
 
-Generate customizable reports by filtering your sessions using criteria such as date ranges, poker site, stakes, or game type. Reports make it easy to analyze specific portions of your database.
+Start the backend:
 
-### Goal Tracking
+```bash
+cd backend
+npm start
+```
 
-Create personal poker goals and monitor your progress over time. Goals can be marked with statuses such as In Progress or Completed, helping you stay focused on continuous improvement.
+Start the frontend in a second terminal:
 
-### Hand Charts
+```bash
+cd frontend
+npm run dev
+```
 
-Compare your own opening ranges against recommended preflop ranges for every table position. This allows you to quickly identify hands you may be playing too frequently or not often enough.
+## Tests
 
-### Dark Mode Interface
+Run backend tests:
 
-A clean, modern dark interface reduces eye strain during long analysis sessions while providing a professional look and feel.
+```bash
+cd backend
+npm test
+```
 
-### Scalable Architecture
+Run frontend tests:
 
-Built using the MERN stack, RiverIQ separates the frontend, backend, database, and parsing logic into maintainable modules, making it easy to extend with additional poker sites and new analytical features in the future.
+```bash
+cd frontend
+npm test
+```
 
-## Environment Variables
+Run frontend end-to-end tests:
 
-### Frontend
+```bash
+cd frontend
+npm run test:e2e
+```
 
-- VITE_API_URL=
-- VITE_STRIPE_PUBLISHABLE_KEY=
-- VITE_GOOGLE_CLIENT_ID=
+## Supported Poker Data
 
-### Backend
+The parser code includes fixtures and wrappers for multiple poker-site formats, including PokerStars, GG Poker, 888poker, CoinPoker, FanDuel, and partypoker. Parser logic lives in `backend/src/utils/parsers`.
 
-- PORT=
-- MONGO_URI=
-- JWT_SECRET=
-- NODE_ENV=
-- BACKEND_URL=
-- FRONTEND_URL=
-- COOKIE_SAME_SITE=
-- CLOUDFLARE_KEY=
-- R2_ACCOUNT_ID=
-- R2_ACCESS_KEY_ID=
-- R2_SECRET_ACCESS_KEY=
-- R2_BUCKET_NAME_HH=
-- R2_BUCKET_NAME_AVATAR=
-- R2_PUBLIC_URL_AVATAR=
-- STRIPE_PUBLISHABLE_KEY=
-- STRIPE_SECRET_KEY=
-- STRIPE_PRICE_ID=
-- STRIPE_YEARLY_PRICE_ID=
-- GOOGLE_CLIENT_ID=
+## License
+
+ISC

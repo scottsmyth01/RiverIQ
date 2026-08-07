@@ -313,6 +313,7 @@
   min-width: 0;
   min-height: 0;
   display: flex;
+  align-self: stretch;
   overflow: hidden;
   border-radius: 0 8px 8px 0;
 }
@@ -325,6 +326,19 @@
   transition: filter 160ms ease, opacity 160ms ease;
 }
 
+.actual-hand-chart-lock__placeholder {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 100%;
+  display: block;
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 78% 12%, color-mix(in srgb, var(--color-primary) 10%, transparent), transparent 30%),
+    linear-gradient(145deg, color-mix(in srgb, var(--surface-chart) 94%, transparent), var(--surface-panel-deep));
+  border: 1px solid var(--theme-border-card);
+  border-radius: 0 8px 8px 0;
+}
+
 .actual-hand-chart-lock__content .starting-hand-card {
   flex: 1 1 auto;
   margin-left: 0;
@@ -332,8 +346,7 @@
 }
 
 .actual-hand-chart-lock--locked .actual-hand-chart-lock__content {
-  filter: blur(18px);
-  opacity: 0.03;
+  opacity: 0;
   pointer-events: none;
   user-select: none;
 }
@@ -346,13 +359,13 @@
   display: grid;
   place-content: center;
   justify-items: center;
+  align-content: center;
   gap: 7px;
   background:
     radial-gradient(circle at center, color-mix(in srgb, var(--surface-panel-deep) 82%, var(--surface-input-deep)), transparent 70%),
     var(--surface-input-deep);
   color: var(--text-control);
   text-align: center;
-  backdrop-filter: blur(14px);
 }
 
 .actual-hand-chart-lock__overlay svg {

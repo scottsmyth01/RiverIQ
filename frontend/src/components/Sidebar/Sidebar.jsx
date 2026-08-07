@@ -4,6 +4,7 @@ import { CircleStar, Crown, LockKeyhole } from 'lucide-react';
 import { Link, NavLink } from 'react-router';
 import { useSessions } from '../../hooks/useSessions';
 import { useAuth } from '../../hooks/useAuth';
+import { useSupportConversations } from '../../hooks/useSupport';
 
 const lockedItemTitles = new Set(['Analytics', 'Reports', 'Hand Charts']);
 
@@ -12,7 +13,14 @@ const Sidebar = () => {
   const { user } = useAuth();
   const hasProMembership = user?.subscription === 'pro';
   const hasUploadedSession = sessions.length > 0;
-  const navigationItems = SidebarData.filter((item) => item.title !== 'Settings');
+  const canUseSupportInbox = user?.role === 'admin' || user?.role === 'support';
+  const { data: openSupportConversations = [] } = useSupportConversations('open', {
+    enabled: canUseSupportInbox,
+  });
+  const openSupportCount = openSupportConversations.length;
+  const navigationItems = SidebarData.filter(
+    (item) => item.title !== 'Settings' && (!item.supportOnly || canUseSupportInbox),
+  );
   const settingsItem = SidebarData.find((item) => item.title === 'Settings');
 
   return (
@@ -53,6 +61,11 @@ const Sidebar = () => {
             >
               <span className='sidebar__icon'>{item.icon}</span>
               <span className='sidebar__title'>{item.title}</span>
+              {item.supportOnly && openSupportCount > 0 && (
+                <span className='sidebar__notification' aria-label={`${openSupportCount} open support chats`}>
+                  {openSupportCount > 99 ? '99+' : openSupportCount}
+                </span>
+              )}
             </NavLink>
           );
         })}

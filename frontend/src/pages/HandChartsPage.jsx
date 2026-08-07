@@ -1,7 +1,7 @@
 import './HandChartsPage.css';
 
 import { ChevronDown, Info, Lock, Table2, X } from 'lucide-react';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useState, useTransition } from 'react';
 import { useSessions } from '../hooks/useSessions';
 import { formatTableSizeLabel, positionsByTableSize, tableSizes } from '../utils/analytics/positions';
 
@@ -1506,29 +1506,39 @@ const HandChartsPage = () => {
   const [selectedTableSize, setSelectedTableSize] = useState('6max');
   const [hasSelectedTableSize, setHasSelectedTableSize] = useState(false);
   const [selectedHand, setSelectedHand] = useState('');
+  const [, startChartTransition] = useTransition();
   const { data: sessions = [] } = useSessions();
-  const tableSizeCounts = useMemo(
+  const { tableSizeCounts, uploadedHandsByTableSize } = useMemo(
     () =>
-      sessions.reduce((counts, session) => {
-        const tableSize = getSessionTableSize(session);
-        if (tableSizes.includes(tableSize)) {
-          counts[tableSize] = (counts[tableSize] || 0) + 1;
-        }
-        return counts;
-      }, {}),
+      sessions.reduce(
+        (summary, session) => {
+          const tableSize = getSessionTableSize(session);
+
+          if (tableSizes.includes(tableSize)) {
+            summary.tableSizeCounts[tableSize] = (summary.tableSizeCounts[tableSize] || 0) + 1;
+            summary.uploadedHandsByTableSize[tableSize] =
+              (summary.uploadedHandsByTableSize[tableSize] || 0) + getUploadedHands(session);
+          }
+
+          return summary;
+        },
+        { tableSizeCounts: {}, uploadedHandsByTableSize: {} },
+      ),
     [sessions],
   );
-  const uploadedHandsByTableSize = useMemo(
-    () =>
-      sessions.reduce((counts, session) => {
-        const tableSize = getSessionTableSize(session);
-        if (tableSizes.includes(tableSize)) {
-          counts[tableSize] = (counts[tableSize] || 0) + getUploadedHands(session);
-        }
-        return counts;
-      }, {}),
-    [sessions],
-  );
+  function changeTableSize(tableSize) {
+    setHasSelectedTableSize(true);
+    startChartTransition(() => {
+      setSelectedTableSize(tableSize);
+    });
+  }
+
+  function changePosition(positionId) {
+    startChartTransition(() => {
+      setSelectedPosition(positionId);
+    });
+  }
+
   const visiblePositions = useMemo(
     () =>
       openRaisePositionsByTableSize[selectedTableSize].map((positionId) => ({
@@ -1547,15 +1557,19 @@ const HandChartsPage = () => {
     [selectedTableSize, sessions],
   );
   const recommendedActions = useMemo(() => buildActionMap({ raises: position.raise }), [position]);
-  const sessionActions = useMemo(
-    () => getActualActionsFromSessions(filteredSessions, selectedPosition),
-    [filteredSessions, selectedPosition],
-  );
-  const actualActions = sessionActions.actions;
-  const actualCount = sessionActions.totalPlayed;
   const uploadedHandCount = uploadedHandsByTableSize[selectedTableSize] || 0;
   const hasUnlockedActualHands = uploadedHandCount >= ACTUAL_HAND_CHART_UNLOCK_HANDS;
-  const remainingHandsToUnlock = Math.max(0, ACTUAL_HAND_CHART_UNLOCK_HANDS - uploadedHandCount);
+  const sessionActions = useMemo(() => {
+    if (!hasUnlockedActualHands) {
+      return { actions: {}, hasData: false, totalPlayed: 0 };
+    }
+
+    return getActualActionsFromSessions(filteredSessions, selectedPosition);
+  }, [filteredSessions, hasUnlockedActualHands, selectedPosition]);
+  const actualActions = sessionActions.actions;
+  const actualCount = sessionActions.totalPlayed;
+  const summaryHandCount = hasUnlockedActualHands ? actualCount : uploadedHandCount;
+  const summaryHandLabel = hasUnlockedActualHands ? 'played hands' : 'uploaded hands';
   const selectedHandStats = hasUnlockedActualHands && selectedHand ? actualActions[selectedHand] : null;
   const totalHands = 169;
 
@@ -1594,10 +1608,7 @@ const HandChartsPage = () => {
             <select
               aria-label='Hand chart table size'
               value={selectedTableSize}
-              onChange={(event) => {
-                setHasSelectedTableSize(true);
-                setSelectedTableSize(event.target.value);
-              }}
+              onChange={(event) => changeTableSize(event.target.value)}
             >
               {tableSizes.map((tableSize) => (
                 <option value={tableSize} key={tableSize}>
@@ -1609,7 +1620,9 @@ const HandChartsPage = () => {
           </label>
 
           <div className='hand-chart-summary'>
-            <span>{actualCount} played hands</span>
+            <span>
+              {summaryHandCount} {summaryHandLabel}
+            </span>
             <strong>{Math.round((position.raise.length / totalHands) * 100)}% range</strong>
           </div>
         </div>
@@ -1620,7 +1633,7 @@ const HandChartsPage = () => {
         <select
           aria-label='Select hand chart position'
           value={selectedPosition}
-          onChange={(event) => setSelectedPosition(event.target.value)}
+          onChange={(event) => changePosition(event.target.value)}
         >
           {visiblePositions.map((item) => (
             <option value={item.id} key={item.id}>
@@ -1641,7 +1654,7 @@ const HandChartsPage = () => {
             className={item.id === selectedPosition ? 'active' : ''}
             key={item.id}
             type='button'
-            onClick={() => setSelectedPosition(item.id)}
+            onClick={() => changePosition(item.id)}
           >
             <span>{item.id}</span>
             <small>{item.raise.length} raises</small>
@@ -1652,42 +1665,48 @@ const HandChartsPage = () => {
       <section className='hand-chart-matrix-section'>
         <header className='hand-chart-section-header'>
           <h2>{position.title}</h2>
-          <div className='starting-hand-legend'>
-            <span>
-              <i className='raise' />
-              Raise
-            </span>
-            <span>
-              <i className='limp' />
-              Limp/Call
-            </span>
-            <span>
-              <i className='fold' />
-              Fold
-            </span>
-          </div>
+          {hasUnlockedActualHands && (
+            <div className='starting-hand-legend'>
+              <span>
+                <i className='raise' />
+                Raise
+              </span>
+              <span>
+                <i className='limp' />
+                Limp/Call
+              </span>
+              <span>
+                <i className='fold' />
+                Fold
+              </span>
+            </div>
+          )}
         </header>
 
         <div className='hand-chart-workspace hand-chart-workspace--with-panel'>
           <div className='hand-chart-matrix-pair'>
             <HandMatrix actions={recommendedActions} title='Recommended Hand Chart' subtitle='Raise or fold' />
             <div className={`actual-hand-chart-lock${hasUnlockedActualHands ? '' : ' actual-hand-chart-lock--locked'}`}>
-              <div className='actual-hand-chart-lock__content'>
-                <HandMatrix
-                  actions={actualActions}
-                  defaultFoldFrequency={0.16}
-                  emptyMessage={
-                    !sessionActions.hasData
-                      ? 'No hand chart data stored yet. Reupload sessions to populate actual hands played.'
-                      : ''
-                  }
-                  selectedHand={hasUnlockedActualHands ? selectedHand : ''}
-                  showFrequency
-                  title='Actual Hands Played'
-                  subtitle={sessionActions.hasData ? 'Click a hand for frequencies' : 'No real hand chart data yet'}
-                  onHandSelect={hasUnlockedActualHands ? setSelectedHand : undefined}
-                />
-              </div>
+              {hasUnlockedActualHands ? (
+                <div className='actual-hand-chart-lock__content'>
+                  <HandMatrix
+                    actions={actualActions}
+                    defaultFoldFrequency={0.16}
+                    emptyMessage={
+                      !sessionActions.hasData
+                        ? 'No hand chart data stored yet. Reupload sessions to populate actual hands played.'
+                        : ''
+                    }
+                    selectedHand={selectedHand}
+                    showFrequency
+                    title='Actual Hands Played'
+                    subtitle={sessionActions.hasData ? 'Click a hand for frequencies' : 'No real hand chart data yet'}
+                    onHandSelect={setSelectedHand}
+                  />
+                </div>
+              ) : (
+                <div className='actual-hand-chart-lock__placeholder' aria-hidden='true' />
+              )}
               {!hasUnlockedActualHands && (
                 <div className='actual-hand-chart-lock__overlay'>
                   <Lock aria-hidden='true' />

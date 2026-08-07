@@ -6,22 +6,10 @@ import { readFileSync } from 'node:fs';
 import generateToken, { getCookieOptions } from '../utils/generateToken.js';
 import Cloudflare from 'cloudflare/index.js';
 import { serializeUser } from '../utils/serializeUser.js';
+import { escapeHtml } from '../utils/escapeHtml.js';
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
-
-const escapeHtml = (value) =>
-  String(value).replace(
-    /[&<>"']/g,
-    (character) =>
-      ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;',
-      })[character],
-  );
 
 async function createUniqueUsername(email) {
   const parsedEmail = email

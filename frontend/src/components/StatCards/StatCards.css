@@ -122,7 +122,7 @@
   padding: 6px 8px;
   color: var(--text-subtle);
   background: transparent;
-  border: 1px solid transparent;
+  border: 1px solid var(--theme-border-card);
   border-radius: 6px;
   cursor: pointer;
   font: inherit;

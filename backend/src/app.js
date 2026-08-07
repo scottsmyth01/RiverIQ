@@ -7,6 +7,7 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import goalRoutes from './routes/goalRoutes.js';
 import savedReportRoutes from './routes/savedReportRoutes.js';
 import settingsRoutes from './routes/settingsRoutes.js';
+import supportRoutes from './routes/supportRoutes.js';
 import { globalErrorHandler, notFound } from './middleware/errorMiddleware.js';
 import { handleStripeWebhook } from './controllers/paymentController.js';
 
@@ -43,6 +44,7 @@ app.use('/api/sessions', sessionRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/saved-reports', savedReportRoutes);
+app.use('/api/support', supportRoutes);
 
 app.use(notFound);
 app.use(globalErrorHandler);

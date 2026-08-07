@@ -530,6 +530,26 @@ body [data-sonner-toast] [data-description] {
   font-weight: 700;
 }
 
+body [data-sonner-toast] [data-button] {
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font: inherit;
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+body [data-sonner-toast] [data-button]:hover {
+  background: transparent;
+  opacity: 0.72;
+}
+
 body [data-sonner-toast] [data-close-button] {
   width: 18px;
   height: 18px;

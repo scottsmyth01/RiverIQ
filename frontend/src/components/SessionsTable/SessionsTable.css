@@ -774,7 +774,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1100px) {
   .sessions-card {
     border-radius: 10px;
     overflow: visible;

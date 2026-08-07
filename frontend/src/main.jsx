@@ -3,7 +3,6 @@ import './index.css';
 import App from './App';
 import { Toaster } from 'sonner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const rootElement = document.getElementById('root');
@@ -18,7 +17,6 @@ createRoot(rootElement).render(
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'missing-google-client-id'}>
       <App />
     </GoogleOAuthProvider>
-    <ReactQueryDevtools initialIsOpen={false} />
     <Toaster position='top-center' richColors closeButton />
   </QueryClientProvider>,
 );

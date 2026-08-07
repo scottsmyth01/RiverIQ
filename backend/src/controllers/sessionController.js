@@ -11,7 +11,8 @@ import { buildHandHistoryRecords, deleteFromR2 } from '../middleware/uploadToR2M
 
 const FREE_SESSION_LIMIT = 20;
 const SESSION_SPLIT_GAP_MINUTES = 60;
-const SESSION_CURRENCIES = new Set(['USD', 'CAD', 'GBP', 'JPY', 'CNY']);
+const SESSION_CURRENCIES = new Set(['USD', 'CAD', 'GBP', 'JPY', 'CNY', 'USDT']);
+const DEFAULT_SESSION_CURRENCY = 'USD';
 
 const serializeUser = (user) => ({
   _id: user._id,
@@ -136,6 +137,50 @@ function splitRawHandsForSite(site, fileText) {
   if (normalizedSite === 'partypoker') return splitPartyPokerHands(fileText);
 
   return [];
+}
+
+function normalizeSessionCurrency(value) {
+  const normalizedValue = String(value || '')
+    .trim()
+    .toUpperCase();
+
+  const currencyAliases = {
+    $: 'USD',
+    'C$': 'CAD',
+    CAD$: 'CAD',
+    '£': 'GBP',
+    '¥': 'JPY',
+    'CN¥': 'CNY',
+    RMB: 'CNY',
+    YUAN: 'CNY',
+    '₮': 'USDT',
+    TETHER: 'USDT',
+  };
+
+  const currency = currencyAliases[normalizedValue] || normalizedValue;
+
+  return SESSION_CURRENCIES.has(currency) ? currency : null;
+}
+
+function detectCurrencyFromText(fileText = '') {
+  const currencyPatterns = [
+    ['USDT', /(?:\bUSDT\b|\bTETHER\b|₮)/i],
+    ['CAD', /(?:\bCAD\b|C\$)/i],
+    ['GBP', /(?:\bGBP\b|£)/i],
+    ['CNY', /(?:\bCNY\b|\bRMB\b|\bYUAN\b|CN¥)/i],
+    ['JPY', /(?:\bJPY\b|\bYEN\b|¥)/i],
+    ['USD', /(?:\bUSD\b|\$)/i],
+  ];
+
+  return currencyPatterns.find(([, pattern]) => pattern.test(fileText))?.[0] || null;
+}
+
+function getSessionCurrency({ hands = [], fileText = '' }) {
+  return (
+    detectCurrencyFromText(fileText) ||
+    normalizeSessionCurrency(hands.find((hand) => hand?.table?.currency)?.table?.currency) ||
+    DEFAULT_SESSION_CURRENCY
+  );
 }
 
 function getInvalidParsedHandIssues(hands) {
@@ -336,11 +381,11 @@ function buildHandResults(hands) {
 function buildSessionPayload({
   req,
   pokerSite,
-  currency,
   sessionName,
   notes,
   tags,
   hands,
+  fileText,
   sessionIndex,
   totalSessions,
   file,
@@ -349,7 +394,7 @@ function buildSessionPayload({
   const parsedStats = calculateStats(hands);
   const firstHand = hands[0];
   const table = firstHand?.table || {};
-  const sessionCurrency = currency || table.currency;
+  const sessionCurrency = getSessionCurrency({ hands, fileText });
 
   return {
     user: req.user._id,
@@ -492,17 +537,10 @@ export const getSessions = async (req, res) => {
 export const addSession = async (req, res, next) => {
   try {
     const { pokerSite, notes, tags } = req.body;
-    const currency = typeof req.body.currency === 'string' ? req.body.currency.trim().toUpperCase() : 'USD';
     const sessionName = typeof req.body.sessionName === 'string' ? req.body.sessionName.trim() : '';
     if (!pokerSite) {
       return res.status(400).json({
         message: 'Please select a poker site',
-      });
-    }
-
-    if (!SESSION_CURRENCIES.has(currency)) {
-      return res.status(400).json({
-        message: 'Please select a supported session currency',
       });
     }
 
@@ -540,6 +578,7 @@ export const addSession = async (req, res, next) => {
 
       return splitHandsIntoSessions(hands).map((handGroup) => ({
         file,
+        fileText,
         fileIndex,
         hands: handGroup,
       }));
@@ -564,15 +603,15 @@ export const addSession = async (req, res, next) => {
     const handHistories = await buildHandHistoryRecords(files, req.user._id);
     let sessions = [];
     try {
-      const sessionPayloads = handGroups.map(({ file, fileIndex, hands }, sessionIndex) =>
+      const sessionPayloads = handGroups.map(({ file, fileText, fileIndex, hands }, sessionIndex) =>
         buildSessionPayload({
           req,
           pokerSite,
-          currency,
           sessionName,
           notes,
           tags,
           hands,
+          fileText,
           sessionIndex,
           totalSessions: handGroups.length,
           file,

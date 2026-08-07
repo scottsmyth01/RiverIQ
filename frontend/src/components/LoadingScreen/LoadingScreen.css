@@ -4,31 +4,20 @@
   z-index: 3000;
   min-height: 100dvh;
   background: #000;
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 180ms ease-out;
-  will-change: opacity;
 }
 
 .loading-screen--visible {
-  opacity: 1;
+  display: flex;
   pointer-events: auto;
-  transition: none;
 }
 
 .loading-modal {
   display: grid;
   place-items: center;
-  transform: scale(0.98);
-  transition: transform 220ms ease-out;
-  will-change: transform;
-}
-
-.loading-screen--visible .loading-modal {
-  transform: scale(1);
 }
 
 .loading-logo {

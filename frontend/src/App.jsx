@@ -21,6 +21,8 @@ import SavedReportsPage from './pages/SavedReportsPage';
 import GoalsPage from './pages/GoalsPage';
 import HandChartsPage from './pages/HandChartsPage';
 import PaymentPage from './pages/PaymentPage';
+import SupportInboxPage from './pages/SupportInboxPage';
+import SupportChat from './components/SupportChat/SupportChat';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
@@ -61,7 +63,7 @@ function AppRoutes() {
   const isPaymentRoute = pathname === '/subscription/payment';
   const isResetPasswordRoute = pathname.startsWith('/reset-password');
   const isLegalRoute = pathname === '/terms' || pathname === '/privacy';
-  const { isPending: isSessionsPending } = useSessions({ enabled: isDashboardRoute && isAuthenticated });
+  useSessions({ enabled: isDashboardRoute && isAuthenticated });
 
   // if user is authenticated and emailVerified then navigate the user to their dashboard
   // if the route is the pricing page then do not run this code
@@ -78,15 +80,10 @@ function AppRoutes() {
   const redirectToVerifyEmail = isAuthenticated && !isEmailVerified && !isVerifyEmailRoute && !isResetPasswordRoute;
   const isAuthRouteLoading = loading && (isDashboardRoute || isSignedOutOnlyRoute);
   const isLoginLoading = loginLoading || googleLoginLoading;
-  const isDashboardDataLoading = pathname === '/dashboard' && isAuthenticated && isSessionsPending;
   const isRedirectingAfterAuth = redirectToDashboard || redirectToVerifyEmail;
-  const showGlobalLoading =
-    logoutLoading ||
-    isLoginLoading ||
-    isAuthRouteLoading ||
-    isDashboardDataLoading ||
-    isRedirectingAfterAuth;
-  const shouldRenderRouteContent = !logoutLoading && !isAuthRouteLoading && !isDashboardDataLoading;
+  const showGlobalLoading = logoutLoading || isLoginLoading || isAuthRouteLoading || isRedirectingAfterAuth;
+  const canResolveRedirects = !logoutLoading && !isLoginLoading && !isAuthRouteLoading;
+  const shouldRenderRouteContent = !showGlobalLoading;
   const showWebsiteChrome = !showGlobalLoading && !loading && !isAuthenticated && !isPaymentRoute;
 
   useEffect(() => {
@@ -107,8 +104,8 @@ function AppRoutes() {
   return (
     <>
       <LoadingScreen visible={showGlobalLoading} />
-      {shouldRenderRouteContent && redirectToDashboard && <Navigate to='/dashboard' replace />}
-      {shouldRenderRouteContent && redirectToVerifyEmail && <Navigate to='/verify-email' replace />}
+      {canResolveRedirects && redirectToDashboard && <Navigate to='/dashboard' replace />}
+      {canResolveRedirects && redirectToVerifyEmail && <Navigate to='/verify-email' replace />}
       {shouldRenderRouteContent && !redirectToDashboard && !redirectToVerifyEmail && (
         <>
           {showWebsiteChrome && <Navbar />}
@@ -184,6 +181,7 @@ function AppRoutes() {
                   }
                 />
                 <Route path='help' element={<InfoPage />} />
+                <Route path='support' element={<SupportInboxPage />} />
                 <Route path='settings' element={<SettingsPage />} />
               </Route>
               <Route path='*' element={<FeaturePage />} />
@@ -203,6 +201,7 @@ function App() {
       <Elements stripe={stripePromise}>
         <ScrollToTop />
         <AppRoutes />
+        <SupportChat />
       </Elements>
     </BrowserRouter>
   );
