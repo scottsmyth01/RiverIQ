@@ -21,7 +21,7 @@ function getInitialMessages(user) {
     {
       id: 'welcome',
       from: 'bot',
-      text: `Hey${name ? ` ${name}` : ''}, I am RiverIQ support. Ask me about uploads, parser errors, stats, billing, or account settings.`,
+      text: `Hey${name ? ` ${name}` : ''}, welcome to RiverIQ (BETA Release). Send errors/bugs to us here. Best, RIQ.`,
     },
   ];
 }
@@ -154,7 +154,12 @@ export default function SupportChat() {
                 <small>{conversation?.status === 'resolved' ? 'Resolved conversation' : 'Live inbox beta'}</small>
               </div>
             </div>
-            <button className='support-chat-icon-button' type='button' aria-label='Close support chat' onClick={closeChat}>
+            <button
+              className='support-chat-icon-button'
+              type='button'
+              aria-label='Close support chat'
+              onClick={closeChat}
+            >
               <X aria-hidden='true' />
             </button>
           </header>
