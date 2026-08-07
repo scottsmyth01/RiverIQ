@@ -81,7 +81,6 @@ const Navbar = () => {
         <span>
           River<strong>IQ</strong>
         </span>
-        <span>(BETA Release)</span>
       </Link>
 
       <div className='dashboard-navbar__actions'>
