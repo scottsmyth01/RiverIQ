@@ -77,9 +77,11 @@ const Navbar = () => {
     <nav className='dashboard-navbar' aria-label='Dashboard navigation'>
       <Link to='/dashboard' className='dashboard-navbar__brand' aria-label='RiverIQ dashboard'>
         <img src={logo} alt='' />
+
         <span>
           River<strong>IQ</strong>
         </span>
+        <span>(BETA Release)</span>
       </Link>
 
       <div className='dashboard-navbar__actions'>
