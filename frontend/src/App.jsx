@@ -79,10 +79,9 @@ function AppRoutes() {
   // if user is authenticated, but email is not verified, then navigate to the /verify-email page
   const redirectToVerifyEmail = isAuthenticated && !isEmailVerified && !isVerifyEmailRoute && !isResetPasswordRoute;
   const isAuthRouteLoading = loading && (isDashboardRoute || isSignedOutOnlyRoute);
-  const isLoginLoading = loginLoading || googleLoginLoading;
   const isRedirectingAfterAuth = redirectToDashboard || redirectToVerifyEmail;
-  const showGlobalLoading = logoutLoading || isLoginLoading || isAuthRouteLoading || isRedirectingAfterAuth;
-  const canResolveRedirects = !logoutLoading && !isLoginLoading && !isAuthRouteLoading;
+  const showGlobalLoading = logoutLoading || isAuthRouteLoading || isRedirectingAfterAuth;
+  const canResolveRedirects = !logoutLoading && !loginLoading && !googleLoginLoading && !isAuthRouteLoading;
   const shouldRenderRouteContent = !showGlobalLoading;
   const showWebsiteChrome = !showGlobalLoading && !loading && !isAuthenticated && !isPaymentRoute;
 
