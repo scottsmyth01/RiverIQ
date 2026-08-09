@@ -388,11 +388,34 @@
 
 .goal-title-cell small,
 .goal-date-cell small {
-  display: block;
   margin-top: 4px;
   color: var(--text-table-muted);
   font-weight: 650;
   line-height: 1.3;
+}
+
+.goal-title-cell small {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.goal-date-cell small {
+  display: block;
+}
+
+.goal-source-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--accent-green-border-strong);
+  border-radius: 6px;
+  color: var(--color-primary-hover);
+  background: color-mix(in srgb, var(--color-primary) 13%, transparent);
+  font-size: 0.66rem;
+  font-weight: 800;
 }
 
 .goal-icon {

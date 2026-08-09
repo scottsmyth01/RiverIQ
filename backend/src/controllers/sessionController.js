@@ -8,6 +8,7 @@ import { parseGGPoker, splitHands as splitGGPokerHands } from '../utils/parsers/
 import { calculateStats } from '../utils/parsers/stats/calculateStats.js';
 import { getHandProfit } from '../utils/parsers/stats/getProfit.js';
 import { buildHandHistoryRecords, deleteFromR2 } from '../middleware/uploadToR2Middleware.js';
+import { syncAiGoalForUser } from '../services/aiGoalService.js';
 
 const FREE_SESSION_LIMIT = 20;
 const SESSION_SPLIT_GAP_MINUTES = 60;
@@ -352,7 +353,21 @@ async function restoreDeletedSession(session) {
   }
 }
 
+async function restoreDeletedSessions(sessions = []) {
+  if (!sessions.length) return;
+
+  try {
+    await Session.create(sessions.map((session) => session.toObject({ depopulate: true })));
+  } catch (restoreError) {
+    console.error('Failed to restore sessions after purge rollback:', restoreError);
+  }
+}
+
 function getSessionName({ sessionName, originalFileName, sessionIndex, totalSessions }) {
+  if (!sessionName) {
+    return `${new Date().toISOString().slice(0, 10)}: session ${sessionIndex + 1}`;
+  }
+
   const baseName = sessionName || originalFileName;
 
   if (totalSessions <= 1) {
@@ -466,7 +481,7 @@ function formatBlindAmount(amount) {
 function formatStakes(table = {}, currency) {
   const smallBlind = formatBlindAmount(table.smallBlind);
   const bigBlind = formatBlindAmount(table.bigBlind);
-  const ante = formatBlindAmount(table.ante);
+  const ante = Number(table.ante) > 0 ? formatBlindAmount(table.ante) : null;
 
   if (!smallBlind || !bigBlind) return undefined;
 
@@ -631,11 +646,19 @@ export const addSession = async (req, res, next) => {
       throw error;
     }
 
+    let aiGoal = null;
+    try {
+      aiGoal = await syncAiGoalForUser(req.user._id);
+    } catch (aiGoalError) {
+      console.error('Failed to sync AI goal after upload:', aiGoalError);
+    }
+
     return res.status(201).json({
       status: 'success',
       session: sessions[0],
       sessions,
       createdSessions: sessions.length,
+      aiGoal,
       user: serializeUser(req.user),
     });
   } catch (error) {
@@ -706,6 +729,51 @@ export const deleteSession = async (req, res, next) => {
     return res.status(200).json({ message: 'Session deleted', id: req.params.id, user: serializeUser(req.user) });
   } catch (error) {
     await restoreDeletedSession(deletedSession);
+    return next(error);
+  }
+};
+
+export const purgeSessions = async (req, res, next) => {
+  let deletedSessions = [];
+  let sessionsWereDeleted = false;
+
+  try {
+    deletedSessions = await Session.find({ user: req.user._id });
+
+    if (!deletedSessions.length) {
+      return res.status(200).json({
+        message: 'No sessions to purge',
+        deletedCount: 0,
+        user: serializeUser(req.user),
+      });
+    }
+
+    const sessionProfit = deletedSessions.reduce((total, session) => total + (Number(session.stats?.profit) || 0), 0);
+    await Session.deleteMany({ user: req.user._id });
+    sessionsWereDeleted = true;
+
+    req.user.bankroll = Number(((Number(req.user.bankroll) || 0) - sessionProfit).toFixed(2));
+    await req.user.save();
+
+    if (process.env.NODE_ENV !== 'test') {
+      const r2Keys = [...new Set(deletedSessions.map((session) => session.handHistory?.r2Key).filter(Boolean))];
+
+      r2Keys.forEach((r2Key) => {
+        deleteFromR2(r2Key, process.env.R2_BUCKET_NAME_HH).catch((error) => {
+          console.error('Failed to delete hand history from R2:', error);
+        });
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Sessions purged',
+      deletedCount: deletedSessions.length,
+      user: serializeUser(req.user),
+    });
+  } catch (error) {
+    if (sessionsWereDeleted) {
+      await restoreDeletedSessions(deletedSessions);
+    }
     return next(error);
   }
 };

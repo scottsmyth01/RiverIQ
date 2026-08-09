@@ -3,6 +3,8 @@ import request from 'supertest';
 import '../../test/setupDb.js';
 import app from '../../app.js';
 import Goal from '../../models/Goal.js';
+import Session from '../../models/Session.js';
+import User from '../../models/User.js';
 
 const makeUser = (prefix) => ({
   username: `${prefix}hero`.slice(0, 20),
@@ -110,5 +112,40 @@ describe('goals API integration', () => {
     const firstListResponse = await firstAgent.get('/api/goals').expect(200);
     expect(firstListResponse.body.goals).toHaveLength(1);
     expect(firstListResponse.body.goals[0].title).toBe(validGoal.title);
+  });
+
+  test('syncs an AI coach goal from existing uploaded sessions when listing goals', async () => {
+    const agent = await createLoggedInAgent('syncgoal');
+    const user = await User.findOne({ email: 'syncgoal@riveriq.test' });
+
+    await Session.create({
+      user: user._id,
+      sessionName: 'Existing Uploaded Session',
+      date: new Date('2026-08-09T00:00:00.000Z'),
+      pokerSite: 'pokerstars',
+      stats: {
+        handsPlayed: 12,
+        vpip: 60,
+        pfr: 10,
+        threeBet: 5,
+        foldToThreeBet: 62,
+        cBet: 72,
+        foldToCBet: 40,
+        turnCBet: 55,
+        foldToTurnCBet: 45,
+        wtsd: 28,
+        wsd: 55,
+        aggressionFactor: 2,
+      },
+    });
+
+    const listResponse = await agent.get('/api/goals').expect(200);
+
+    expect(listResponse.body.goals).toHaveLength(1);
+    expect(listResponse.body.goals[0]).toMatchObject({
+      source: 'ai',
+      status: 'Active',
+      current: '60%',
+    });
   });
 });

@@ -86,7 +86,7 @@ function normalizeStakes(stakes, currency) {
 
   const smallBlind = formatBlindAmount(amounts[0]);
   const bigBlind = formatBlindAmount(amounts[1]);
-  const ante = formatBlindAmount(amounts[2]);
+  const ante = Number(amounts[2]) > 0 ? formatBlindAmount(amounts[2]) : null;
 
   if (!smallBlind || !bigBlind) {
     return stakes;
@@ -162,6 +162,7 @@ export async function addSession(sessionData) {
     session: sessions[0],
     sessions,
     createdSessions: data.createdSessions || sessions.length,
+    aiGoal: data.aiGoal,
     user: data.user,
   };
 }
@@ -180,6 +181,16 @@ export async function deleteSession(id) {
   });
   return {
     id,
+    user: data.user,
+  };
+}
+
+export async function purgeSessions() {
+  const data = await request('/api/sessions', {
+    method: 'DELETE',
+  });
+  return {
+    deletedCount: data.deletedCount || 0,
     user: data.user,
   };
 }

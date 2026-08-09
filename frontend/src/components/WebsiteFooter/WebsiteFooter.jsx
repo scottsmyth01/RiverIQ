@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import './WebsiteFooter.css';
 
 const footerLinks = [
+  { label: 'Blog', to: '/blog' },
   { label: 'Privacy Policy', to: '/privacy' },
   { label: 'Terms & Conditions', to: '/terms' },
 ];

@@ -151,6 +151,7 @@ describe('session API integration', () => {
 
     const { session, user: updatedUser } = uploadResponse.body;
     expect(session.sessionName).toBe('API Integration PokerStars');
+    expect(session.stakes).toBe('$0.05/$0.10');
     expect(session.stats.handsPlayed).toBe(250);
     expect(session.stats.profit).toBe(262.5);
     expect(session.handResults).toHaveLength(250);
@@ -194,6 +195,31 @@ describe('session API integration', () => {
       id: session._id,
     });
     expect(deleteResponse.body.user.bankroll).toBe(0);
+    expect(await Session.countDocuments()).toBe(0);
+  });
+
+  test('purges all sessions for the logged-in user and updates bankroll', async () => {
+    const agent = await createLoggedInAgent();
+
+    const uploadResponse = await agent
+      .post('/api/sessions/add-session')
+      .field('pokerSite', 'pokerstars')
+      .field('sessionName', 'Purge Integration')
+      .attach('handHistory', 'src/utils/parsers/fixtures/ps/pokerstars_250_hand_winning_session_01.txt')
+      .attach('handHistory', 'src/utils/parsers/fixtures/ps/pokerstars_250_hand_losing_session_02.txt')
+      .expect(201);
+
+    expect(uploadResponse.body.createdSessions).toBe(2);
+    expect(uploadResponse.body.user.bankroll).toBe(50);
+    expect(await Session.countDocuments()).toBe(2);
+
+    const purgeResponse = await agent.delete('/api/sessions').expect(200);
+
+    expect(purgeResponse.body).toMatchObject({
+      message: 'Sessions purged',
+      deletedCount: 2,
+    });
+    expect(purgeResponse.body.user.bankroll).toBe(0);
     expect(await Session.countDocuments()).toBe(0);
   });
 
@@ -662,6 +688,23 @@ This line keeps the hand block detectable but not parseable.
     ]);
     expect(updatedUser.bankroll).toBe(50);
     expect(await Session.countDocuments()).toBe(2);
+  });
+
+  test('uses today and session number as the default session name', async () => {
+    const agent = await createLoggedInAgent();
+    const today = new Date().toISOString().slice(0, 10);
+
+    const uploadResponse = await agent
+      .post('/api/sessions/add-session')
+      .field('pokerSite', 'pokerstars')
+      .attach('handHistory', 'src/utils/parsers/fixtures/ps/pokerstars_250_hand_winning_session_01.txt')
+      .attach('handHistory', 'src/utils/parsers/fixtures/ps/pokerstars_250_hand_losing_session_02.txt')
+      .expect(201);
+
+    expect(uploadResponse.body.sessions.map((session) => session.sessionName)).toEqual([
+      `${today}: session 1`,
+      `${today}: session 2`,
+    ]);
   });
 
   test('rolls back created sessions when the user bankroll update fails after upload', async () => {

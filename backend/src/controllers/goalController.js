@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Goal from '../models/Goal.js';
+import { syncAiGoalForUser } from '../services/aiGoalService.js';
 
 function getGoalPayload(body = {}) {
   return {
@@ -20,6 +21,12 @@ export const getGoals = async (req, res, next) => {
   // get userId from protect middleware
   // get all sessions that have that userId and return to frontend
   try {
+    try {
+      await syncAiGoalForUser(req.user._id);
+    } catch (aiGoalError) {
+      console.error('Failed to sync AI goal before listing goals:', aiGoalError);
+    }
+
     const goals = await Goal.find({ user: req.user._id }).sort({ order: 1, createdAt: -1 });
     return res.status(200).json({ goals });
   } catch (error) {

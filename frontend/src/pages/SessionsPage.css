@@ -32,8 +32,107 @@
   line-height: 1.45;
 }
 
+.sessions-purge-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  width: 100vw;
+  min-height: 100dvh;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3, 8, 14, 0.58);
+}
+
+.sessions-purge-modal {
+  width: min(100%, 390px);
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+  color: var(--text-control);
+  background: var(--surface-auth-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+}
+
+.sessions-purge-modal-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: var(--color-primary);
+  background: var(--overlay-success-weak);
+  border: 1px solid var(--accent-green-border);
+  border-radius: 8px;
+}
+
+.sessions-purge-modal-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sessions-purge-modal h2 {
+  margin: 0;
+  color: var(--text-white);
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.sessions-purge-modal p {
+  margin: 6px 0 0;
+  color: var(--text-table-muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.sessions-purge-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.sessions-purge-modal-actions button {
+  min-height: 38px;
+  padding: 0 13px;
+  color: var(--text-control);
+  background: var(--surface-control-deep);
+  border: 1px solid var(--theme-nav-border);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.sessions-purge-modal-actions button:last-child {
+  color: var(--text-on-primary);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.sessions-purge-modal-actions button:last-child:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.sessions-purge-modal-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 @media (max-width: 760px) {
   .sessions-page {
     padding: 10px;
+  }
+
+  .sessions-purge-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .sessions-purge-modal-actions button {
+    width: 100%;
   }
 }

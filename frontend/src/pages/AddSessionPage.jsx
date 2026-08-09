@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ArrowLeft, ChevronRight, CircleHelp, CloudUpload, FileText, X } from 'lucide-react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -74,7 +75,7 @@ function UploadLoadingScreen({ visible }) {
     Math.floor((progress / 100) * uploadLoadingSteps.length),
   );
 
-  return (
+  const loadingScreen = (
     <LoadingScreen visible={visible} label='Uploading hand history'>
       <div className='upload-loading-panel'>
         <div className='upload-loading-steps'>
@@ -99,6 +100,10 @@ function UploadLoadingScreen({ visible }) {
       </div>
     </LoadingScreen>
   );
+
+  if (typeof document === 'undefined') return loadingScreen;
+
+  return createPortal(loadingScreen, document.body);
 }
 
 const AddSessionPage = () => {

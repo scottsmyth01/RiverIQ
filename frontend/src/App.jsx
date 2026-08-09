@@ -36,6 +36,8 @@ const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
 const InfoPage = lazy(() => import('./pages/InfoPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
 const SessionStatsPage = lazy(() => import('./pages/SessionStatsPage'));
@@ -63,6 +65,7 @@ function AppRoutes() {
   const isPaymentRoute = pathname === '/subscription/payment';
   const isResetPasswordRoute = pathname.startsWith('/reset-password');
   const isLegalRoute = pathname === '/terms' || pathname === '/privacy';
+  const isBlogRoute = pathname.startsWith('/blog');
   useSessions({ enabled: isDashboardRoute && isAuthenticated });
 
   // if user is authenticated and emailVerified then navigate the user to their dashboard
@@ -74,10 +77,11 @@ function AppRoutes() {
     !isPricingRoute &&
     !isPaymentRoute &&
     !isResetPasswordRoute &&
-    !isLegalRoute;
+    !isLegalRoute &&
+    !isBlogRoute;
 
   // if user is authenticated, but email is not verified, then navigate to the /verify-email page
-  const redirectToVerifyEmail = isAuthenticated && !isEmailVerified && !isVerifyEmailRoute && !isResetPasswordRoute;
+  const redirectToVerifyEmail = isAuthenticated && !isEmailVerified && !isVerifyEmailRoute && !isResetPasswordRoute && !isBlogRoute;
   const isAuthRouteLoading = loading && (isDashboardRoute || isSignedOutOnlyRoute);
   const isRedirectingAfterAuth = redirectToDashboard || redirectToVerifyEmail;
   const showGlobalLoading = logoutLoading || isAuthRouteLoading || isRedirectingAfterAuth;
@@ -123,6 +127,8 @@ function AppRoutes() {
               />
               <Route path='/about' element={<AboutPage />} />
               <Route path='/faq' element={<FaqPage />} />
+              <Route path='/blog' element={<BlogPage />} />
+              <Route path='/blog/:slug' element={<BlogPostPage />} />
               <Route path='/help' element={<Navigate to='/login' replace />} />
               <Route path='/privacy' element={<PrivacyPage />} />
               <Route path='/terms' element={<TermsPage />} />

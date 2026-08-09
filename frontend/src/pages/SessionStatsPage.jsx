@@ -251,8 +251,9 @@ const SessionStatsPage = () => {
   const profit = Number(session.profit) || 0;
   const bb100 = Number(session.bb100 ?? session.winRate ?? stats.bb100 ?? 0);
   const allInEV = Number(session.allInEV ?? stats.allInEV);
+  const allInWinSampleSize = Number(session.allInWinSampleSize ?? stats.allInWinSampleSize ?? 0);
   const bigBlind = getSessionBigBlind(session);
-  const allInEvBb = Number.isFinite(allInEV) && bigBlind > 0 ? allInEV / bigBlind : null;
+  const allInEvBb = allInWinSampleSize > 0 && Number.isFinite(allInEV) && bigBlind > 0 ? allInEV / bigBlind : null;
   const hands = Number(session.hands ?? stats.handsPlayed ?? 0);
   const profitIsPositive = profit >= 0;
   const topStats = [

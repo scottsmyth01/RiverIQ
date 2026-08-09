@@ -61,6 +61,25 @@ const goalSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    source: {
+      type: String,
+      enum: ['manual', 'ai'],
+      default: 'manual',
+      index: true,
+    },
+    ai: {
+      metric: String,
+      position: String,
+      direction: {
+        type: String,
+        enum: ['increase', 'decrease'],
+      },
+      targetMin: Number,
+      targetMax: Number,
+      baseline: Number,
+      sampleSize: Number,
+      generatedAt: Date,
+    },
   },
   { timestamps: true },
 );

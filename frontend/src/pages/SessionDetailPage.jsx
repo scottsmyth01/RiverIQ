@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { useSessions, useUpdateSession } from '../hooks/useSessions';
 import { useAuth } from '../hooks/useAuth';
 import { formatSignedCurrency, formatStakes, getPreferredCurrency } from '../utils/currency';
-import { successToastWithUndo } from '../utils/toastWithUndo';
 import pokerStarsLogo from '../assets/pokerstars-logo.svg';
 import ggPokerMark from '../assets/gg-poker-mark.svg';
 import coinPokerLogo from '../assets/coinpoker-logo.svg';
@@ -179,11 +178,6 @@ const SessionDetailPage = () => {
     event.preventDefault();
     const fallbackTitle = session.sessionName || session.handHistory?.originalFileName || 'Poker Session';
     const nextSessionTitle = sessionTitle.trim() || fallbackTitle;
-    const previousSessionData = {
-      sessionName: session.sessionName || fallbackTitle,
-      notes: session.notes || '',
-      tags: session.tags || '',
-    };
 
     try {
       await updateSession({
@@ -195,16 +189,7 @@ const SessionDetailPage = () => {
         },
       });
       setSessionTitle(nextSessionTitle);
-      successToastWithUndo('Session updated', async () => {
-        try {
-          await updateSession({ id, sessionData: previousSessionData });
-          setSessionTitle(previousSessionData.sessionName);
-          setNotes(previousSessionData.notes);
-          setTagsInput(previousSessionData.tags);
-        } catch (undoError) {
-          toast.error(undoError.message || 'Could not undo session update');
-        }
-      });
+      toast.success('Session updated');
     } catch (updateError) {
       toast.error(updateError.message || 'Could not update session');
     }

@@ -332,6 +332,8 @@ function getSessionStat(session, key) {
 }
 
 function getSessionAllInEvBb(session) {
+  if (getSessionAllInHandCount(session) <= 0) return null;
+
   const allInEV = Number(session?.allInEV ?? session?.stats?.allInEV);
   const bigBlind = getSessionBigBlind(session);
 

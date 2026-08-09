@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addSession, deleteSession, getSessions, updateSession } from '../api/sessionApi';
+import { addSession, deleteSession, getSessions, purgeSessions, updateSession } from '../api/sessionApi';
+import { goalsQueryKey } from './useGoals';
 
 export const sessionsQueryKey = ['sessions'];
 const allSessionsQueryKey = [...sessionsQueryKey, { period: 'all-time' }];
@@ -24,13 +25,17 @@ export function useAddSession() {
   return useMutation({
     mutationKey: ['sessions', 'add'],
     mutationFn: addSession,
-    onSuccess: ({ session: newSession, sessions: newSessions = [], user }) => {
+    onSuccess: ({ session: newSession, sessions: newSessions = [], aiGoal, user }) => {
       const sessionsToAdd = newSessions.length ? newSessions : [newSession].filter(Boolean);
       queryClient.setQueryData(allSessionsQueryKey, (sessions = []) => [...sessions, ...sessionsToAdd]);
+      if (aiGoal) {
+        queryClient.setQueryData(goalsQueryKey, (goals = []) => [aiGoal, ...goals]);
+      }
       if (user) {
         queryClient.setQueryData(['authUser'], { user });
       }
       queryClient.invalidateQueries({ queryKey: sessionsQueryKey });
+      queryClient.invalidateQueries({ queryKey: goalsQueryKey });
     },
   });
 }
@@ -60,6 +65,22 @@ export function useDeleteSession() {
       queryClient.setQueryData(allSessionsQueryKey, (sessions = []) =>
         sessions.filter((session) => session._id !== deletedSessionId),
       );
+      if (user) {
+        queryClient.setQueryData(['authUser'], { user });
+      }
+      queryClient.invalidateQueries({ queryKey: sessionsQueryKey });
+    },
+  });
+}
+
+export function usePurgeSessions() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['sessions', 'purge'],
+    mutationFn: purgeSessions,
+    onSuccess: ({ user }) => {
+      queryClient.setQueryData(allSessionsQueryKey, []);
       if (user) {
         queryClient.setQueryData(['authUser'], { user });
       }

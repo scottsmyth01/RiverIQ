@@ -254,10 +254,9 @@ function getAllInAdjustedHandProfit(hand) {
   const totalPot = Number(hand.summary?.totalPot);
 
   if (!allInStreet || heroCards.length !== 2 || !opponentCards.length || !Number.isFinite(totalPot)) {
-    const handProfit = getProfit([hand]);
-    allInEvCache.set(hand, handProfit);
+    allInEvCache.set(hand, null);
     allInWinPercentageCache.set(hand, null);
-    return handProfit;
+    return null;
   }
 
   const equity = getHeroEquity({
@@ -268,10 +267,9 @@ function getAllInAdjustedHandProfit(hand) {
   });
 
   if (equity === null) {
-    const handProfit = getProfit([hand]);
-    allInEvCache.set(hand, handProfit);
+    allInEvCache.set(hand, null);
     allInWinPercentageCache.set(hand, null);
-    return handProfit;
+    return null;
   }
 
   const adjustedProfit = Number((equity * totalPot - getHeroInvestment(hand)).toFixed(2));
@@ -281,7 +279,13 @@ function getAllInAdjustedHandProfit(hand) {
 }
 
 export function getAllInEV(hands) {
-  return Number(hands.reduce((total, hand) => total + getAllInAdjustedHandProfit(hand), 0).toFixed(2));
+  return Number(
+    hands
+      .map(getAllInAdjustedHandProfit)
+      .filter((adjustedProfit) => adjustedProfit !== null)
+      .reduce((total, adjustedProfit) => total + adjustedProfit, 0)
+      .toFixed(2),
+  );
 }
 
 function getAllInHandEquity(hand) {

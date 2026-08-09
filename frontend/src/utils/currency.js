@@ -69,5 +69,5 @@ export function formatStakes(stakes, currency = DEFAULT_CURRENCY) {
   });
 
   const normalizedStakes = `${symbol}${convertedAmounts[0]}/${symbol}${convertedAmounts[1]}`;
-  return convertedAmounts[2] ? `${normalizedStakes} (${symbol}${convertedAmounts[2]})` : normalizedStakes;
+  return Number(amounts[2]) > 0 ? `${normalizedStakes} (${symbol}${convertedAmounts[2]})` : normalizedStakes;
 }

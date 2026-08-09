@@ -30,7 +30,7 @@ const session = {
   hands: 250,
 };
 
-function renderSessionsTable(subscription = 'free') {
+function renderSessionsTable(subscription = 'free', sessions = [session]) {
   useAuth.mockReturnValue({
     user: {
       subscription,
@@ -44,7 +44,7 @@ function renderSessionsTable(subscription = 'free') {
     initialEntries: ['/dashboard/sessions'],
     routes: (
       <>
-        <Route path='/dashboard/sessions' element={<SessionsTable sessions={[session]} variant='sessions-page' />} />
+        <Route path='/dashboard/sessions' element={<SessionsTable sessions={sessions} variant='sessions-page' />} />
         <Route path='/subscription/payment' element={<div>Payment page</div>} />
         <Route path='/dashboard/sessions/:id/stats' element={<div>Session stats page</div>} />
       </>
@@ -67,5 +67,17 @@ describe('SessionsTable', () => {
     await userEvent.click(screen.getByLabelText('View stats for Sunday session'));
 
     expect(screen.getByText('Session stats page')).toBeInTheDocument();
+  });
+
+  test('omits zero ante from displayed stakes', () => {
+    renderSessionsTable('pro', [
+      {
+        ...session,
+        stakes: '$0.05/$0.10 ($0.00)',
+      },
+    ]);
+
+    expect(screen.getByText('$0.05/$0.10')).toBeInTheDocument();
+    expect(screen.queryByText(/\$0\.00/)).not.toBeInTheDocument();
   });
 });

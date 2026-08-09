@@ -61,6 +61,69 @@
   flex: 0 0 auto;
 }
 
+.sessions-add-button,
+.sessions-purge-button {
+  min-height: 34px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  text-align: center;
+  color: var(--color-primary);
+  background: var(--overlay-success-weak);
+  border: 1px solid var(--accent-green-border);
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.sessions-add-button {
+  color: var(--text-on-primary);
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.sessions-add-button:hover {
+  color: var(--text-on-primary);
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.sessions-purge-button:hover:not(:disabled) {
+  color: var(--text-on-primary);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.sessions-purge-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.sessions-add-button svg,
+.sessions-purge-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.sessions-card-header .sessions-add-button span,
+.sessions-card-header .sessions-purge-button span {
+  margin: 0;
+  color: inherit;
+  font-size: inherit;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+}
+
 .sessions-view-all-link {
   min-height: 28px;
   padding: 0 10px;
@@ -786,6 +849,13 @@
 
   .sessions-card-header__actions {
     gap: 6px;
+  }
+
+  .sessions-add-button,
+  .sessions-purge-button {
+    min-height: 30px;
+    padding-inline: 9px;
+    font-size: 0.66rem;
   }
 
   .sessions-card-header small {

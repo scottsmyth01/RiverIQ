@@ -1,63 +1,94 @@
-import { ArrowRight, BookOpen, Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ArrowRight, Search, Spade } from 'lucide-react';
 import { Link } from 'react-router';
 import { blogPosts } from '../data/blogPosts';
 import './BlogPage.css';
 
+const categories = ['All', ...Array.from(new Set(blogPosts.map((post) => post.category)))];
+
 const BlogPage = () => {
-  const featuredPost = blogPosts[0];
-  const remainingPosts = blogPosts.slice(1);
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredPosts = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    return blogPosts.filter((post) => {
+      const matchesCategory = activeCategory === 'All' || post.category === activeCategory;
+      const matchesSearch =
+        !query ||
+        [post.title, post.excerpt, post.category].some((value) => value.toLowerCase().includes(query));
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, searchQuery]);
 
   return (
     <main className='blog-page'>
       <section className='blog-shell'>
-        <header className='blog-hero'>
-          <div>
-            <span className='blog-kicker'>
-              <BookOpen aria-hidden='true' />
-              RiverIQ Blog
-            </span>
-            <h1>Poker strategy, session review, and hand history analysis.</h1>
-            <p>
-              Practical articles for players who want to understand their stats, review sessions with more structure, and
-              make better decisions away from the table.
-            </p>
-          </div>
-          <div className='blog-search-card' aria-label='Blog topics'>
+        <div className='blog-topbar'>
+          <Link className='blog-brand' to='/blog'>
+            <Spade aria-hidden='true' />
+            RiverIQ Blog
+          </Link>
+
+          <label className='blog-search'>
             <Search aria-hidden='true' />
-            <span>Coming next: parser guides, position leaks, bankroll systems, and hand history walkthroughs.</span>
-          </div>
+            <input
+              type='search'
+              value={searchQuery}
+              placeholder='Search articles'
+              onChange={(event) => setSearchQuery(event.target.value)}
+            />
+          </label>
+        </div>
+
+        <header className='blog-hero'>
+          <h1>Articles</h1>
+          <p>
+            Strategy notes, review systems, hand-history workflows, and practical ways to understand your poker data.
+          </p>
         </header>
 
-        {featuredPost && (
-          <article className='blog-featured-card'>
-            <div>
-              <span className='blog-meta'>
-                {featuredPost.category} · {featuredPost.readTime}
-              </span>
-              <h2>{featuredPost.title}</h2>
-              <p>{featuredPost.excerpt}</p>
-            </div>
-            <Link to={`/blog/${featuredPost.slug}`}>
-              Read article
-              <ArrowRight aria-hidden='true' />
-            </Link>
-          </article>
-        )}
+        <div className='blog-tabs' role='tablist' aria-label='Article categories'>
+          {categories.map((category) => (
+            <button
+              className={activeCategory === category ? 'blog-tab active' : 'blog-tab'}
+              key={category}
+              type='button'
+              role='tab'
+              aria-selected={activeCategory === category}
+              onClick={() => setActiveCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
 
-        <section className='blog-grid' aria-label='Latest poker articles'>
-          {remainingPosts.map((post) => (
-            <article className='blog-card' key={post.slug}>
-              <span className='blog-meta'>
-                {post.category} · {post.readTime}
-              </span>
-              <h2>{post.title}</h2>
-              <p>{post.excerpt}</p>
-              <Link to={`/blog/${post.slug}`}>
-                Read more
+        <section className='blog-list' aria-label='Latest poker articles'>
+          {filteredPosts.map((post) => (
+            <article className='blog-list-item' key={post.slug}>
+              <time className='blog-date' dateTime={new Date(post.date).toISOString()}>
+                {post.date}
+              </time>
+              <div>
+                <h2>
+                  <Link to={`/blog/${post.slug}`}>{post.title}</Link>
+                </h2>
+                <p>{post.excerpt}</p>
+                <div className='blog-meta-row'>
+                  <span className='blog-category'>{post.category}</span>
+                  <span aria-hidden='true'>/</span>
+                  <span>{post.readTime}</span>
+                </div>
+              </div>
+              <Link className='blog-read-link' to={`/blog/${post.slug}`} aria-label={`Read ${post.title}`}>
                 <ArrowRight aria-hidden='true' />
               </Link>
             </article>
           ))}
+
+          {!filteredPosts.length && <p className='blog-empty'>No articles found.</p>}
         </section>
       </section>
     </main>

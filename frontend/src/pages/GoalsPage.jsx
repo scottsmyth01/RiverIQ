@@ -22,7 +22,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCreateGoal, useDeleteGoal, useGoals, useReorderGoals, useUpdateGoal } from '../hooks/useGoals';
-import { successToastWithUndo } from '../utils/toastWithUndo';
 
 const tabs = ['All Goals', 'Not Started', 'Active', 'Needs Attention', 'Completed'];
 const categoryOptions = ['All Categories', 'Preflop', 'Postflop', 'Results', 'Volume', 'Bankroll', 'Study'];
@@ -172,7 +171,10 @@ function GoalRow({ goal, isDragging, isMenuOpen, onDragEnd, onDragOver, onDragSt
           </span>
           <div>
             <strong>{goal.title}</strong>
-            <small>{goal.category}</small>
+            <small>
+              <span>{goal.category}</span>
+              {goal.source === 'ai' && <span className='goal-source-badge'>AI Coach</span>}
+            </small>
           </div>
         </div>
       </td>
@@ -341,29 +343,8 @@ const GoalsPage = () => {
 
     try {
       if (modalMode === 'edit') {
-        const previousGoal = goals.find((goal) => goal._id === editingId || goal.id === editingId);
-        const previousGoalData = previousGoal
-          ? {
-              title: previousGoal.title,
-              description: previousGoal.description,
-              category: previousGoal.category,
-              target: previousGoal.target,
-              current: previousGoal.current,
-              progress: previousGoal.progress,
-              status: previousGoal.status,
-              dueDate: previousGoal.dueDate || null,
-            }
-          : null;
-
         await updateGoalMutation.mutateAsync({ id: editingId, goalData });
-        successToastWithUndo('Goal updated', async () => {
-          if (!previousGoalData) return;
-          try {
-            await updateGoalMutation.mutateAsync({ id: editingId, goalData: previousGoalData });
-          } catch (undoError) {
-            toast.error(undoError.message || 'Could not undo goal update');
-          }
-        });
+        toast.success('Goal updated');
       } else {
         await createGoalMutation.mutateAsync(goalData);
       }

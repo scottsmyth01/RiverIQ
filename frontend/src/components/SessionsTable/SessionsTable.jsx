@@ -1,7 +1,7 @@
 import './SessionsTable.css';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { BarChart3, ChevronLeft, ChevronRight, ExternalLink, Lock, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { BarChart3, ChevronLeft, ChevronRight, ExternalLink, Lock, MoreVertical, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import SessionToolbar from './SessionToolbar';
@@ -78,6 +78,19 @@ function formatSessionTableSize(session) {
   return sessionTableSize === '2-Max' ? 'Heads Up' : sessionTableSize || 'N/A';
 }
 
+function getNativeStakesSymbol(stakes, currency) {
+  const stakesText = String(stakes);
+
+  if (stakesText.includes('C$')) return 'C$';
+  if (stakesText.includes('$')) return '$';
+  if (stakesText.includes('£')) return '£';
+  if (stakesText.includes('CN¥')) return 'CN¥';
+  if (stakesText.includes('¥')) return '¥';
+  if (stakesText.includes('₮')) return '₮';
+
+  return getCurrencySymbol(currency);
+}
+
 function formatNativeStakes(session) {
   if (!session.stakes) return 'N/A';
 
@@ -85,9 +98,7 @@ function formatNativeStakes(session) {
   const isCoinPoker = siteKey.includes('coinpoker') || siteKey.includes('coin poker');
   const rawCurrency = String(session.currency || '').trim().toUpperCase();
   const currency = isCoinPoker && (!rawCurrency || rawCurrency === 'USD' || rawCurrency === '$') ? 'USDT' : rawCurrency;
-  const symbol = getCurrencySymbol(currency);
-
-  if (!symbol) return session.stakes;
+  const symbol = getNativeStakesSymbol(session.stakes, currency);
 
   const amounts = String(session.stakes).match(/\d+(?:\.\d+)?/g);
   if (!amounts || amounts.length < 2) return session.stakes;
@@ -95,10 +106,10 @@ function formatNativeStakes(session) {
   const [smallBlind, bigBlind, ante] = amounts;
   const formattedStakes = `${symbol}${smallBlind}/${symbol}${bigBlind}`;
 
-  return ante ? `${formattedStakes} (${symbol}${ante})` : formattedStakes;
+  return Number(ante) > 0 ? `${formattedStakes} (${symbol}${ante})` : formattedStakes;
 }
 
-const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
+const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant, onPurgeSessions, isPurgingSessions = false }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const hasProMembership = user?.subscription === 'pro';
@@ -223,6 +234,23 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant }) => {
             <Link className='sessions-view-all-link' to='/dashboard/sessions'>
               View all
             </Link>
+          </div>
+        )}
+        {variant === 'sessions-page' && (
+          <div className='sessions-card-header__actions'>
+            <Link className='sessions-add-button' to='/dashboard/sessions/new'>
+              <Plus aria-hidden='true' />
+              <span>Add Session</span>
+            </Link>
+            <button
+              className='sessions-purge-button'
+              type='button'
+              disabled={!sessions.length || isPurgingSessions}
+              onClick={onPurgeSessions}
+            >
+              <Trash2 aria-hidden='true' />
+              <span>{isPurgingSessions ? 'Purging...' : 'Purge Sessions'}</span>
+            </button>
           </div>
         )}
       </div>
