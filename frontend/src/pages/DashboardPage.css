@@ -373,31 +373,33 @@
 }
 
 .dashboard-add-session {
-  min-width: 265px;
-  padding: 13px 22px;
-  display: flex;
+  min-width: 104px;
+  min-height: 36px;
+  padding: 0 12px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  color: var(--text-white);
-  background: linear-gradient(135deg, var(--gradient-cta-start), var(--gradient-cta-end));
-  border: 1px solid var(--theme-success-border-strong);
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  box-shadow: 0 9px 25px var(--accent-green-shadow-strong);
+  gap: 9px;
+  color: var(--text-on-primary);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+  border-radius: 6px;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  font: inherit;
+  font-weight: 800;
   transition:
     transform 160ms ease,
     filter 160ms ease;
 }
 
 .dashboard-add-session:hover {
-  filter: brightness(1.08);
+  filter: none;
   transform: translateY(-1px);
 }
 
 .dashboard-add-session svg {
-  width: 19px;
+  width: 15px;
+  height: 15px;
 }
 
 .dashboard-view-sessions {

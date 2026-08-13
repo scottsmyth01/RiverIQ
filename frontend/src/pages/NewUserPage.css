@@ -105,19 +105,21 @@
 }
 
 .new-user-add-session {
-  min-width: 210px;
-  min-height: 44px;
+  min-width: 104px;
+  min-height: 36px;
   margin-top: clamp(1.5rem, 3vh, 2rem);
-  padding: 0.75rem 1.4rem;
-  color: var(--text-primary);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-  border: 1px solid var(--success-bright-border);
-  border-radius: var(--radius-sm);
-  box-shadow:
-    0 10px 24px var(--accent-green-ring-soft),
-    inset 0 1px 0 var(--overlay-white-highlight);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: var(--text-on-primary);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+  border-radius: 6px;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  font: inherit;
+  font-weight: 800;
   transition:
     transform var(--transition),
     filter var(--transition),
@@ -125,11 +127,8 @@
 }
 
 .new-user-add-session:hover {
-  filter: brightness(1.08);
-  box-shadow:
-    0 12px 28px var(--accent-green-hover-shadow),
-    inset 0 1px 0 var(--overlay-white-highlight-strong);
-  transform: translateY(-2px);
+  filter: none;
+  transform: translateY(-1px);
 }
 
 .new-user-add-session:active {

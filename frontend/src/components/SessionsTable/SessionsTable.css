@@ -86,15 +86,28 @@
 }
 
 .sessions-add-button {
+  min-width: 104px;
+  min-height: 36px;
+  padding: 0 12px;
+  gap: 9px;
   color: var(--text-on-primary);
-  background: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+  border-radius: 6px;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  font: inherit;
+  font-weight: 800;
+}
+
+.sessions-purge-button {
+  font: inherit;
+  font-weight: 800;
 }
 
 .sessions-add-button:hover {
   color: var(--text-on-primary);
-  background: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
 }
 
 .sessions-purge-button:hover:not(:disabled) {

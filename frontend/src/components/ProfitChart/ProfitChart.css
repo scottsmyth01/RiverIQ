@@ -93,6 +93,11 @@
   outline-offset: 2px;
 }
 
+:root[data-theme='light'] .profit-expand-button,
+:root[data-theme='light'] .profit-expand-button:hover {
+  color: #0f172a;
+}
+
 .profit-period-buttons {
   min-height: 34px;
   padding: 4px;

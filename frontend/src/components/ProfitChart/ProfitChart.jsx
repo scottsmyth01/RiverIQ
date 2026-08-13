@@ -97,6 +97,24 @@ function formatHandsAxisLabel(label) {
   });
 }
 
+function getThemeColor(name, fallback) {
+  if (typeof window === 'undefined') return fallback;
+
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+
+function hexToRgba(hex, alpha) {
+  const normalizedHex = hex.replace('#', '').trim();
+
+  if (!/^[\da-f]{6}$/i.test(normalizedHex)) return hex;
+
+  const red = parseInt(normalizedHex.slice(0, 2), 16);
+  const green = parseInt(normalizedHex.slice(2, 4), 16);
+  const blue = parseInt(normalizedHex.slice(4, 6), 16);
+
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
 function getSessionTime(session) {
   const date = new Date(session.date || session.createdAt || session.updatedAt);
 
@@ -150,6 +168,8 @@ export default function ProfitChart({
   const chartGridColor = isLightTheme ? 'rgba(17, 24, 39, 0.14)' : 'rgba(148, 163, 184, 0.15)';
   const fullScreenTextColor = isLightTheme ? '#111827' : '#d8dee8';
   const fullScreenGridColor = isLightTheme ? '#d1d5db' : '#263545';
+  const chartLineColor = isLightTheme ? '#11d73c' : getThemeColor('--color-primary', '#00c853');
+  const chartFillColor = hexToRgba(chartLineColor, 0.16);
 
   useEffect(() => {
     //observes any HTML element with the data-theme attr. Without this the line graph would not know that the theme changed.
@@ -341,21 +361,21 @@ export default function ProfitChart({
         label: 'Total Profit', //main title
         data: getMetricValues(chartPoints, 'profit'),
         yAxisID: 'money', //axes ID
-        borderColor: '#39ff64', //color of the line
-        backgroundColor: '#39ff642a',
+        borderColor: chartLineColor, //color of the line
+        backgroundColor: chartFillColor,
         fill: true,
         tension: 0,
         pointRadius: isMobileChart ? 2 : 0,
         pointHoverRadius: 5,
         pointHitRadius: 16,
-        pointHoverBackgroundColor: '#39ff64',
+        pointHoverBackgroundColor: chartLineColor,
         pointHoverBorderColor: '#ffffff',
         pointHoverBorderWidth: 2,
         borderWidth: 1.5,
         metricKey: 'profit',
       },
     ],
-    [chartPoints, isMobileChart],
+    [chartFillColor, chartLineColor, chartPoints, isMobileChart],
   );
 
   // Exactly what Chart.js expects.

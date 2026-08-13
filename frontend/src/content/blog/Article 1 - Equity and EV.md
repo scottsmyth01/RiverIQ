@@ -87,6 +87,8 @@ Cost -> Pot odds -> Implied odds -> Expected Value (EV)
 
 Equity, expected value (EV), and pot odds form the foundation of profitable poker decisions. Instead of asking whether a particular play won or lost this time, start asking whether it was the most profitable decision over thousands of similar situations. Poker is a game of long-term averages, and short-term results are often influenced by variance. By consistently comparing your equity to the odds you’re being offered, and considering implied odds when appropriate, you’ll make better decisions, reduce costly mistakes, and build a fundamentally stronger poker strategy. Master these concepts first, and every advanced topic you learn afterward will become much easier to understand.
 
+Keep crushing!
+
 **Useful Links**
 
 Equity Calculator: https://openpokertools.com/equity

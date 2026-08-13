@@ -40,31 +40,31 @@
 }
 
 .goals-new-button {
-  height: 44px;
+  min-width: 104px;
+  min-height: 36px;
+  padding: 0 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
   border-radius: 6px;
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  color: var(--text-on-primary);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--color-primary) 20%, transparent);
   font: inherit;
-  font-size: 0.9rem;
-  font-weight: 850;
+  font-weight: 800;
   cursor: pointer;
 }
 
 .goals-new-button {
   flex: 0 0 auto;
   margin-top: 6px;
-  padding: 0 20px;
-  border: 1px solid color-mix(in srgb, var(--color-primary) 74%, transparent);
-  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary-dark));
-  color: var(--text-on-primary);
-  box-shadow: 0 14px 28px rgba(0, 200, 83, 0.18);
 }
 
 .goals-new-button svg {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   flex: 0 0 auto;
 }
 
