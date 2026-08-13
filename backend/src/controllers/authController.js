@@ -232,6 +232,21 @@ export const loginWithGoogle = async (req, res, next) => {
         password: hashedPassword,
         isEmailVerified: true,
       });
+
+      const setPasswordLink = createPasswordResetLink(user);
+      await sendPasswordResetEmail(user.email, setPasswordLink, {
+        subject: 'RiverIQ - Set your password',
+        previewText: 'Set a RiverIQ password for your new Google-created account. This secure link expires in 5 minutes.',
+        eyebrow: 'Set password',
+        title: 'Finish securing your account.',
+        body: 'Your RiverIQ account was created with Google. We generated a secure internal password for the account, but you can use the link below to choose your own password for email login.',
+        buttonText: 'Set my password',
+        securityText:
+          'For your security, this setup link can only be used while it is valid. If it expires, request a new password link from the RiverIQ login page.',
+        ignoreText:
+          '<strong style="color: #ffffff">Prefer Google sign-in?</strong> You can ignore this email and keep using Continue with Google.',
+        footerReason: 'You received this email because a RiverIQ account was created using Google sign-in.',
+      });
     } else if (!user.isEmailVerified) {
       user.isEmailVerified = true;
       user.verifyEmailToken = undefined;
@@ -261,7 +276,16 @@ export const logoutUser = async (req, res, next) => {
   }
 };
 
-const sendPasswordResetEmail = async (email, resetLink) => {
+function createPasswordResetLink(user) {
+  const secret = process.env.JWT_SECRET + user.password;
+  const token = jwt.sign({ email: user.email, id: user._id }, secret, {
+    expiresIn: '5m',
+  });
+
+  return `${process.env.FRONTEND_URL}/reset-password/${user._id}/${token}`;
+}
+
+const sendPasswordResetEmail = async (email, resetLink, content = {}) => {
   if (process.env.NODE_ENV === 'test') {
     return;
   }
@@ -273,7 +297,28 @@ const sendPasswordResetEmail = async (email, resetLink) => {
   const client = new Cloudflare({
     apiToken,
   });
+  const {
+    subject = 'RiverIQ - Here is your password reset link',
+    previewText = 'Reset your RiverIQ password. This secure link expires in 5 minutes.',
+    eyebrow = 'Password reset',
+    title = 'Let’s get you back in.',
+    body = 'We received a request to reset the password for your RiverIQ account. Use the secure link below to choose a new password and get back to tracking your game.',
+    buttonText = 'Reset my password',
+    securityTitle = 'This link expires in 5 minutes',
+    securityText = 'For your security, this reset link can only be used while it is valid. If it expires, request a new one from the RiverIQ login page.',
+    ignoreText = '<strong style="color: #ffffff">Didn’t request this reset?</strong> You can safely ignore this email. Your password will remain unchanged.',
+    footerReason = 'You received this email because a password reset was requested for your RiverIQ account.',
+  } = content;
   const pwResetEmail = readFileSync(new URL('../data/password-reset-email.html', import.meta.url), 'utf8')
+    .replaceAll('{{preview_text}}', () => escapeHtml(previewText))
+    .replaceAll('{{email_eyebrow}}', () => escapeHtml(eyebrow))
+    .replaceAll('{{email_title}}', () => escapeHtml(title))
+    .replaceAll('{{email_body}}', () => escapeHtml(body))
+    .replaceAll('{{button_text}}', () => escapeHtml(buttonText))
+    .replaceAll('{{security_title}}', () => escapeHtml(securityTitle))
+    .replaceAll('{{security_text}}', () => escapeHtml(securityText))
+    .replaceAll('{{ignore_text}}', () => ignoreText)
+    .replaceAll('{{footer_reason}}', () => escapeHtml(footerReason))
     .replaceAll('{{reset_url}}', () => escapeHtml(resetLink))
     .replaceAll('{{current_year}}', () => escapeHtml(new Date().getFullYear().toString()));
 
@@ -281,7 +326,7 @@ const sendPasswordResetEmail = async (email, resetLink) => {
     account_id: 'a6dbd6263cba6aeb30176d034c765748',
     from: 'RiverIQ <support@riveriq.app>',
     to: email,
-    subject: 'RiverIQ - Here is your password reset link',
+    subject,
     html: pwResetEmail,
   });
 };
@@ -337,11 +382,7 @@ export const forgotPassword = async (req, res, next) => {
     const user = await User.findOne({ email }).select('+password');
     if (!user) return res.status(401).json({ field: 'email', message: 'Invalid email' });
 
-    const secret = process.env.JWT_SECRET + user.password;
-    const token = jwt.sign({ email: user.email, id: user._id }, secret, {
-      expiresIn: '5m',
-    });
-    const link = `${process.env.FRONTEND_URL}/reset-password/${user._id}/${token}`;
+    const link = createPasswordResetLink(user);
 
     await sendPasswordResetEmail(user.email, link);
 

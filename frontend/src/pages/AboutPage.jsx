@@ -52,7 +52,7 @@ const AboutPage = () => {
               of hands but tough to know what’s actually working.
             </p>
             <p>
-              That’s why we created RiverIQ—to help you track every session, analyze your game, find leaks, and make
+              That’s why we created RiverIQ, to help you track every session, analyze your game, find leaks, and make
               better decisions so you can win more.
             </p>
             <Link className='about-primary-button' to='/register'>
@@ -142,7 +142,7 @@ const AboutPage = () => {
               leaks were, or how we compared to tougher players.
             </p>
             <p>
-              We couldn’t find a tool that was easy to use, actually helpful, and made for real players—not just pros.
+              We couldn’t find a tool that was easy to use, actually helpful, and made for real players, not just pros.
               So we built RiverIQ.
             </p>
             <p>Today, we’re proud to help thousands of players around the world turn data into an edge.</p>
