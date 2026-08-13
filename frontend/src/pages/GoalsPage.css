@@ -1010,11 +1010,17 @@
   .goals-table-scroll {
     min-height: 0;
     max-height: none;
-    overflow: visible;
+    overflow: auto;
   }
 
   .goals-result-count {
     padding: 10px 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  .goals-table-scroll {
+    overflow: visible;
   }
 
   .goals-table {

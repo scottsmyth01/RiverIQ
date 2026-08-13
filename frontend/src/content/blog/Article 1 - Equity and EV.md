@@ -4,7 +4,7 @@ slug: equity-and-ev
 excerpt: Learn the fundamentals of poker equity, expected value (EV) and odds, and discover how these concepts help you make more profitable decisions at the table.
 category: Fundamentals
 date: August 12, 2026
-readTime: 15 min read
+readTime: 10 min read
 author: RiverIQ
 ---
 
@@ -84,6 +84,8 @@ How much does it cost? -> how much can I win right now? -> Can I win more later?
 Or in poker terms:
 
 Cost -> Pot odds -> Implied odds -> Expected Value (EV)
+
+Equity, expected value (EV), and pot odds form the foundation of profitable poker decisions. Instead of asking whether a particular play won or lost this time, start asking whether it was the most profitable decision over thousands of similar situations. Poker is a game of long-term averages, and short-term results are often influenced by variance. By consistently comparing your equity to the odds you’re being offered—and considering implied odds when appropriate—you’ll make better decisions, reduce costly mistakes, and build a fundamentally stronger poker strategy. Master these concepts first, and every advanced topic you learn afterward will become much easier to understand.
 
 **Useful Links**
 
