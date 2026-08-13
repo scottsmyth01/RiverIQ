@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight, Search, Spade } from 'lucide-react';
 import { Link } from 'react-router';
-import { blogPosts } from '../data/blogPosts';
+import { blogPosts } from '../content/blog/blogPosts';
 import './BlogPage.css';
 
 const categories = ['All', ...Array.from(new Set(blogPosts.map((post) => post.category)))];
@@ -17,7 +17,9 @@ const BlogPage = () => {
       const matchesCategory = activeCategory === 'All' || post.category === activeCategory;
       const matchesSearch =
         !query ||
-        [post.title, post.excerpt, post.category].some((value) => value.toLowerCase().includes(query));
+        [post.title, post.excerpt, post.category, post.contentText].some((value) =>
+          value.toLowerCase().includes(query),
+        );
 
       return matchesCategory && matchesSearch;
     });

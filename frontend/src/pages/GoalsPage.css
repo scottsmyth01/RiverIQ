@@ -621,6 +621,10 @@
   color: var(--danger-bright);
 }
 
+.goal-row-menu button.goal-row-menu__complete {
+  color: var(--color-primary-hover);
+}
+
 .goal-row-menu button:hover {
   color: var(--text-white);
   background: var(--overlay-white);
@@ -1295,6 +1299,10 @@
 :root[data-theme='light'] .goal-row-menu button {
   border-color: #e2e8f0;
   color: #1e293b;
+}
+
+:root[data-theme='light'] .goal-row-menu button.goal-row-menu__complete {
+  color: #15803d;
 }
 
 :root[data-theme='light'] .goal-status--green {

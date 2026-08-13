@@ -1,6 +1,8 @@
 import { ArrowLeft } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { Link, Navigate, useParams } from 'react-router';
-import { getBlogPost } from '../data/blogPosts';
+import remarkBreaks from 'remark-breaks';
+import { getBlogPost } from '../content/blog/blogPosts';
 import './BlogPage.css';
 
 const BlogPostPage = () => {
@@ -31,12 +33,7 @@ const BlogPostPage = () => {
         </header>
 
         <div className='blog-article-body'>
-          {post.content.map((section) => (
-            <section key={section.heading}>
-              <h2>{section.heading}</h2>
-              <p>{section.body}</p>
-            </section>
-          ))}
+          <ReactMarkdown remarkPlugins={[remarkBreaks]}>{post.body}</ReactMarkdown>
         </div>
       </article>
     </main>

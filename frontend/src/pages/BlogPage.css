@@ -234,19 +234,50 @@
   padding-top: 1rem;
 }
 
-.blog-article-body section {
-  padding-top: 1.75rem;
-}
-
 .blog-article-body h2 {
-  margin: 0 0 0.6rem;
+  margin: 2rem 0 0.6rem;
   font-size: clamp(1.45rem, 3vw, 2rem);
   letter-spacing: 0;
 }
 
-.blog-article-body p {
+.blog-article-body h3 {
+  margin: 1.5rem 0 0.5rem;
+  color: var(--text-white);
+  font-size: var(--font-size-xl);
+  letter-spacing: 0;
+}
+
+.blog-article-body p,
+.blog-article-body li {
   color: var(--text-soft-muted);
   line-height: 1.8;
+}
+
+.blog-article-body p + p {
+  margin-top: 1rem;
+}
+
+.blog-article-body p + ul,
+.blog-article-body p + ol,
+.blog-article-body ul + p,
+.blog-article-body ol + p {
+  margin-top: 1rem;
+}
+
+.blog-article-body br {
+  display: block;
+  content: '';
+  margin-top: 0.45rem;
+}
+
+.blog-article-body ul,
+.blog-article-body ol {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.blog-article-body li + li {
+  margin-top: 0.4rem;
 }
 
 @media (max-width: 760px) {

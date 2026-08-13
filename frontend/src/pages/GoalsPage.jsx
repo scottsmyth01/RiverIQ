@@ -23,7 +23,7 @@ import {
 import { toast } from 'sonner';
 import { useCreateGoal, useDeleteGoal, useGoals, useReorderGoals, useUpdateGoal } from '../hooks/useGoals';
 
-const tabs = ['All Goals', 'Not Started', 'Active', 'Needs Attention', 'Completed'];
+const tabs = ['Active', 'All Goals', 'Not Started', 'Needs Attention', 'Completed'];
 const categoryOptions = ['All Categories', 'Preflop', 'Postflop', 'Results', 'Volume', 'Bankroll', 'Study'];
 const sortOptions = ['Custom Order', 'Recently Created', 'Due Date'];
 
@@ -150,7 +150,19 @@ function SummaryCard({ card }) {
   );
 }
 
-function GoalRow({ goal, isDragging, isMenuOpen, onDragEnd, onDragOver, onDragStart, onDrop, onEdit, onMenuToggle, onRemove }) {
+function GoalRow({
+  goal,
+  isDragging,
+  isMenuOpen,
+  onComplete,
+  onDragEnd,
+  onDragOver,
+  onDragStart,
+  onDrop,
+  onEdit,
+  onMenuToggle,
+  onRemove,
+}) {
   const Icon = iconByCategory[goal.category] ?? Target;
   const iconTone = iconToneByCategory[goal.category] ?? 'blue';
   const statusTone = statusToneByStatus[goal.status] ?? 'gray';
@@ -217,6 +229,12 @@ function GoalRow({ goal, isDragging, isMenuOpen, onDragEnd, onDragOver, onDragSt
           </button>
           {isMenuOpen && (
             <div className='goal-row-menu'>
+              {goal.status !== 'Completed' && (
+                <button className='goal-row-menu__complete' type='button' onClick={() => onComplete(goal)}>
+                  <CheckCircle2 aria-hidden='true' />
+                  <span>Complete</span>
+                </button>
+              )}
               <button type='button' onClick={() => onEdit(goal)}>
                 <Pencil aria-hidden='true' />
                 <span>Edit</span>
@@ -240,7 +258,7 @@ const GoalsPage = () => {
   const deleteGoalMutation = useDeleteGoal();
   const reorderGoalsMutation = useReorderGoals();
   const isSavingGoal = createGoalMutation.isPending || updateGoalMutation.isPending;
-  const [activeTab, setActiveTab] = useState('All Goals');
+  const [activeTab, setActiveTab] = useState('Active');
   const [category, setCategory] = useState('All Categories');
   const [sortBy, setSortBy] = useState('Custom Order');
   const [openMenu, setOpenMenu] = useState(null);
@@ -362,6 +380,28 @@ const GoalsPage = () => {
       setRowMenuId(null);
     } catch (mutationError) {
       console.error(mutationError);
+    }
+  }
+
+  async function handleComplete(goal) {
+    const goalData = {
+      title: goal.title,
+      description: goal.description || 'Focus for this goal',
+      category: goal.category,
+      target: goal.target,
+      current: goal.current || goal.target,
+      progress: 100,
+      status: 'Completed',
+      dueDate: goal.dueDate || null,
+    };
+
+    try {
+      await updateGoalMutation.mutateAsync({ id: getGoalId(goal), goalData });
+      setRowMenuId(null);
+      toast.success('Goal completed');
+    } catch (mutationError) {
+      console.error(mutationError);
+      toast.error(mutationError.message || 'Could not complete goal');
     }
   }
 
@@ -552,6 +592,7 @@ const GoalsPage = () => {
                   isDragging={draggedGoalId === getGoalId(goal)}
                   isMenuOpen={rowMenuId === goal._id}
                   key={goal._id}
+                  onComplete={handleComplete}
                   onDragEnd={() => setDraggedGoalId(null)}
                   onDragOver={handleGoalDragOver}
                   onDragStart={handleGoalDragStart}
