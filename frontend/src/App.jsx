@@ -20,6 +20,7 @@ import ReportsPage from './pages/ReportsPage';
 import SavedReportsPage from './pages/SavedReportsPage';
 import GoalsPage from './pages/GoalsPage';
 import HandChartsPage from './pages/HandChartsPage';
+import LearnPage from './pages/LearnPage';
 import PaymentPage from './pages/PaymentPage';
 import SupportInboxPage from './pages/SupportInboxPage';
 import SupportChat from './components/SupportChat/SupportChat';
@@ -177,6 +178,7 @@ function AppRoutes() {
                 />
                 <Route path='reports/saved' element={<Navigate to='/dashboard/reports' replace />} />
                 <Route path='goals' element={<GoalsPage />} />
+                <Route path='learn' element={<LearnPage />} />
                 <Route
                   path='hand-history'
                   element={
