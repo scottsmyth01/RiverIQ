@@ -145,9 +145,10 @@
   justify-content: center;
   gap: 6px;
   color: var(--text-on-primary);
-  background: var(--success-bright);
-  border: 1px solid var(--theme-submit-border);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
   border-radius: 6px;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--color-primary) 20%, transparent);
   font-size: 0.7rem;
   font-weight: 800;
   line-height: 1;
@@ -163,7 +164,7 @@
 }
 
 .sessions-view-all-link:focus-visible {
-  outline: 2px solid var(--success-bright);
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 68%, transparent);
   outline-offset: 2px;
 }
 
@@ -552,6 +553,12 @@
   height: 16px;
 }
 
+:root[data-theme='light'] .sessions-details-button,
+:root[data-theme='light'] .sessions-details-button:hover {
+  color: #0f172a;
+  border-color: #374151;
+}
+
 .sessions-actions-menu {
   position: absolute;
   top: calc(100% - 8px);
@@ -645,10 +652,11 @@
   height: 34px;
   display: grid;
   place-items: center;
-  color: var(--text-control);
-  background: var(--surface-toolbar);
-  border: 1px solid var(--theme-border-card);
+  color: var(--text-on-primary);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
   border-radius: 6px;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--color-primary) 20%, transparent);
   font-size: 0.78rem;
   transition:
     color 160ms ease,
@@ -658,23 +666,27 @@
 }
 
 .sessions-pagination button:hover {
-  color: var(--text-white);
-  background: var(--surface-row-hover);
-  border-color: var(--theme-hover-border);
+  color: var(--text-on-primary);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
   transform: translateY(-1px);
 }
 
 .sessions-pagination button:disabled {
+  color: var(--text-table-muted);
+  background: var(--surface-toolbar);
+  border-color: var(--theme-border-card);
+  box-shadow: none;
   opacity: 0.35;
   cursor: not-allowed;
   transform: none;
 }
 
 .sessions-pagination button.active {
-  color: var(--text-white);
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  box-shadow: 0 0 14px var(--accent-green-shadow-bold);
+  color: var(--text-on-primary);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--color-primary) 20%, transparent);
   font-weight: 700;
 }
 
