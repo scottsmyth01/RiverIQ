@@ -233,11 +233,11 @@
     --bg-card: #ffffff;
     --bg-card-hover: #f1f5f9;
     --bg-navbar: rgba(255, 255, 255, 0.9);
-    --color-primary: #1cb135;
-    --color-primary-hover: #1fb41f;
-    --color-primary-dark: #4ce722;
-    --success: #4ce722;
-    --success-bright: #3eff09;
+    --color-primary: rgba(95, 187, 105);
+    --color-primary-hover: rgba(95, 187, 105);
+    --color-primary-dark: rgba(95, 187, 105);
+    --success: rgba(95, 187, 105);
+    --success-bright: #1cb135;
     --success-accent: #008339;
 
     --text-primary: #0f172a;
