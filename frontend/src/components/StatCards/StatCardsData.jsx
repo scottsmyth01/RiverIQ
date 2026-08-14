@@ -23,12 +23,14 @@ export const getStatCards = (sessions = [], currency = 'USD') => {
   }, 0);
 
   const bb100 = (totalBbWon / totalHands) * 100; //calculate BB100
+  const winRate = Number.isFinite(bb100) ? bb100 : 0;
 
   return [
     {
       id: 'total-profit',
       title: 'Total Profit',
       value: totalProfit,
+      tone: totalProfit < 0 ? 'negative' : 'positive',
       formatValue: (value) => formatCurrency(value, currency),
       icon: <TrendingUp />,
       iconColor: '#00ff37',
@@ -36,7 +38,8 @@ export const getStatCards = (sessions = [], currency = 'USD') => {
     {
       id: 'win-rate',
       title: 'Win Rate',
-      value: bb100,
+      value: winRate,
+      tone: winRate < 0 ? 'negative' : 'positive',
       formatValue: (value) => `${value.toFixed(2)} bb/100`,
       icon: <Star />,
       iconColor: '#3b82f6',

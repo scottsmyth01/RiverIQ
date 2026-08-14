@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  BarChart3,
-  Clock,
-  CloudUpload,
-  LoaderCircle,
-  Lock,
-  Mail,
-  MailCheck,
-  ShieldCheck,
-  Spade,
-} from 'lucide-react';
+import { BarChart3, Clock, CloudUpload, LoaderCircle, Lock, Mail, MailCheck, ShieldCheck, Spade } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { GoogleLogin } from '@react-oauth/google';
 import './UserAuthPage.css';
@@ -207,6 +197,7 @@ const UserAuthPage = () => {
           </div>
         </section>
 
+        {/* Log in / create account buttons at the top of the form */}
         <section className='auth-panel'>
           <div className='auth-tabs' role='tablist' aria-label='Authentication options'>
             <button
@@ -229,6 +220,8 @@ const UserAuthPage = () => {
             </button>
           </div>
 
+          {/* Password reset */}
+
           {authMode === 'forgot' && resetLinkSent ? (
             <div className='auth-reset-success' role='status'>
               <MailCheck aria-hidden='true' />
@@ -238,11 +231,13 @@ const UserAuthPage = () => {
                 Back to login
               </button>
             </div>
-          ) : authMode === 'register' && isRegisterSubmitting ? (
+          ) : // loading spinner
+          authMode === 'register' && isRegisterSubmitting ? (
             <div className='auth-register-loading' role='status' aria-label='Creating your account'>
               <LoaderCircle aria-hidden='true' />
             </div>
           ) : (
+            // USER AUTH FORM
             <form noValidate className='auth-form' onSubmit={handleSubmit(submitForm)}>
               <div className='auth-form-heading'>
                 <h2>
@@ -260,7 +255,7 @@ const UserAuthPage = () => {
                       : 'Enter your email and we’ll send you a password reset link'}
                 </p>
               </div>
-
+              {/* Form for registering a new user */}
               {authMode === 'register' && (
                 <label className={`auth-field ${fieldErrors.username ? 'has-error' : ''}`}>
                   <span>Username</span>
@@ -406,7 +401,9 @@ const UserAuthPage = () => {
                     <span>or</span>
                   </div>
 
-                  <div className={`social-auth-button social-auth-button--google${googleLoginLoading ? ' loading' : ''}`}>
+                  <div
+                    className={`social-auth-button social-auth-button--google${googleLoginLoading ? ' loading' : ''}`}
+                  >
                     {googleLoginLoading ? (
                       <>
                         <LoaderCircle aria-hidden='true' />

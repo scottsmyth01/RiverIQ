@@ -1,5 +1,4 @@
 import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
 import {
   getMe,
   registerUser,
@@ -13,12 +12,7 @@ import {
   cancelSubscription,
   createBillingPortalSession,
 } from '../api/authApi.js';
-import {
-  updateSettings,
-  updateBankroll,
-  uploadAvatar,
-  deleteAvatar,
-} from '../api/settingsApi.js';
+import { updateSettings, updateBankroll, uploadAvatar, deleteAvatar } from '../api/settingsApi.js';
 
 export function useAuth() {
   const queryClient = useQueryClient();

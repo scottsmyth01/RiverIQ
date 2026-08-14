@@ -46,7 +46,9 @@ const StatCards = ({ sessions = [], periods = [], selectedPeriod = 'all-time', s
             <div className='stat-card-copy'>
               <h3 className='stat-card-title'>{card.title}</h3>
 
-              <h3 className='stat-card-value'>{card.formatValue(card.value)}</h3>
+              <h3 className={`stat-card-value ${card.tone ? `stat-card-value--${card.tone}` : ''}`}>
+                {card.formatValue(card.value)}
+              </h3>
             </div>
 
             <div className='icon-background' style={{ '--stat-icon-color': card.iconColor }}>

@@ -23,7 +23,6 @@ import HandChartsPage from './pages/HandChartsPage';
 import LearnPage from './pages/LearnPage';
 import PaymentPage from './pages/PaymentPage';
 import SupportInboxPage from './pages/SupportInboxPage';
-import SupportChat from './components/SupportChat/SupportChat';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
@@ -208,7 +207,6 @@ function App() {
       <Elements stripe={stripePromise}>
         <ScrollToTop />
         <AppRoutes />
-        <SupportChat />
       </Elements>
     </BrowserRouter>
   );

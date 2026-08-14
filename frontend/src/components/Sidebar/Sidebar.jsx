@@ -7,13 +7,14 @@ import { useAuth } from '../../hooks/useAuth';
 import { useSupportConversations } from '../../hooks/useSupport';
 
 const lockedItemTitles = new Set(['Analytics', 'Reports', 'Hand Charts']);
+const showSupportSidebarItem = false;
 
 const Sidebar = () => {
   const { data: sessions = [] } = useSessions();
   const { user } = useAuth();
   const hasProMembership = user?.subscription === 'pro';
   const hasUploadedSession = sessions.length > 0;
-  const canUseSupportInbox = user?.role === 'admin' || user?.role === 'support';
+  const canUseSupportInbox = showSupportSidebarItem && (user?.role === 'admin' || user?.role === 'support');
   const { data: openSupportConversations = [] } = useSupportConversations('open', {
     enabled: canUseSupportInbox,
   });

@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import { useAddSession, useSessions } from '../hooks/useSessions';
 import { useAuth } from '../hooks/useAuth';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
-import { openSupportChat } from '../utils/supportChat';
 import './AddSessionPage.css';
 
 const FREE_SESSION_LIMIT = 20;
@@ -122,21 +121,22 @@ const AddSessionPage = () => {
   const { mutateAsync: addSession, isPending } = useAddSession();
   const hasReachedFreeSessionLimit = user?.subscription !== 'pro' && sessions.length >= FREE_SESSION_LIMIT;
 
-  function openUploadSupport(error) {
-    openSupportChat({
-      topic: 'session-upload',
-      message: error
-        ? `A ${selectedPokerSite} hand history file failed to parse.`
-        : `I need help uploading a ${selectedPokerSite} hand history file.`,
-      sendOnOpen: Boolean(error),
-      metadata: {
-        pokerSite: selectedPokerSite,
-        selectedFileCount: handHistoryFiles.length,
-        selectedFileTypes: handHistoryFiles.map((file) => file.name.split('.').pop()?.toLowerCase()).join(', '),
-        errorCode: error?.code || '',
-        errorMessage: error?.message || '',
-      },
-    });
+  function openUploadSupportEmail(error) {
+    const subject = encodeURIComponent('RiverIQ hand history upload support');
+    const body = encodeURIComponent(
+      [
+        `Account email: ${user?.email || ''}`,
+        `Poker site: ${selectedPokerSite}`,
+        `Selected file count: ${handHistoryFiles.length}`,
+        `Selected file types: ${handHistoryFiles.map((file) => file.name.split('.').pop()?.toLowerCase()).join(', ')}`,
+        `Error code: ${error?.code || ''}`,
+        `Error message: ${error?.message || ''}`,
+        '',
+        'What happened:',
+      ].join('\n'),
+    );
+
+    window.location.href = `mailto:support@riveriq.com?subject=${subject}&body=${body}`;
   }
 
   function handleDetailsChange(event) {
@@ -244,10 +244,10 @@ const AddSessionPage = () => {
 
       if (isParseError(error)) {
         toast('Want to send this to support?', {
-          description: 'Open RiverIQ support and we will tell you what to include.',
+          description: 'Email RiverIQ support and we will tell you what to include.',
           action: {
             label: 'Report issue',
-            onClick: () => openUploadSupport(error),
+            onClick: () => openUploadSupportEmail(error),
           },
           duration: 12000,
         });
@@ -283,14 +283,13 @@ const AddSessionPage = () => {
           <p>Upload one or more hand history files. RiverIQ will create each detected session.</p>
         </div>
         <div className='add-session-heading-actions'>
-          <button
+          <Link
             className='add-session-help-link'
-            type='button'
-            onClick={() => openUploadSupport()}
+            to='/dashboard/help#hand-history-uploads'
           >
             <CircleHelp aria-hidden='true' />
             Need help?
-          </button>
+          </Link>
         </div>
       </header>
 

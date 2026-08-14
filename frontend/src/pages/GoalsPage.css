@@ -298,7 +298,8 @@
   flex: 1 1 auto;
   min-height: 260px;
   max-height: min(52vh, 560px);
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .goals-result-count {
@@ -311,7 +312,7 @@
 
 .goals-table {
   width: 100%;
-  min-width: 1040px;
+  min-width: 0;
   border-collapse: collapse;
   table-layout: fixed;
   font-size: 0.82rem;
@@ -319,7 +320,7 @@
 
 .goals-table th:nth-child(1),
 .goals-table td:nth-child(1) {
-  width: 28%;
+  width: 24%;
 }
 
 .goals-table th:nth-child(2),
@@ -329,7 +330,7 @@
 
 .goals-table th:nth-child(3),
 .goals-table td:nth-child(3) {
-  width: 30%;
+  width: 29%;
 }
 
 .goals-table th:nth-child(4),
@@ -339,20 +340,21 @@
 
 .goals-table th:nth-child(5),
 .goals-table td:nth-child(5) {
-  width: 14%;
+  width: 15%;
 }
 
 .goals-table th:nth-child(6),
 .goals-table td:nth-child(6) {
-  width: 6%;
+  width: 10%;
 }
 
 .goals-table th,
 .goals-table td {
-  padding: 14px 18px;
+  padding: 14px;
   text-align: left;
   border-bottom: 1px solid var(--border-row-alpha);
   vertical-align: middle;
+  overflow-wrap: anywhere;
 }
 
 .goals-table th {
@@ -756,39 +758,8 @@
   line-height: 1.5;
 }
 
-.goals-empty-state__button {
-  min-height: 42px;
+.goals-empty-state .goals-new-button {
   margin-top: 8px;
-  padding: 0 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: var(--text-on-primary);
-  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary-dark));
-  border: 1px solid color-mix(in srgb, var(--color-primary) 74%, transparent);
-  border-radius: 6px;
-  box-shadow: 0 14px 28px rgba(0, 200, 83, 0.18);
-  font: inherit;
-  font-size: 0.86rem;
-  font-weight: 900;
-  cursor: pointer;
-  transition:
-    transform var(--transition),
-    filter var(--transition),
-    box-shadow var(--transition);
-}
-
-.goals-empty-state__button:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 16px 32px rgba(0, 200, 83, 0.24);
-  transform: translateY(-1px);
-}
-
-.goals-empty-state__button svg {
-  width: 17px;
-  height: 17px;
-  stroke-width: 3;
 }
 
 .goal-modal-backdrop {
@@ -1064,7 +1035,7 @@
   .goals-table-scroll {
     min-height: 0;
     max-height: none;
-    overflow: auto;
+    overflow: visible;
   }
 
   .goals-result-count {
@@ -1072,7 +1043,7 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 720px) {
   .goals-table-scroll {
     overflow: visible;
   }

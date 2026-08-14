@@ -611,7 +611,7 @@ const GoalsPage = () => {
               </span>
               <h2>No goals at the moment</h2>
               <p>Start with one clear target and track it from your dashboard.</p>
-              <button className='goals-empty-state__button' type='button' onClick={openNewGoalModal}>
+              <button className='goals-new-button' type='button' onClick={openNewGoalModal}>
                 <Plus aria-hidden='true' />
                 <span>Add First Goal</span>
               </button>
