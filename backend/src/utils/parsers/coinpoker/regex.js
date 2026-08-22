@@ -15,4 +15,5 @@ export const REGEX = {
   river: /\*\*\* RIVER \*\*\* \[[^\]]+\] \[([^\]]+)\]\r?\n([\s\S]*?)(?=\*\*\* SHOWDOWN \*\*\*|\*\*\* SUMMARY \*\*\*)/,
   showdown: /\*\*\* SHOWDOWN \*\*\*([\s\S]*?)(?=\*\*\* SUMMARY \*\*\*|$)/,
   summary: /\*\*\* SUMMARY \*\*\*([\s\S]*)$/,
+  useCollectedAmounts: true,
 };

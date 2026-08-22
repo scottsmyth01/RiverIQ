@@ -31,6 +31,21 @@ Whenever the component renders, it follows this sequence:
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Filler, Legend);
 
+const chartAreaBorderPlugin = {
+  id: 'chartAreaBorder',
+  afterDraw(chart, args, options) {
+    const { ctx, chartArea } = chart;
+
+    if (!chartArea) return;
+
+    ctx.save();
+    ctx.strokeStyle = options.borderColor;
+    ctx.lineWidth = options.borderWidth;
+    ctx.strokeRect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
+    ctx.restore();
+  },
+};
+
 // returns key value of specified key
 /*
 Example:
@@ -103,18 +118,6 @@ function getThemeColor(name, fallback) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 }
 
-function hexToRgba(hex, alpha) {
-  const normalizedHex = hex.replace('#', '').trim();
-
-  if (!/^[\da-f]{6}$/i.test(normalizedHex)) return hex;
-
-  const red = parseInt(normalizedHex.slice(0, 2), 16);
-  const green = parseInt(normalizedHex.slice(2, 4), 16);
-  const blue = parseInt(normalizedHex.slice(4, 6), 16);
-
-  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
-}
-
 function getSessionTime(session) {
   const date = new Date(session.date || session.createdAt || session.updatedAt);
 
@@ -164,12 +167,12 @@ export default function ProfitChart({
 
   // change graph colors based on selected theme.
   const isLightTheme = theme === 'light';
-  const chartTextColor = isLightTheme ? '#111827' : '#cbd5e1';
+  const chartTextColor = isLightTheme ? '#111827' : '#5f5f5f';
   const chartGridColor = isLightTheme ? 'rgba(17, 24, 39, 0.14)' : 'rgba(148, 163, 184, 0.15)';
   const fullScreenTextColor = isLightTheme ? '#111827' : '#d8dee8';
   const fullScreenGridColor = isLightTheme ? '#d1d5db' : '#263545';
-  const chartLineColor = isLightTheme ? '#11d73c' : getThemeColor('--color-primary', '#00c853');
-  const chartFillColor = hexToRgba(chartLineColor, 0.16);
+  const lightChartLineColor = '#13e044';
+  const chartLineColor = isLightTheme ? lightChartLineColor : getThemeColor('--color-primary', '#00c853');
 
   useEffect(() => {
     //observes any HTML element with the data-theme attr. Without this the line graph would not know that the theme changed.
@@ -254,6 +257,7 @@ export default function ProfitChart({
       const formattedDate = formatChartDate(sessionDate); //formatted date
       const sessionHands = Number(session.hands ?? session.stats?.handsPlayed) || 0; //get number of hands played
       const sessionProfit = Number(session.profit) || 0; //get session profit
+      const sessionProfitAdjustment = Number(session.profitAdjustment) || 0;
       const handResults = Array.isArray(session.handResults) ? session.handResults : [];
       const previousHands = runningHands;
 
@@ -269,7 +273,9 @@ export default function ProfitChart({
 
       points.forEach((point, pointIndex) => {
         const handProfit = Number(point.profit);
-        const pointProfit = Number.isFinite(handProfit) ? handProfit : 0;
+        const isLastHandPoint = handResults.length && pointIndex === points.length - 1;
+        const pointProfit =
+          (Number.isFinite(handProfit) ? handProfit : 0) + (isLastHandPoint ? sessionProfitAdjustment : 0);
         const handCount = handResults.length ? previousHands + pointIndex + 1 : previousHands + sessionHands;
 
         runningProfit += pointProfit; //running profit value
@@ -334,12 +340,17 @@ export default function ProfitChart({
         return {};
       }
 
-      const min = range.min;
-      const max = range.max;
+      const maxAbsValue = Math.max(Math.abs(range.min), Math.abs(range.max));
+      const intervalCountPerSide = 2;
+      const tickInterval = Math.max(10, Math.ceil(maxAbsValue / intervalCountPerSide / 10) * 10);
+      const roundedMaxAbsValue = tickInterval * intervalCountPerSide;
 
       return {
-        min: min < 0 ? Math.floor(min / 10) * 10 : 0,
-        max: max > 0 ? Math.ceil(max / 10) * 10 : 0,
+        min: -roundedMaxAbsValue,
+        max: roundedMaxAbsValue,
+        ticks: {
+          stepSize: tickInterval,
+        },
       };
     }
 
@@ -362,20 +373,20 @@ export default function ProfitChart({
         data: getMetricValues(chartPoints, 'profit'),
         yAxisID: 'money', //axes ID
         borderColor: chartLineColor, //color of the line
-        backgroundColor: chartFillColor,
-        fill: true,
+        backgroundColor: 'transparent',
+        fill: false,
         tension: 0,
-        pointRadius: isMobileChart ? 2 : 0,
+        pointRadius: 0,
         pointHoverRadius: 5,
         pointHitRadius: 16,
         pointHoverBackgroundColor: chartLineColor,
         pointHoverBorderColor: '#ffffff',
         pointHoverBorderWidth: 2,
-        borderWidth: 1.5,
+        borderWidth: 1.8,
         metricKey: 'profit',
       },
     ],
-    [chartFillColor, chartLineColor, chartPoints, isMobileChart],
+    [chartLineColor, chartPoints],
   );
 
   // Exactly what Chart.js expects.
@@ -411,10 +422,24 @@ export default function ProfitChart({
   function getChartOptions({ fullScreen = false } = {}) {
     const textColor = fullScreen ? fullScreenTextColor : chartTextColor;
     const gridColor = fullScreen ? fullScreenGridColor : chartGridColor;
+    const axisColor = fullScreen
+      ? fullScreenTextColor
+      : isLightTheme
+        ? 'rgba(17, 24, 39, 0.82)'
+        : 'rgba(226, 232, 240, 0.72)';
+    const zeroLineColor = '#000000';
 
     return {
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+        padding: {
+          top: 6,
+          right: 4,
+          bottom: 0,
+          left: 2,
+        },
+      },
       interaction: {
         mode: 'index',
         intersect: false,
@@ -430,6 +455,10 @@ export default function ProfitChart({
             boxWidth: 28,
             usePointStyle: false,
           },
+        },
+        chartAreaBorder: {
+          borderColor: axisColor,
+          borderWidth: 2,
         },
         tooltip: {
           enabled: true,
@@ -477,15 +506,16 @@ export default function ProfitChart({
             font: {
               weight: '700',
             },
-            text: isMobileChart ? 'Sessions' : 'Hands',
+            text: isMobileChart ? 'Sessions' : 'Hands Played',
           },
           grid: {
             color: gridColor,
-            display: fullScreen,
+            display: true,
+            drawTicks: true,
           },
           ticks: {
             color: textColor,
-            maxTicksLimit: fullScreen ? 12 : isMobileChart ? 4 : 7,
+            maxTicksLimit: fullScreen ? 14 : isMobileChart ? 4 : 12,
             autoSkip: true,
             maxRotation: 0,
             callback(value) {
@@ -495,8 +525,9 @@ export default function ProfitChart({
             },
           },
           border: {
-            color: gridColor,
-            display: fullScreen,
+            color: axisColor,
+            display: true,
+            width: 2,
           },
         },
 
@@ -511,23 +542,34 @@ export default function ProfitChart({
             font: {
               weight: '700',
             },
-            text: 'Profit',
+            text: 'Currency Won',
           },
           ticks: {
+            ...axesMinMax.profit?.ticks,
             color: textColor,
-            maxTicksLimit: fullScreen ? 9 : isMobileChart ? 4 : 5,
             precision: 0,
-            stepSize: 10,
-            callback: (value) =>
-              isMobileChart ? formatMobileAxisCurrency(value, currency) : formatAxisCurrency(value, currency),
+            callback: (value) => {
+              if (Number(value) === 0) return '0';
+
+              return isMobileChart ? formatMobileAxisCurrency(value, currency) : formatAxisCurrency(value, currency);
+            },
+          },
+          afterBuildTicks: (axis) => {
+            if (!axis.ticks.some((tick) => Number(tick.value) === 0)) {
+              axis.ticks.push({ value: 0 });
+              axis.ticks.sort((firstTick, secondTick) => firstTick.value - secondTick.value);
+            }
           },
           grid: {
-            color: gridColor,
-            borderDash: fullScreen ? [] : [6, 6],
+            color: (context) => (Number(context.tick?.value) === 0 ? zeroLineColor : gridColor),
+            lineWidth: (context) => (Number(context.tick?.value) === 0 ? 2 : 1),
+            borderDash: [],
+            drawTicks: true,
           },
           border: {
-            color: gridColor,
-            display: fullScreen,
+            color: axisColor,
+            display: true,
+            width: 2,
           },
         },
       },
@@ -536,7 +578,7 @@ export default function ProfitChart({
 
   const options = useMemo(
     () => getChartOptions(),
-    [chartPoints, chartGridColor, chartTextColor, datasets.length, axesMinMax, isMobileChart, currency],
+    [chartPoints, chartGridColor, chartTextColor, datasets.length, axesMinMax, isMobileChart, currency, isLightTheme],
   );
   const fullScreenOptions = useMemo(
     () => getChartOptions({ fullScreen: true }),
@@ -566,7 +608,12 @@ export default function ProfitChart({
             </div>
 
             <div className='profit-fullscreen__chart'>
-              <Line key='profit-fullscreen-chart' data={fullScreenData} options={fullScreenOptions} />
+              <Line
+                key='profit-fullscreen-chart'
+                data={fullScreenData}
+                options={fullScreenOptions}
+                plugins={[chartAreaBorderPlugin]}
+              />
             </div>
           </div>
         </div>,
@@ -612,7 +659,7 @@ export default function ProfitChart({
       <div className='chart-wrapper' aria-busy={isLoading}>
         {hasChartData ? (
           <div className='profit-chart-stage'>
-            <Line data={data} options={options} />
+            <Line data={data} options={options} plugins={[chartAreaBorderPlugin]} />
           </div>
         ) : (
           <div className='profit-chart-stage'>

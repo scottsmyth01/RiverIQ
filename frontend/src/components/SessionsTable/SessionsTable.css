@@ -329,14 +329,20 @@
 
 .sessions-table th,
 .sessions-table td {
-  width: calc(100% / 9);
-}
-
-.sessions-table th,
-.sessions-table td {
   padding: 14px 16px;
   text-align: left;
   white-space: nowrap;
+}
+
+.sessions-table th:first-child,
+.sessions-table td:first-child {
+  width: 112px;
+}
+
+.sessions-table th:nth-child(2),
+.sessions-table td:nth-child(2) {
+  width: 18%;
+  min-width: 136px;
 }
 
 .sessions-table th {
@@ -384,16 +390,17 @@
 }
 
 .sessions-empty-state a {
-  min-height: 34px;
-  padding: 0 13px;
+  min-height: 36px;
+  padding: 0 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--text-on-primary);
-  background: var(--success-bright);
-  border: 1px solid var(--theme-submit-border);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
   border-radius: 6px;
-  font-size: 0.78rem;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  font-size: 0.8rem;
   font-weight: 800;
   text-decoration: none;
 }

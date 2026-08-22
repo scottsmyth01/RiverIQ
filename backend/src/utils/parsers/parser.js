@@ -175,7 +175,7 @@ export function getShowdown(handText, regex) {
   };
 }
 
-export function getSummary(handText, regex) {
+export function getSummary(handText, regex, options = {}) {
   const match = handText.match(regex);
 
   if (!match) {
@@ -229,7 +229,37 @@ export function getSummary(handText, regex) {
     }
   }
 
+  const collectedAmountsByPlayer = options.useCollectedAmounts ? getCollectedAmountsByPlayer(handText) : new Map();
+  if (collectedAmountsByPlayer.size) {
+    summary.seats = summary.seats.map((seat) => {
+      if (!seat.player || !collectedAmountsByPlayer.has(seat.player)) return seat;
+
+      return {
+        ...seat,
+        result: seat.result === 'lost' ? 'collected' : seat.result,
+        amount: collectedAmountsByPlayer.get(seat.player),
+      };
+    });
+  }
+
   return summary;
+}
+
+function getCollectedAmountsByPlayer(handText) {
+  const amountsByPlayer = new Map();
+  const collectedRegex = new RegExp(`^(.+?) collected ${MONEY_PATTERN.source} from (?:main |side )?pot$`, 'gim');
+  let match;
+
+  while ((match = collectedRegex.exec(handText)) !== null) {
+    const player = match[1].trim();
+    const amount = getFirstAmount(match[2]);
+
+    if (!player || !Number.isFinite(amount)) continue;
+
+    amountsByPlayer.set(player, Number(((amountsByPlayer.get(player) || 0) + amount).toFixed(2)));
+  }
+
+  return amountsByPlayer;
 }
 
 export function getDate(handText, regex) {
@@ -259,7 +289,7 @@ export function parseHand(handText, regex) {
   hand.turn = getTurn(handText, regex.turn);
   hand.river = getRiver(handText, regex.river);
   hand.showdown = getShowdown(handText, regex.showdown);
-  hand.summary = getSummary(handText, regex.summary);
+  hand.summary = getSummary(handText, regex.summary, regex);
   return hand;
 }
 

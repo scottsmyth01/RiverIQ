@@ -992,6 +992,7 @@
 .reports-empty-state__visual svg {
   width: 26px;
   height: 26px;
+  color: var(--success-bright);
 }
 
 .reports-empty-state__copy {

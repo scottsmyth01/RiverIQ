@@ -603,6 +603,24 @@
   }
 }
 
+@media (min-width: 761px) {
+  .dashboard-home-page > .profit-card.dashboard-profit-card {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboard-home-page > .profit-card.dashboard-profit-card .chart-wrapper {
+    flex: 1 1 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+}
+
 @media (max-width: 760px) {
   .profit-card.dashboard-profit-card {
     flex: 0 0 auto !important;

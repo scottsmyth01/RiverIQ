@@ -13,7 +13,7 @@ import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 import { useAuth } from '../hooks/useAuth';
 import { useSessions } from '../hooks/useSessions';
 import { toNumber, getStatValue, getByPosition } from '../utils/analytics/helpers';
-import { formatCurrency, getPreferredCurrency } from '../utils/currency';
+import { convertFromUsd, formatCurrency, getCurrencySymbol, getPreferredCurrency } from '../utils/currency';
 import { getSessionBigBlind, getSessionBbWon } from '../utils/sessionUnits';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip);
@@ -41,6 +41,26 @@ function addPositionStats(accumulator, stats = {}) {
 
     accumulator.weightedStats[key] += value * hands;
     accumulator.statHands[key] += hands;
+  });
+}
+
+function applySessionProfitAdjustment(positionAccumulators, session, byPosition = {}) {
+  const adjustment = toNumber(session.profitAdjustment);
+
+  if (!adjustment) return;
+
+  const positions = Object.entries(byPosition)
+    .map(([position, stats]) => ({
+      position,
+      hands: toNumber(stats?.handsPlayed),
+    }))
+    .filter((item) => item.hands > 0 && positionAccumulators[item.position]);
+  const totalHands = positions.reduce((sum, item) => sum + item.hands, 0);
+
+  if (!totalHands) return;
+
+  positions.forEach((item) => {
+    positionAccumulators[item.position].netWon += adjustment * (item.hands / totalHands);
   });
 }
 
@@ -88,6 +108,8 @@ function getPositionStatsFromSessions(sessions) {
 
       addPositionStats(positionAccumulators[position], stats);
     });
+
+    applySessionProfitAdjustment(positionAccumulators, session, byPosition);
   });
 
   return Object.values(positionAccumulators)
@@ -534,6 +556,34 @@ const positionColors = [
   '#fb7185',
 ];
 
+function getPositionProfitAxisBounds(stats) {
+  const values = stats.map((stat) => Number(stat.netWon)).filter((value) => Number.isFinite(value));
+
+  if (!values.length) {
+    return { min: -10, max: 10 };
+  }
+
+  const minValue = Math.min(0, ...values);
+  const maxValue = Math.max(0, ...values);
+  const largestAbsValue = Math.max(Math.abs(minValue), Math.abs(maxValue), 10);
+  const step = largestAbsValue >= 1000 ? 500 : largestAbsValue >= 250 ? 100 : largestAbsValue >= 100 ? 50 : 10;
+
+  return {
+    min: Math.floor(minValue / step) * step,
+    max: Math.ceil(maxValue / step) * step,
+  };
+}
+
+function formatWholeCurrency(value, currency) {
+  const convertedValue = convertFromUsd(value, currency);
+
+  if (!Number.isFinite(convertedValue)) return 'N/A';
+
+  const sign = convertedValue < 0 ? '-' : '';
+
+  return `${sign}${getCurrencySymbol(currency)}${Math.abs(Math.round(convertedValue)).toLocaleString('en-US')}`;
+}
+
 const AnalyticsPage = () => {
   const { user } = useAuth();
   const currency = getPreferredCurrency(user);
@@ -646,18 +696,19 @@ const AnalyticsPage = () => {
 
   const chartTextColor = getComputedStyle(document.documentElement).getPropertyValue('--text-table') || '#d8dee6';
   const chartGridColor = getComputedStyle(document.documentElement).getPropertyValue('--border-row-alpha') || '#25313e';
+  const positionProfitAxisBounds = getPositionProfitAxisBounds(currentPositionStats);
 
   const barData = {
     labels: currentPositionStats.map((item) => item.position),
     datasets: [
       {
-        data: currentPositionStats.map((item) => item.winRate),
+        data: currentPositionStats.map((item) => item.netWon),
         backgroundColor: currentPositionStats.map((item) => {
           if (activePosition !== 'Overall' && item.position !== activePosition) {
-            return item.winRate >= 0 ? 'rgba(134, 239, 172, 0.26)' : 'rgba(251, 113, 133, 0.24)';
+            return item.netWon >= 0 ? 'rgba(134, 239, 172, 0.26)' : 'rgba(251, 113, 133, 0.24)';
           }
 
-          return item.winRate >= 0 ? '#86efac' : '#fb7185';
+          return item.netWon >= 0 ? '#86efac' : '#fb7185';
         }),
         borderRadius: 2,
         barThickness: 26,
@@ -774,7 +825,7 @@ const AnalyticsPage = () => {
         />
 
         <article className='analytics-panel analytics-position-chart'>
-          <h2>Win Rate by Position (bb/100)</h2>
+          <h2>Profit by Position ($)</h2>
           <ChartLoadingFrame isLoading={isLoading}>
             <div className='analytics-bar-chart'>
               <Bar
@@ -784,12 +835,22 @@ const AnalyticsPage = () => {
                   responsive: true,
                   maintainAspectRatio: false,
                   resizeDelay: 100,
-                  plugins: { legend: { display: false }, tooltip: sharedTooltip },
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      ...sharedTooltip,
+                      callbacks: {
+                        label: (context) => formatCurrency(context.parsed.x, currency),
+                      },
+                    },
+                  },
                   scales: {
                     x: {
-                      min: -10,
-                      max: 15,
-                      ticks: { color: chartTextColor },
+                      ...positionProfitAxisBounds,
+                      ticks: {
+                        color: chartTextColor,
+                        callback: (value) => formatWholeCurrency(value, currency),
+                      },
                       grid: { color: chartGridColor },
                       border: { display: false },
                     },

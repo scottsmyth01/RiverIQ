@@ -206,6 +206,41 @@ function expectParsedFixture(fileText, parse, expected) {
 }
 
 describe('parser edge-case fixtures', () => {
+  test('CoinPoker sums repeated collected pot lines for split runouts', () => {
+    const fileText = `
+CoinPoker Hand #111128400721: NLH (₮0.25/₮0.50/₮0.08) 2026/08/14 18:23:58 -04
+Table '200906' 6-max Seat #1 is the button
+Seat 1: Hero (₮50.07 in chips)
+Seat 6: Villain (₮50.00 in chips)
+Hero: posts ante ₮0.08
+Villain: posts ante ₮0.08
+Hero: posts small blind ₮0.25
+Villain: posts big blind ₮0.50
+*** HOLE CARDS ***
+Dealt to Hero [Ac Jd]
+Hero: raises ₮1.00 to ₮1.50
+Villain: ALLIN ₮44.75
+Hero: calls ₮43.25
+*** FLOP *** [Ah Js 2c]
+*** TURN *** [Ah Js 2c] [8d]
+*** RIVER *** [Ah Js 2c 8d] [3h]
+*** SHOWDOWN ***
+Hero: shows [Ac Jd]
+Villain: shows [9h Qh]
+Hero collected ₮53.96 from pot
+Hero collected ₮53.96 from pot
+*** SUMMARY ***
+Total pot ₮111.97 | Rake ₮4 | Splash Fee ₮0.05
+Board [Ah Js 2c 8d 3h]
+Seat 1: Hero showed [Ac Jd] and won (₮53.96) with Two Pair, and won (₮53.96) with Two Pair
+Seat 6: Villain showed [9h Qh] and lost with High Card, and lost with High Card
+`;
+    const [hand] = parseCoinPoker(fileText);
+
+    expect(hand.summary?.seats[0].amount).toBe(107.92);
+    expect(getHandProfit(hand)).toBe(63.09);
+  });
+
   test.each(fixtureCases)('$name', ({ fixturePath, parse, expected }) => {
     const fileText = readFileSync(fixturePath, 'utf8');
     expectParsedFixture(fileText, parse, expected);

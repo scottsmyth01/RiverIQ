@@ -287,7 +287,7 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant, onPurgeSes
           <tbody>
             {currentSessions?.map((session) => {
               const formattedDate = new Date(session.date).toLocaleDateString('en-US', {
-                month: 'long',
+                month: 'short',
                 day: 'numeric',
                 year: 'numeric',
               });

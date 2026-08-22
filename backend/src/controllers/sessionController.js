@@ -15,6 +15,13 @@ const SESSION_SPLIT_GAP_MINUTES = 60;
 const SESSION_CURRENCIES = new Set(['USD', 'CAD', 'GBP', 'JPY', 'CNY', 'USDT']);
 const DEFAULT_SESSION_CURRENCY = 'USD';
 
+function getStoredSessionProfit(session) {
+  const parsedProfit = Number(session?.stats?.profit) || 0;
+  const adjustment = Number(session?.profitAdjustment?.amount) || 0;
+
+  return Number((parsedProfit + adjustment).toFixed(2));
+}
+
 const serializeUser = (user) => ({
   _id: user._id,
   name: user.name,
@@ -634,7 +641,7 @@ export const addSession = async (req, res, next) => {
         }),
       );
       sessions = await Session.create(sessionPayloads);
-      const sessionProfit = sessions.reduce((total, session) => total + (Number(session.stats?.profit) || 0), 0);
+      const sessionProfit = sessions.reduce((total, session) => total + getStoredSessionProfit(session), 0);
 
       req.user.bankroll = Number(((Number(req.user.bankroll) || 0) + sessionProfit).toFixed(2));
       await req.user.save();
@@ -709,7 +716,7 @@ export const deleteSession = async (req, res, next) => {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    const sessionProfit = Number(deletedSession.stats?.profit) || 0;
+    const sessionProfit = getStoredSessionProfit(deletedSession);
     req.user.bankroll = Number(((Number(req.user.bankroll) || 0) - sessionProfit).toFixed(2));
     await req.user.save();
 
@@ -748,7 +755,7 @@ export const purgeSessions = async (req, res, next) => {
       });
     }
 
-    const sessionProfit = deletedSessions.reduce((total, session) => total + (Number(session.stats?.profit) || 0), 0);
+    const sessionProfit = deletedSessions.reduce((total, session) => total + getStoredSessionProfit(session), 0);
     await Session.deleteMany({ user: req.user._id });
     sessionsWereDeleted = true;
 

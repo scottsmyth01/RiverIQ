@@ -72,7 +72,7 @@ const DashboardPage = () => {
       if (period.id === 'all-time') {
         return {
           ...period,
-          available: allSessions.length > 1,
+          available: allSessions.length > 0,
           sessionCount: allSessions.length,
         };
       }
@@ -90,7 +90,7 @@ const DashboardPage = () => {
 
       return {
         ...period,
-        available: hasElapsed && sessionCount > 1,
+        available: hasElapsed && sessionCount > 0,
         disabledReason: !hasElapsed
           ? `${period.label} will unlock after ${period.value} days of session history`
           : 'No sessions found for this period',
@@ -121,7 +121,7 @@ const DashboardPage = () => {
     );
   }
 
-  if (allSessions.length <= 2) {
+  if (allSessions.length < 1) {
     return <NewUserPage sessions={allSessions} />;
   }
 
@@ -131,7 +131,6 @@ const DashboardPage = () => {
         <div className='dashboard-page-header__top'>
           <div>
             <h1>Dashboard</h1>
-            <p>Welcome back, {username}! Here is your poker performance review.</p>
           </div>
           <div className='dashboard-header-meta' aria-label='Dashboard summary'>
             <span>
@@ -157,7 +156,7 @@ const DashboardPage = () => {
         selectedPeriod={selectedPeriod}
         setSelectedPeriod={handleSelectedPeriodChange}
       />
-      <SessionsTable sessions={sessions} sessionsPerPage={5} variant='home-page' />
+      {/* <SessionsTable sessions={sessions} sessionsPerPage={5} variant='home-page' /> */}
     </section>
   );
 };

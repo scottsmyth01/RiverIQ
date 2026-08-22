@@ -12,7 +12,9 @@
 }
 
 .dashboard-content.dashboard-home-page {
+  box-sizing: border-box;
   gap: 12px;
+  height: 100%;
   padding-top: calc(clamp(10px, 1.5vh, 18px) - 3px);
 }
 

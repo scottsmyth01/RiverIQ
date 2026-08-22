@@ -198,6 +198,34 @@ describe('session API integration', () => {
     expect(await Session.countDocuments()).toBe(0);
   });
 
+  test('uses profit adjustments when deleting a corrected session', async () => {
+    const agent = await createLoggedInAgent();
+
+    const uploadResponse = await agent
+      .post('/api/sessions/add-session')
+      .field('pokerSite', 'pokerstars')
+      .field('sessionName', 'Adjusted Integration Session')
+      .attach('handHistory', 'src/utils/parsers/fixtures/ps/pokerstars_250_hand_winning_session_01.txt')
+      .expect(201);
+
+    const { session } = uploadResponse.body;
+    await Session.updateOne(
+      { _id: session._id },
+      {
+        profitAdjustment: {
+          amount: 10,
+          reason: 'Manual correction from site session total',
+          createdAt: new Date('2026-08-14T00:00:00.000Z'),
+        },
+      },
+    );
+    await User.updateOne({ email: user.email }, { bankroll: 272.5 });
+
+    const deleteResponse = await agent.delete(`/api/sessions/${session._id}`).expect(200);
+
+    expect(deleteResponse.body.user.bankroll).toBe(0);
+  });
+
   test('purges all sessions for the logged-in user and updates bankroll', async () => {
     const agent = await createLoggedInAgent();
 

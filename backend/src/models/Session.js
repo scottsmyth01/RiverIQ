@@ -90,6 +90,11 @@ const sessionSchema = new mongoose.Schema(
       type: [handResultSchema],
       default: [],
     },
+    profitAdjustment: {
+      amount: { type: Number, default: 0 },
+      reason: String,
+      createdAt: Date,
+    },
 
     stats: {
       ...statFields,

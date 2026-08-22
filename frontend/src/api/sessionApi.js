@@ -100,7 +100,9 @@ function normalizeStakes(stakes, currency) {
 
 function normalizeSession(session = {}) {
   const stats = session.stats || {};
-  const profit = Number(session.profit ?? stats.profit ?? 0);
+  const parsedProfit = Number(session.profit ?? stats.profit ?? 0);
+  const profitAdjustment = Number(session.profitAdjustment?.amount ?? 0);
+  const profit = Number((parsedProfit + profitAdjustment).toFixed(2));
   const allInEV = Number(session.allInEV ?? stats.allInEV ?? profit);
   const allInWinSampleSize = Number(session.allInWinSampleSize ?? stats.allInWinSampleSize ?? 0);
   const allInWinPercentage =
@@ -127,6 +129,8 @@ function normalizeSession(session = {}) {
     stakes: normalizeStakes(session.stakes, session.currency),
     hands,
     profit,
+    parsedProfit,
+    profitAdjustment,
     allInEV,
     allInWinPercentage,
     allInWinSampleSize,
