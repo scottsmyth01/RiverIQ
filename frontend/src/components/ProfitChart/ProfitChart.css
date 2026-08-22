@@ -710,7 +710,7 @@
     top: 0;
   }
 
-  .chart-wrapper {
+  .profit-card.dashboard-profit-card .chart-wrapper {
     box-sizing: border-box;
     display: block;
     flex: none !important;
@@ -726,7 +726,7 @@
     max-height: 100% !important;
   }
 
-  .chart-wrapper canvas {
+  .profit-card.dashboard-profit-card .chart-wrapper canvas {
     height: 100% !important;
     max-height: 100% !important;
   }

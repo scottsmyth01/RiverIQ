@@ -94,14 +94,6 @@ function formatMobileAxisCurrency(value, currency) {
   return `${sign}${symbol}${Math.round(absValue)}`;
 }
 
-function formatSessionAxisLabel(label) {
-  const sessionNumber = Number(String(label).replace(/^S/i, ''));
-
-  if (!Number.isFinite(sessionNumber)) return label;
-
-  return `S${sessionNumber}`;
-}
-
 function formatHandsAxisLabel(label) {
   const hands = Number(String(label).replace(/,/g, ''));
 
@@ -167,7 +159,7 @@ export default function ProfitChart({
 
   // change graph colors based on selected theme.
   const isLightTheme = theme === 'light';
-  const chartTextColor = isLightTheme ? '#111827' : '#5f5f5f';
+  const chartTextColor = isLightTheme ? '#111827' : '#ffffff';
   const chartGridColor = isLightTheme ? 'rgba(17, 24, 39, 0.14)' : 'rgba(148, 163, 184, 0.15)';
   const fullScreenTextColor = isLightTheme ? '#111827' : '#d8dee8';
   const fullScreenGridColor = isLightTheme ? '#d1d5db' : '#263545';
@@ -220,7 +212,7 @@ export default function ProfitChart({
   }, [isFullScreen]);
 
   // MEMO - the heart of the component
-  const { sessionsWithData, sessionChartPoints, runningHands, runningProfit, sessionsCount } = useMemo(() => {
+  const { sessionsWithData, runningHands, runningProfit, sessionsCount } = useMemo(() => {
     // Sort the sessions by date
     // Don't mutate the sessions prop (props are immutable)
     const sortedSessions = [...sessions].sort((firstSession, secondSession) => {
@@ -234,7 +226,6 @@ export default function ProfitChart({
     let runningProfit = 0;
     let runningHands = 0;
     const sessionsWithData = [];
-    const sessionChartPoints = [];
 
     if (sortedSessions.length) {
       const firstSession = sortedSessions[0];
@@ -291,31 +282,31 @@ export default function ProfitChart({
           sessionLabel: session.sessionName || `Session ${index + 1}`,
         });
       });
-
-      sessionChartPoints.push({
-        date: formattedDate,
-        xLabel: `S${index + 1}`,
-        timestamp: getSessionTime(session),
-        profit: Number(runningProfit.toFixed(2)),
-        handsPlayed: runningHands,
-        sessionLabel: session.sessionName || `Session ${index + 1}`,
-        sessionNumber: index + 1,
-      });
     });
 
     // after iterating through the visible sessions
     // **THESE VALUES ARE USED THROUGHOUT THE FILE
     return {
       sessionsWithData, //required chart meta data
-      sessionChartPoints, //one point per session for compact mobile charts
       runningHands, //running hands played
       runningProfit, //running total profit
       sessionsCount: sortedSessions.length, //length of sessions (sorted array)
     };
   }, [sessions]); // when the sessions mutates, run this memo
+  const mobileHandChartPoints = useMemo(() => {
+    if (!sessionsWithData.length) return [];
+
+    const lastIndex = sessionsWithData.length - 1;
+
+    return sessionsWithData.filter((point, index) => {
+      const handsPlayed = Number(point.handsPlayed);
+
+      return index === 0 || index === lastIndex || (Number.isFinite(handsPlayed) && handsPlayed % 10 === 0);
+    });
+  }, [sessionsWithData]);
   const chartPoints = useMemo(() => {
-    return isMobileChart ? sessionChartPoints : sessionsWithData;
-  }, [isMobileChart, sessionChartPoints, sessionsWithData]);
+    return isMobileChart ? mobileHandChartPoints : sessionsWithData;
+  }, [isMobileChart, mobileHandChartPoints, sessionsWithData]);
   const hasChartData = sessionsCount > 0 && chartPoints.length > 0;
 
   // Keep each y-axis close to the values drawn on that axis.
@@ -376,7 +367,7 @@ export default function ProfitChart({
         backgroundColor: 'transparent',
         fill: false,
         tension: 0,
-        pointRadius: 0,
+        pointRadius: isMobileChart ? 2.5 : 0,
         pointHoverRadius: 5,
         pointHitRadius: 16,
         pointHoverBackgroundColor: chartLineColor,
@@ -386,7 +377,7 @@ export default function ProfitChart({
         metricKey: 'profit',
       },
     ],
-    [chartLineColor, chartPoints],
+    [chartLineColor, chartPoints, isMobileChart],
   );
 
   // Exactly what Chart.js expects.
@@ -426,7 +417,7 @@ export default function ProfitChart({
       ? fullScreenTextColor
       : isLightTheme
         ? 'rgba(17, 24, 39, 0.82)'
-        : 'rgba(226, 232, 240, 0.72)';
+        : 'rgba(148, 163, 184, 0.48)';
     const zeroLineColor = '#000000';
 
     return {
@@ -506,7 +497,7 @@ export default function ProfitChart({
             font: {
               weight: '700',
             },
-            text: isMobileChart ? 'Sessions' : 'Hands Played',
+            text: 'Hands Played',
           },
           grid: {
             color: gridColor,
@@ -521,7 +512,7 @@ export default function ProfitChart({
             callback(value) {
               const label = this.getLabelForValue(value);
 
-              return isMobileChart ? formatSessionAxisLabel(label) : formatHandsAxisLabel(label);
+              return formatHandsAxisLabel(label);
             },
           },
           border: {
