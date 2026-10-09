@@ -1,171 +1,261 @@
-# RiverIQ
+# RiverIQ ♠️
 
-RiverIQ is a poker analytics platform for uploading hand-history files, parsing sessions automatically, and turning raw poker data into dashboards, reports, goals, and preflop hand-chart insights.
+### Poker. Simply.
 
-## Screenshots
+RiverIQ is a full-stack poker analytics platform designed to help online poker players track their performance, analyze hand histories, and identify areas for improvement.
 
-### Performance Dashboard
+Built with React, Node.js, Express, and MongoDB, RiverIQ transforms raw poker hand histories into actionable statistics and interactive visualizations.
 
-![RiverIQ performance graph](./frontend/public/dashboard.png)
+## Key Features
 
-### Mobile Experience
+Hand History Analysis — Parse PokerStars and GGPoker hand histories to extract detailed gameplay statistics.
 
-![RiverIQ mobile dashboard preview](./frontend/public/mobile_dashboard.png)
+Performance Dashboard — Visualize profit, win rates, and session performance over time.
 
-## Features
+Advanced Analytics — Track VPIP, PFR, 3-Bet%, aggression factor, positional performance, and other poker metrics.
 
-- Upload and parse hand-history files from supported poker sites.
-- Track sessions with profit, hands played, duration, stakes, site, and game type.
-- Review dashboard stats, profit trends, recent sessions, and BB/100 performance.
-- Analyze advanced stats including VPIP, PFR, 3-Bet, 4-Bet, C-Bet, fold frequencies, WTSD, W$SD, AF, and steal metrics.
-- Build custom reports from filtered session data.
-- Create and manage poker improvement goals.
-- Compare actual hands played against recommended preflop ranges by position.
-- Use a responsive dark-mode interface across desktop, tablet, and mobile.
+Session Management — Upload, organize, edit, and review poker sessions.
+
+Custom Reports — Filter and analyze session data with configurable reports.
+
+Goal Tracking — Set performance goals and monitor progress.
 
 ## Tech Stack
 
-| Area     | Tools                                                                       |
-| -------- | --------------------------------------------------------------------------- |
-| Frontend | React, Vite, React Router, TanStack Query, React Hook Form, Chart.js, CSS   |
-| Backend  | Node.js, Express, MongoDB, Mongoose                                         |
-| Auth     | JWT, BcryptJS, Google OAuth                                                 |
-| Storage  | Cloudflare R2                                                               |
-| Payments | Stripe                                                                      |
-| Testing  | Vitest, Testing Library, Playwright, Jest, Supertest, MongoDB Memory Server |
+Frontend: React, JavaScript, Vite, TanStack Query, Chart.js, CSS
 
-## Project Structure
+Backend: Node.js, Express.js, MongoDB, Mongoose
 
-```text
-RiverIQ/
-├── backend/
-│   ├── src/
-│   │   ├── config/          # Environment, database, and Stripe config
-│   │   ├── controllers/     # Route handler logic
-│   │   ├── data/            # Email templates and fixture data
-│   │   ├── middleware/      # Auth, upload, R2, and error middleware
-│   │   ├── models/          # Mongoose models
-│   │   ├── routes/          # Express routes
-│   │   ├── scripts/         # Backfill and fixture generation scripts
-│   │   ├── test/            # Test server and DB setup
-│   │   └── utils/           # JWT helpers and hand-history parser logic
-│   └── package.json
-├── frontend/
-│   ├── public/              # Static assets and README screenshots
-│   ├── src/
-│   │   ├── api/             # API clients
-│   │   ├── assets/          # Imported app assets
-│   │   ├── components/      # Reusable UI components
-│   │   ├── data/            # Static frontend data
-│   │   ├── hooks/           # React Query/auth hooks
-│   │   ├── pages/           # Route-level views
-│   │   └── utils/           # Shared frontend utilities
-│   └── package.json
-└── README.md
-```
+Infrastructure & Services: Cloudflare R2, Cloudflare, Render, JWT Authentication, Resend
+
+## Application Preview
+
+### Dashboard
+Track overall poker performance through interactive profit graphs, key performance metrics, and session summaries.
+
+![RiverIQ Dashboard](./screenshots/dashboard.png)
+
+### Advanced Analytics
+Analyze detailed poker statistics, including preflop tendencies, postflop performance, and positional breakdowns.
+
+![RiverIQ Analytics](./screenshots/analytics.png)
+
+### Session Management
+Upload hand histories, manage sessions, and review historical performance.
+
+![RiverIQ Sessions](./screenshots/sessions.png)
+
+### Custom Reports
+Generate personalized reports using configurable filters to explore session data.
+
+![RiverIQ Reports](./screenshots/reports.png)
+
+## Key Features
+
+### Hand History Analysis
+- Parse and process poker hand histories from PokerStars and GGPoker.
+- Extract player actions, betting rounds, positions, and hand outcomes.
+- Automatically calculate performance statistics from parsed hand data.
+
+### Performance Dashboard
+- Track total profit, win rate (bb/100), hands played, and sessions.
+- Visualize performance over time using interactive profit graphs.
+- Review recent sessions and filter performance by date.
+
+### Advanced Poker Analytics
+- Analyze preflop statistics including VPIP, PFR, 3-Bet%, and Fold to 3-Bet%.
+- Evaluate postflop performance through C-Bet%, WTSD%, W$SD%, and aggression factor.
+- Compare performance across table positions to identify potential weaknesses.
+
+### Session Management
+- Upload and process hand-history files.
+- Create, edit, delete, and organize poker sessions.
+- Track session details including stakes, poker site, profit, and duration.
+
+### Custom Reports
+- Generate personalized reports using configurable filters.
+- Analyze historical session data and performance trends.
+- Export report data to Excel for further analysis.
+
+### Goal Tracking
+- Create personalized poker performance goals.
+- Monitor progress toward defined targets.
+- Track goal completion and performance milestones.
+
+## Tech Stack
+
+### Frontend
+- **React** — Component-based user interface
+- **JavaScript (ES6+)** — Application logic and functionality
+- **Vite** — Development server and build tooling
+- **TanStack Query** — Server-state management, caching, and API mutations
+- **React Router** — Client-side routing and navigation
+- **Chart.js** — Interactive charts and data visualizations
+- **CSS3** — Custom styling and responsive layouts
+
+### Backend
+- **Node.js** — JavaScript runtime environment
+- **Express.js** — RESTful API development and middleware
+- **Mongoose** — MongoDB schema modeling and database operations
+- **JWT & bcryptjs** — Authentication, authorization, and password hashing
+- **Multer** — File upload handling
+
+### Database & Storage
+- **MongoDB** — Storage of user accounts, sessions, and performance statistics
+- **Cloudflare R2** — Cloud storage for uploaded hand-history files
+
+### Infrastructure & Services
+- **Cloudflare** — Frontend hosting
+- **Render** — Backend hosting
+- **Resend** — Transactional emails and account verification
+- **Stripe** — Payment processing and subscription integration
+
+## Technical Implementation
+
+### 1. Hand History Parsing Engine
+
+Developed a custom JavaScript parsing engine to process raw poker hand-history files from multiple poker platforms, including PokerStars and GGPoker.
+
+- Implemented regular expressions to extract hand information, player actions, betting rounds, and outcomes.
+- Built parsing functions to transform unstructured text files into structured JavaScript objects.
+- Developed position-detection logic to identify player positions based on table size and dealer button placement.
+- Implemented platform-specific parsing logic to accommodate differences in hand-history formats.
+
+### 2. Poker Statistics Engine
+
+Developed a custom statistics engine to calculate player performance metrics from parsed hand histories.
+
+- Implemented calculations for VPIP, PFR, 3-Bet%, C-Bet%, aggression factor, and other advanced poker statistics.
+- Built aggregation logic to calculate statistics across individual hands and entire sessions.
+- Developed position-based analytics to evaluate player performance across different table positions.
+- Implemented profit and win-rate calculations using betting actions, hand outcomes, and stake information.
+
+### 3. RESTful API & Database Architecture
+
+Designed and developed a backend using Node.js, Express.js, MongoDB, and Mongoose.
+
+- Built RESTful endpoints for user authentication, session management, and data retrieval.
+- Designed Mongoose schemas to manage user accounts, poker sessions, and calculated statistics.
+- Implemented CRUD operations for managing session data.
+- Integrated the backend with the React frontend using TanStack Query for asynchronous data fetching, caching, and mutations.
+
+### 4. Authentication & Security
+
+Implemented a user authentication system using JWT, bcryptjs, and HTTP-only cookies.
+
+- Developed registration, login, and logout functionality.
+- Implemented password hashing using bcryptjs.
+- Built authentication middleware to protect restricted API endpoints.
+- Integrated email verification using Resend.
+
+### 5. File Upload & Cloud Storage
+
+Developed a file-processing workflow to handle poker hand-history uploads.
+
+- Implemented file upload handling using Multer.
+- Integrated Cloudflare R2 for cloud-based file storage.
+- Built backend processing logic to parse uploaded hand histories and calculate session statistics.
+- Stored processed statistics and file metadata in MongoDB for subsequent retrieval and analysis.
 
 ## Getting Started
 
+Follow these instructions to run RiverIQ locally.
+
 ### Prerequisites
 
-- Node.js `22.22.0` or newer
-- MongoDB connection string
-- Stripe keys for subscription billing
-- Cloudflare R2 credentials for hand-history and avatar uploads
+Ensure you have the following installed:
 
-### Install Dependencies
+- Node.js (LTS recommended)
+- npm
+- MongoDB (local installation or MongoDB Atlas)
+- Git
+
+### 1. Clone the Repository
 
 ```bash
-cd backend
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+cd YOUR_REPO
+```
+
+### 2. Install Dependencies
+
+Install dependencies for both the frontend and backend.
+
+```bash
+# Frontend
+cd client
 npm install
 
-cd ../frontend
+# Backend
+cd ../server
 npm install
 ```
 
-### Environment Variables
+### 3. Configure Environment Variables
 
-Create `backend/.env`:
-
-```env
-PORT=
-MONGO_URI=
-JWT_SECRET=
-NODE_ENV=
-BACKEND_URL=
-FRONTEND_URL=
-COOKIE_SAME_SITE=
-CLOUDFLARE_KEY=
-SUPPORT_NOTIFY_EMAIL=ssmythwilliam@gmail.com
-R2_ACCOUNT_ID=
-R2_ACCESS_KEY_ID=
-R2_SECRET_ACCESS_KEY=
-R2_BUCKET_NAME_HH=
-R2_BUCKET_NAME_AVATAR=
-R2_PUBLIC_URL_AVATAR=
-STRIPE_PUBLISHABLE_KEY=
-STRIPE_SECRET_KEY=
-STRIPE_PRICE_ID=
-STRIPE_YEARLY_PRICE_ID=
-STRIPE_WEBHOOK_SECRET=
-GOOGLE_CLIENT_ID=
-```
-
-In production, `STRIPE_YEARLY_PRICE_ID` must be a Stripe Price ID, and
-`STRIPE_WEBHOOK_SECRET` must be the signing secret for your Stripe webhook
-endpoint. Configure both in your deployment's environment settings.
-
-Create `frontend/.env`:
+Create a `.env` file in the backend directory.
 
 ```env
-VITE_API_URL=
-VITE_STRIPE_PUBLISHABLE_KEY=
-VITE_GOOGLE_CLIENT_ID=
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
 ```
 
-### Run Locally
+Configure any additional environment variables required for Cloudflare R2, Resend, and Stripe.
+
+If your frontend requires environment variables, create a separate `.env` file in the frontend directory.
+
+### 4. Start the Development Servers
 
 Start the backend:
 
 ```bash
-cd backend
-npm start
+cd server
+npm run start
 ```
 
-Start the frontend in a second terminal:
+Open a second terminal and start the frontend:
 
 ```bash
-cd frontend
+cd client
 npm run dev
 ```
 
-## Tests
+### 5. Open the Application
 
-Run backend tests:
+Navigate to the local URL displayed by Vite, typically:
 
-```bash
-cd backend
-npm test
+```text
+http://localhost:5173
 ```
 
-Run frontend tests:
+You can now access RiverIQ in your browser.
 
-```bash
-cd frontend
-npm test
-```
+## Roadmap
 
-Run frontend end-to-end tests:
+RiverIQ is an ongoing project, with several features and improvements planned for future development.
 
-```bash
-cd frontend
-npm run test:e2e
-```
+- [ ] **Cross-Platform Desktop Application** — Develop a desktop version for Windows and macOS using Electron.
+- [ ] **Automatic Hand History Importing** — Monitor local hand-history folders and automatically import new hands.
+- [ ] **Expanded Poker Site Support** — Add compatibility with additional online poker platforms.
+- [ ] **Advanced Leak Detection** — Identify potential weaknesses in player strategies using statistical analysis.
+- [ ] **RiverIQ Performance Score** — Develop a custom scoring system to evaluate overall player performance across multiple statistical categories.
+- [ ] **Enhanced Data Visualization** — Introduce additional charts, positional heatmaps, and performance comparisons.
+- [ ] **Performance Optimization** — Improve processing efficiency for large hand-history files and datasets.
 
-## Supported Poker Data
+## Author
 
-The parser code includes fixtures and wrappers for multiple poker-site formats, including PokerStars, GG Poker, 888poker, CoinPoker, FanDuel, and partypoker. Parser logic lives in `backend/src/utils/parsers`.
+**Scott Smyth**  
+Full-Stack Developer
 
-## License
+RiverIQ is an independently developed project showcasing my experience in full-stack development, API design, database management, data processing, and interactive web applications.
 
-ISC
+**Connect with me:**
+
+- **GitHub:** [GitHub Profile](https://github.com/scottsmyth01)
+- **LinkedIn:** [LinkedIn Profile](https://www.linkedin.com/in/scottwsmyth)
+- **Email:** ssmythwilliam@gmail.com
+
+---
+
+Built with React, Node.js, Express, and MongoDB.
