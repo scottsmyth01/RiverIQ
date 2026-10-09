@@ -37,6 +37,7 @@ const validReport = {
     key: 'date',
     direction: 'desc',
   },
+  groupBy: 'Poker Site',
   visibleColumnKeys: ['date', 'game', 'stakes', 'profit', 'bb100'],
   rowsPerPage: 25,
   metrics: ['profit', 'bb100', 'hands'],
@@ -63,6 +64,7 @@ describe('saved reports API integration', () => {
       title: validReport.title,
       reportType: validReport.reportType,
       rowsPerPage: validReport.rowsPerPage,
+      groupBy: validReport.groupBy,
       visibleColumnKeys: validReport.visibleColumnKeys,
       metrics: validReport.metrics,
     });

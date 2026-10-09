@@ -1,11 +1,12 @@
 import './ReportsPage.css';
 import './SavedReportsPage.css';
 
-import { ChevronLeft, ChevronRight, Download, FileText, Plus, Trash2 } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Download, Edit3, FileText, Plus, Trash2, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router';
+import { toast } from 'sonner';
 import { useAuth } from '../hooks/useAuth';
-import { useDeleteSavedReport, useSavedReports } from '../hooks/useSavedReports';
+import { useDeleteSavedReport, useSavedReports, useUpdateSavedReport } from '../hooks/useSavedReports';
 import { useSessions } from '../hooks/useSessions';
 import { getPreferredCurrency } from '../utils/currency';
 import {
@@ -79,7 +80,10 @@ const SavedReportsPage = () => {
   const { data: sessions = [] } = useSessions();
   const { data: savedReports = [], isLoading, error } = useSavedReports();
   const { mutateAsync: deleteSavedReport, isPending: isDeletingReport } = useDeleteSavedReport();
+  const { mutateAsync: updateSavedReport, isPending: isUpdatingReport } = useUpdateSavedReport();
   const [activeReportId, setActiveReportId] = useState(null);
+  const [draftReportTitle, setDraftReportTitle] = useState('');
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [page, setPage] = useState(1);
   const rows = useMemo(() => getReportRows(sessions), [sessions]);
   const activeReport = savedReports.find((report) => report.id === activeReportId) || savedReports[0];
@@ -99,6 +103,46 @@ const SavedReportsPage = () => {
       setActiveReportId(savedReports[0].id);
     }
   }, [activeReportId, savedReports]);
+
+  useEffect(() => {
+    setIsEditingTitle(false);
+    setDraftReportTitle(activeReport?.title || '');
+  }, [activeReport?.id, activeReport?.title]);
+
+  function startEditingTitle() {
+    if (!activeReport) return;
+    setDraftReportTitle(activeReport.title);
+    setIsEditingTitle(true);
+  }
+
+  function cancelTitleEdit() {
+    setDraftReportTitle(activeReport?.title || '');
+    setIsEditingTitle(false);
+  }
+
+  async function saveReportTitle() {
+    if (!activeReport) return;
+
+    const nextTitle = draftReportTitle.trim();
+    if (!nextTitle) {
+      toast.error('Report title is required');
+      return;
+    }
+
+    try {
+      await updateSavedReport({
+        id: activeReport.id,
+        reportData: {
+          ...activeReport,
+          title: nextTitle,
+        },
+      });
+      setIsEditingTitle(false);
+      toast.success('Report title updated');
+    } catch (updateError) {
+      toast.error(updateError.message || 'Could not update report title');
+    }
+  }
 
   async function removeReport(reportId) {
     try {
@@ -165,7 +209,44 @@ const SavedReportsPage = () => {
         <section className='reports-workspace'>
           <article className='reports-results-panel'>
             <div className='reports-results-header'>
-              <h2>{activeReport?.title || 'No report selected'}</h2>
+              <h2>
+                {activeReport && isEditingTitle ? (
+                  <span className='reports-title-editor'>
+                    <input
+                      aria-label='Report title'
+                      autoFocus
+                      value={draftReportTitle}
+                      onChange={(event) => setDraftReportTitle(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') saveReportTitle();
+                        if (event.key === 'Escape') cancelTitleEdit();
+                      }}
+                    />
+                    <button type='button' aria-label='Save report title' disabled={isUpdatingReport} onClick={saveReportTitle}>
+                      <Check aria-hidden='true' />
+                    </button>
+                    <button type='button' aria-label='Cancel report title edit' disabled={isUpdatingReport} onClick={cancelTitleEdit}>
+                      <X aria-hidden='true' />
+                    </button>
+                  </span>
+                ) : activeReport ? (
+                  <>
+                    <button className='reports-title-button' type='button' onClick={startEditingTitle}>
+                      {activeReport.title}
+                    </button>
+                    <button
+                      className='reports-title-edit-button'
+                      type='button'
+                      aria-label='Edit report title'
+                      onClick={startEditingTitle}
+                    >
+                      <Edit3 aria-hidden='true' />
+                    </button>
+                  </>
+                ) : (
+                  'No report selected'
+                )}
+              </h2>
               {activeReport && (
                 <div className='saved-report-actions'>
                   <button

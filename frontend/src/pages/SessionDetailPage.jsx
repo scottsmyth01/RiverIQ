@@ -7,10 +7,10 @@ import { toast } from 'sonner';
 import { useSessions, useUpdateSession } from '../hooks/useSessions';
 import { useAuth } from '../hooks/useAuth';
 import { formatSignedCurrency, formatStakes, getPreferredCurrency } from '../utils/currency';
-import pokerStarsLogo from '../assets/pokerstars-logo.svg';
-import ggPokerMark from '../assets/gg-poker-mark.svg';
-import coinPokerLogo from '../assets/coinpoker-logo.svg';
-import partyPokerLogo from '../assets/partypoker-diamond-logo.svg';
+import pokerStarsLogo from '../api/assets/pokerstars-logo.svg';
+import ggPokerMark from '../api/assets/gg-poker-mark.svg';
+import coinPokerLogo from '../api/assets/coinpoker-logo.svg';
+import partyPokerLogo from '../api/assets/partypoker-diamond-logo.svg';
 
 const pokerSiteDetails = {
   ggpoker: {
@@ -165,7 +165,11 @@ const SessionDetailPage = () => {
   const pokerSite = getPokerSiteDetail(session);
   const metadata = [
     { label: 'Date', value: formatDate(session.date) },
-    { label: 'Profit', value: formatSignedCurrency(profit, currency), tone: profitIsPositive ? 'positive' : 'negative' },
+    {
+      label: 'Profit',
+      value: formatSignedCurrency(profit, currency),
+      tone: profitIsPositive ? 'positive' : 'negative',
+    },
     { label: 'Hands', value: hands.toLocaleString() },
     { label: 'Win Rate', value: `${winRate.toFixed(2)} BB/100`, tone: winRateIsPositive ? 'positive' : 'negative' },
     { label: 'Duration', value: formatDuration(session.duration) },
@@ -219,7 +223,11 @@ const SessionDetailPage = () => {
         <form className='session-detail-form' onSubmit={handleSaveSession}>
           <section className='session-site-card' aria-label='Poker site'>
             <div className={`session-site-card__logo${pokerSite.className ? ` ${pokerSite.className}` : ''}`}>
-              {pokerSite.logo ? <img src={pokerSite.logo} alt='' /> : pokerSite.fallback || <FileText aria-hidden='true' />}
+              {pokerSite.logo ? (
+                <img src={pokerSite.logo} alt='' />
+              ) : (
+                pokerSite.fallback || <FileText aria-hidden='true' />
+              )}
             </div>
             <div>
               <span>Poker Site</span>

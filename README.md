@@ -107,8 +107,13 @@ STRIPE_PUBLISHABLE_KEY=
 STRIPE_SECRET_KEY=
 STRIPE_PRICE_ID=
 STRIPE_YEARLY_PRICE_ID=
+STRIPE_WEBHOOK_SECRET=
 GOOGLE_CLIENT_ID=
 ```
+
+In production, `STRIPE_YEARLY_PRICE_ID` must be a Stripe Price ID, and
+`STRIPE_WEBHOOK_SECRET` must be the signing secret for your Stripe webhook
+endpoint. Configure both in your deployment's environment settings.
 
 Create `frontend/.env`:
 

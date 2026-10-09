@@ -2,7 +2,7 @@ import React from 'react';
 import { BarChart3, Check, FileText, LockKeyhole, Plus, Spade } from 'lucide-react';
 import { Link } from 'react-router';
 import './FeaturePage.css';
-import features from '../assets/feature-grid.jsx';
+import features from '../api/assets/feature-grid.jsx';
 import { useAuth } from '../hooks/useAuth';
 import { convertFromUsd, formatCurrency, getCurrencySymbol, getPreferredCurrency } from '../utils/currency';
 
@@ -64,12 +64,7 @@ const goals = [
   { icon: FileText, label: 'Review 12 tagged sessions', value: '7 / 12', progress: '58%' },
 ];
 
-const freeFeatures = [
-  'Create an account',
-  'Upload and review sessions',
-  'Dashboard stats',
-  'Settings and preferences',
-];
+const freeFeatures = ['Create an account', 'Upload and review sessions', 'Dashboard stats', 'Settings and preferences'];
 
 const proFeatures = [
   'Everything in Free',
@@ -105,7 +100,10 @@ const FeaturePage = () => {
           <h2>
             Track sessions, analyze leaks, and build better <span className='accent'>poker habits</span>
           </h2>
-          <p>RiverIQ turns uploaded hand histories into dashboards, reports, goals, and hand charts you can use every session.</p>
+          <p>
+            RiverIQ turns uploaded hand histories into dashboards, reports, goals, and hand charts you can use every
+            session.
+          </p>
         </header>
 
         <section className='feature-grid'>
@@ -295,9 +293,7 @@ const FeaturePage = () => {
 
           <div className='insights-copy'>
             <span className='section-kicker'>Leak tracker</span>
-            <h2>
-              Spot stats that drift from your goals.
-            </h2>
+            <h2>Spot stats that drift from your goals.</h2>
             <p>RiverIQ highlights out-of-range stats when there are enough hands to make the signal useful.</p>
 
             <ul className='insights-list'>

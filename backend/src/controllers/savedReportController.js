@@ -9,6 +9,7 @@ function getSavedReportPayload(body = {}) {
     filters: body.filters,
     appliedFilters: body.appliedFilters,
     sort: body.sort,
+    groupBy: body.groupBy,
     visibleColumnKeys: body.visibleColumnKeys,
     rowsPerPage: body.rowsPerPage,
     metrics: body.metrics,

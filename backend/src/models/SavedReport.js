@@ -50,6 +50,11 @@ const savedReportSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       default: {},
     },
+    groupBy: {
+      type: String,
+      trim: true,
+      default: 'None',
+    },
     visibleColumnKeys: {
       type: [String],
       default: [],

@@ -7,22 +7,23 @@
   min-height: 0 !important;
   max-height: max-content;
   box-sizing: border-box;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--surface-chart) 96%, var(--surface-white)),
-    var(--surface-chart)
-  );
-  border: 1px solid var(--theme-border-card);
+  background:
+    linear-gradient(180deg, rgba(24, 34, 45, 0.96), rgba(14, 24, 34, 0.98)),
+    var(--surface-chart);
+  border: 1px solid rgba(55, 84, 100, 0.76);
   border-radius: 8px;
-  padding: 14px 18px 14px;
-  box-shadow: inset 0 1px 0 var(--overlay-white-hairline);
+  padding: 14px 20px 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 0 1px rgba(38, 211, 100, 0.04);
 }
 
 .profit-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 18px;
+  min-height: 44px;
 }
 
 .profit-chart-title {
@@ -36,7 +37,7 @@
 .profit-header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-left: auto;
 }
 
@@ -44,21 +45,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  min-width: 36px;
-  height: 32px;
+  width: 44px;
+  min-width: 44px;
+  height: 40px;
   padding: 0;
-  color: var(--text-on-primary);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--success-bright) 86%, var(--surface-white)),
-    var(--success-bright)
-  );
-  border: 1px solid color-mix(in srgb, var(--success-bright) 78%, var(--theme-border-card));
-  border-radius: 6px;
+  color: #07130d;
+  background: #32ff63;
+  border: 1px solid rgba(50, 255, 99, 0.72);
+  border-radius: 7px;
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--success-bright) 16%, transparent),
-    0 10px 22px color-mix(in srgb, var(--success-bright) 18%, transparent);
+    0 0 0 4px rgba(50, 255, 99, 0.1),
+    0 10px 22px rgba(50, 255, 99, 0.18);
   cursor: pointer;
   transition:
     color 180ms ease,
@@ -68,14 +65,14 @@
 }
 
 .profit-expand-button svg {
-  width: 15px;
-  height: 15px;
-  stroke-width: 2.4;
+  width: 17px;
+  height: 17px;
+  stroke-width: 3;
 }
 
 .profit-expand-button:hover {
-  color: var(--text-on-primary);
-  border-color: var(--success-bright);
+  color: #07130d;
+  border-color: #32ff63;
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--success-bright) 30%, transparent),
     0 12px 26px color-mix(in srgb, var(--success-bright) 26%, transparent);
@@ -99,27 +96,29 @@
 }
 
 .profit-period-buttons {
-  min-height: 34px;
-  padding: 4px;
+  min-height: 44px;
+  padding: 5px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 4px;
-  background: var(--surface-control-deep);
-  border: 1px solid var(--theme-border-card);
-  border-radius: 8px;
+  gap: 5px;
+  background: rgba(6, 15, 24, 0.88);
+  border: 1px solid rgba(40, 67, 83, 0.92);
+  border-radius: 9px;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.12);
 }
 
 .profit-period-buttons button {
   position: relative;
-  min-height: 26px;
-  padding: 5px 9px;
-  color: var(--text-subtle);
+  min-height: 34px;
+  padding: 7px 14px;
+  color: #7f8b9b;
   background: transparent;
-  border: 1px solid transparent;
+  border: 1px solid rgba(40, 67, 83, 0.74);
   border-radius: 6px;
   cursor: pointer;
   font: inherit;
-  font-size: 0.72rem;
+  font-size: 0.84rem;
+  font-weight: 800;
   white-space: nowrap;
   transition:
     color 180ms ease,
@@ -132,16 +131,16 @@
 }
 
 .profit-period-buttons button:hover {
-  color: var(--text-white);
-  border-color: var(--theme-hover-border);
+  color: #d6dde6;
+  border-color: rgba(70, 104, 122, 0.96);
 }
 
 .profit-period-buttons button:disabled {
-  color: color-mix(in srgb, var(--text-subtle) 72%, var(--bg-main));
-  background: color-mix(in srgb, var(--surface-control-deep) 72%, var(--bg-main));
-  border-color: color-mix(in srgb, var(--theme-border-card) 70%, transparent);
+  color: rgba(127, 139, 155, 0.6);
+  background: rgba(10, 21, 33, 0.62);
+  border-color: rgba(40, 67, 83, 0.58);
   cursor: not-allowed;
-  opacity: 0.72;
+  opacity: 1;
 }
 
 .profit-period-buttons button:disabled:hover {
@@ -152,29 +151,25 @@
 
 .profit-period-buttons .period-unavailable {
   position: absolute;
-  top: -7px;
-  right: -4px;
-  padding: 1px 5px;
-  color: color-mix(in srgb, var(--text-subtle) 74%, var(--bg-main));
-  background: color-mix(in srgb, var(--surface-control-deep) 82%, var(--bg-main));
-  border: 1px solid color-mix(in srgb, var(--theme-border-card) 58%, transparent);
+  top: -8px;
+  right: -5px;
+  padding: 1px 6px;
+  color: rgba(127, 139, 155, 0.74);
+  background: #111b26;
+  border: 1px solid rgba(40, 67, 83, 0.72);
   border-radius: 999px;
-  font-size: 0.52rem;
+  font-size: 0.56rem;
   font-weight: 800;
   line-height: 1.4;
   letter-spacing: 0;
 }
 
 .profit-period-buttons button.active {
-  color: var(--text-on-primary);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--success-bright) 88%, var(--surface-white)),
-    var(--success-bright)
-  );
-  border-color: var(--success-bright);
-  font-weight: 700;
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--success-bright) 18%, transparent);
+  color: #06120b;
+  background: #32ff63;
+  border-color: #32ff63;
+  font-weight: 900;
+  box-shadow: 0 0 0 3px rgba(50, 255, 99, 0.12);
 }
 
 .profit-period-buttons button:focus-visible {
@@ -185,30 +180,30 @@
 .profit-metric-toggles {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
   margin: 0;
 }
 
 .profit-metric-toggles label {
   position: relative;
   display: inline-grid;
-  grid-template-columns: 15px max-content;
+  grid-template-columns: 22px max-content;
   align-items: center;
   justify-items: center;
   gap: 8px;
-  min-height: 32px;
-  padding: 6px 10px;
-  color: var(--text-subtle);
+  min-height: 40px;
+  padding: 8px 13px;
+  color: #f0f5f7;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--surface-control-deep) 92%, var(--surface-white)),
-    var(--surface-control-deep)
+    color-mix(in srgb, var(--metric-color) 13%, rgba(16, 27, 38, 0.96)),
+    rgba(9, 18, 28, 0.96)
   );
-  border: 1px solid var(--theme-border-card);
-  border-radius: 6px;
+  border: 1px solid var(--metric-color);
+  border-radius: 7px;
   cursor: pointer;
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.92rem;
+  font-weight: 900;
   line-height: 1;
   user-select: none;
   transition:
@@ -224,11 +219,11 @@
 }
 
 .profit-metric-toggles label:has(input:checked) {
-  color: var(--text-white);
+  color: #f8fbff;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--metric-color) 24%, var(--surface-control-deep)),
-    var(--surface-control-deep)
+    color-mix(in srgb, var(--metric-color) 20%, rgba(16, 27, 38, 0.98)),
+    rgba(9, 18, 28, 0.98)
   );
   border-color: var(--metric-color);
   box-shadow:
@@ -267,15 +262,15 @@
 
 .metric-check {
   position: relative;
-  width: 15px;
-  height: 15px;
+  width: 22px;
+  height: 22px;
   flex: 0 0 auto;
   display: block;
   align-self: center;
   border: 1px solid color-mix(in srgb, var(--metric-color) 62%, var(--theme-border-card));
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--surface-panel-deep) 88%, transparent);
-  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--surface-control-deep) 86%, transparent);
+  border-radius: 6px;
+  background: rgba(9, 18, 28, 0.96);
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.04);
   transition:
     background-color 180ms ease,
     border-color 180ms ease,
@@ -284,10 +279,10 @@
 
 .metric-check::after {
   position: absolute;
-  left: 4px;
-  top: 1px;
-  width: 4px;
-  height: 8px;
+  left: 7px;
+  top: 3px;
+  width: 5px;
+  height: 10px;
   border: solid var(--text-white);
   border-width: 0 2px 2px 0;
   content: '';
@@ -321,14 +316,14 @@
   position: relative;
   width: 100%;
   min-width: 0;
-  flex: 0 0 260px !important;
-  height: 260px !important;
+  flex: 0 0 330px !important;
+  height: 330px !important;
   min-height: 0 !important;
-  max-height: 260px !important;
+  max-height: 330px !important;
   overflow: hidden;
-  border-top: 1px solid var(--border-row-alpha);
-  margin-top: 10px;
-  padding-top: 8px;
+  border-top: 1px solid rgba(72, 98, 112, 0.38);
+  margin-top: 12px;
+  padding-top: 10px;
 }
 
 .profit-card.dashboard-profit-card .chart-wrapper canvas {

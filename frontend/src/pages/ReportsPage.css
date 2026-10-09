@@ -974,27 +974,6 @@
     radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--color-primary) 13%, transparent), transparent 42%);
 }
 
-.reports-empty-state__visual {
-  width: 58px;
-  height: 58px;
-  display: grid;
-  place-items: center;
-  color: var(--text-on-primary);
-  background:
-    linear-gradient(145deg, color-mix(in srgb, var(--success-bright) 88%, var(--surface-white)), var(--success-bright));
-  border: 1px solid color-mix(in srgb, var(--success-bright) 76%, transparent);
-  border-radius: 8px;
-  box-shadow:
-    0 0 0 5px color-mix(in srgb, var(--success-bright) 10%, transparent),
-    0 16px 32px color-mix(in srgb, var(--success-bright) 16%, transparent);
-}
-
-.reports-empty-state__visual svg {
-  width: 26px;
-  height: 26px;
-  color: var(--success-bright);
-}
-
 .reports-empty-state__copy {
   max-width: 460px;
   display: grid;
@@ -1013,6 +992,13 @@
   font-size: 0.82rem;
   font-weight: 750;
   line-height: 1.55;
+}
+
+.reports-empty-state__actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .reports-loading-state {

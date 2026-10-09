@@ -1,7 +1,17 @@
 import './SessionsTable.css';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { BarChart3, ChevronLeft, ChevronRight, ExternalLink, Lock, MoreVertical, Pencil, Plus, Trash2 } from 'lucide-react';
+import {
+  BarChart3,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Lock,
+  MoreVertical,
+  Pencil,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import SessionToolbar from './SessionToolbar';
@@ -16,11 +26,11 @@ import { useAuth } from '../../hooks/useAuth';
 import { useDeleteSession } from '../../hooks/useSessions';
 import { getPeriodFromDefaultTimeFilter } from '../../utils/dateRangePreferences';
 import { getCurrencySymbol } from '../../utils/currency';
-import pokerStarsLogo from '../../assets/pokerstars-logo.svg';
-import ggPokerMark from '../../assets/gg-poker-mark.svg';
-import coinPokerLogo from '../../assets/coinpoker-logo.svg';
-import poker888Logo from '../../assets/888-poker-logo.svg';
-import partyPokerLogo from '../../assets/partypoker-diamond-logo.svg';
+import pokerStarsLogo from '../../api/assets/pokerstars-logo.svg';
+import ggPokerMark from '../../api/assets/gg-poker-mark.svg';
+import coinPokerLogo from '../../api/assets/coinpoker-logo.svg';
+import poker888Logo from '../../api/assets/888-poker-logo.svg';
+import partyPokerLogo from '../../api/assets/partypoker-diamond-logo.svg';
 
 const pokerSiteDetails = {
   pokerstars: {
@@ -96,7 +106,9 @@ function formatNativeStakes(session) {
 
   const siteKey = String(session.pokerSite || session.site || '').toLowerCase();
   const isCoinPoker = siteKey.includes('coinpoker') || siteKey.includes('coin poker');
-  const rawCurrency = String(session.currency || '').trim().toUpperCase();
+  const rawCurrency = String(session.currency || '')
+    .trim()
+    .toUpperCase();
   const currency = isCoinPoker && (!rawCurrency || rawCurrency === 'USD' || rawCurrency === '$') ? 'USDT' : rawCurrency;
   const symbol = getNativeStakesSymbol(session.stakes, currency);
 
@@ -344,7 +356,11 @@ const SessionsTable = ({ sessions = [], sessionsPerPage = 5, variant, onPurgeSes
                   </td>
                   <td data-label='Hands'>{hands.toLocaleString('en-US')}</td>
                   <td data-label='Duration'>{hasDuration ? `${hours}h ${minutes}m` : 'N/A'}</td>
-                  <td data-label='Actions' className='sessions-actions-cell' onClick={(event) => event.stopPropagation()}>
+                  <td
+                    data-label='Actions'
+                    className='sessions-actions-cell'
+                    onClick={(event) => event.stopPropagation()}
+                  >
                     <div className='sessions-row-actions'>
                       <button
                         className={`sessions-stats-button${hasProMembership ? '' : ' sessions-stats-button--locked'}`}

@@ -18,7 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useAuth } from '../hooks/useAuth';
 import { useCreateSavedReport, useUpdateSavedReport } from '../hooks/useSavedReports';
@@ -308,6 +308,7 @@ function ReportActionButton({ children, variant = 'secondary', icon: Icon, onCli
 }
 
 const ReportsPage = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const currency = getPreferredCurrency(user);
   const { data: sessions = [] } = useSessions();
@@ -519,14 +520,19 @@ const ReportsPage = () => {
   async function saveCurrentReport() {
     try {
       const reportData = getReportConfig(savedReportId, reportTitle);
-      const savedReport = savedReportId
-        ? await updateSavedReportMutation.mutateAsync({ id: savedReportId, reportData })
-        : await createSavedReportMutation.mutateAsync(reportData);
+      const isNewReport = !savedReportId;
+      const savedReport = isNewReport
+        ? await createSavedReportMutation.mutateAsync(reportData)
+        : await updateSavedReportMutation.mutateAsync({ id: savedReportId, reportData });
 
       setSavedReportId(savedReport.id);
       setReportTitle(savedReport.title);
       setAppliedFilters(filters);
-      toast.success('Saved report successfully');
+      toast.success(isNewReport ? 'Report created successfully' : 'Saved report successfully');
+
+      if (isNewReport) {
+        navigate('/dashboard/reports');
+      }
     } catch (error) {
       toast.error(error.message || 'Could not save report');
     }
@@ -595,7 +601,7 @@ const ReportsPage = () => {
             onClick={() => saveCurrentReport()}
             disabled={isSavingReport}
           >
-            {isSavingReport ? 'Saving...' : 'Save Report'}
+            {isSavingReport ? 'Saving...' : savedReportId ? 'Save Report' : 'Create Report'}
           </ReportActionButton>
           <ReportActionButton variant='primary' icon={Play} onClick={runReport} disabled={isRunningReport}>
             {isRunningReport ? 'Running...' : 'Run Report'}
@@ -622,7 +628,7 @@ const ReportsPage = () => {
                   }}
                 >
                   <Check aria-hidden='true' />
-                  <span>{isSavingReport ? 'Saving...' : 'Save Report'}</span>
+                  <span>{isSavingReport ? 'Saving...' : savedReportId ? 'Save Report' : 'Create Report'}</span>
                 </button>
                 <button
                   type='button'
@@ -855,9 +861,6 @@ const ReportsPage = () => {
                 </div>
               ) : isEmptyReportState ? (
                 <div className='reports-empty-state'>
-                  <div className='reports-empty-state__visual' aria-hidden='true'>
-                    <FileSearch />
-                  </div>
                   <div className='reports-empty-state__copy'>
                     <strong>{hasRunReport ? 'No matching sessions' : 'Build your report and view it here.'}</strong>
                     <p>
@@ -865,6 +868,14 @@ const ReportsPage = () => {
                         ? 'Try widening your date range, removing a filter, or switching the grouping.'
                         : 'Choose your filters and columns, then run the report to turn sessions into a clean review table.'}
                     </p>
+                  </div>
+                  <div className='reports-empty-state__actions'>
+                    <ReportActionButton variant='primary' icon={Play} onClick={runReport} disabled={isRunningReport}>
+                      Run Report
+                    </ReportActionButton>
+                    <ReportActionButton onClick={() => saveCurrentReport()} disabled={isSavingReport}>
+                      {isSavingReport ? 'Saving...' : savedReportId ? 'Save Report' : 'Create Report'}
+                    </ReportActionButton>
                   </div>
                 </div>
               ) : (

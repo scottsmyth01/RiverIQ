@@ -8,6 +8,26 @@ import Cloudflare from 'cloudflare/index.js';
 import { serializeUser } from '../utils/serializeUser.js';
 import { escapeHtml } from '../utils/escapeHtml.js';
 
+const CLOUDFLARE_ACCOUNT_ID = 'a6dbd6263cba6aeb30176d034c765748';
+
+function logEmailSendResult(label, response) {
+  const result = {
+    messageId: response?.message_id,
+    delivered: response?.delivered ?? [],
+    queued: response?.queued ?? [],
+    permanentBounces: response?.permanent_bounces ?? [],
+  };
+
+  console.info(`${label} email send result:`, result);
+
+  if (result.permanentBounces.length) {
+    const error = new Error(`${label} email permanently bounced`);
+    error.statusCode = 502;
+    error.details = result;
+    throw error;
+  }
+}
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 
@@ -236,7 +256,8 @@ export const loginWithGoogle = async (req, res, next) => {
       const setPasswordLink = createPasswordResetLink(user);
       await sendPasswordResetEmail(user.email, setPasswordLink, {
         subject: 'RiverIQ - Set your password',
-        previewText: 'Set a RiverIQ password for your new Google-created account. This secure link expires in 5 minutes.',
+        previewText:
+          'Set a RiverIQ password for your new Google-created account. This secure link expires in 5 minutes.',
         eyebrow: 'Set password',
         title: 'Finish securing your account.',
         body: 'Your RiverIQ account was created with Google. We generated a secure internal password for the account, but you can use the link below to choose your own password for email login.',
@@ -323,12 +344,14 @@ const sendPasswordResetEmail = async (email, resetLink, content = {}) => {
     .replaceAll('{{current_year}}', () => escapeHtml(new Date().getFullYear().toString()));
 
   const response = await client.emailSending.send({
-    account_id: 'a6dbd6263cba6aeb30176d034c765748',
+    account_id: CLOUDFLARE_ACCOUNT_ID,
     from: 'RiverIQ <support@riveriq.app>',
     to: email,
     subject,
     html: pwResetEmail,
   });
+
+  logEmailSendResult('Password reset', response);
 };
 
 const sendVerifyEmail = async (username, email, verifyLink) => {
@@ -351,13 +374,15 @@ const sendVerifyEmail = async (username, email, verifyLink) => {
     .replaceAll('{{current_year}}', new Date().getFullYear().toString());
 
   const response = await client.emailSending.send({
-    account_id: 'a6dbd6263cba6aeb30176d034c765748',
+    account_id: CLOUDFLARE_ACCOUNT_ID,
     from: 'RiverIQ <welcome@riveriq.app>',
     to: email,
     subject: 'Welcome to RiverIQ — verify your email',
     html: verificationEmail,
     text: `Welcome to RiverIQ, ${username}! Verify your email to activate your account: ${verifyLink}`,
   });
+
+  logEmailSendResult('Verification', response);
 };
 
 // @desc    Get current logged-in user

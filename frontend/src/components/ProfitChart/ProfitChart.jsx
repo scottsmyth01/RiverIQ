@@ -94,6 +94,16 @@ function formatMobileAxisCurrency(value, currency) {
   return `${sign}${symbol}${Math.round(absValue)}`;
 }
 
+function formatAxisHourly(value, currency) {
+  const convertedValue = convertFromUsd(value, currency);
+
+  if (!Number.isFinite(convertedValue)) return 'N/A';
+
+  const sign = convertedValue < 0 ? '-' : '';
+
+  return `${sign}${getCurrencySymbol(currency)}${Math.abs(Math.round(convertedValue)).toLocaleString('en-US')}/hr`;
+}
+
 function formatHandsAxisLabel(label) {
   const hands = Number(String(label).replace(/,/g, ''));
 
@@ -150,6 +160,10 @@ export default function ProfitChart({
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'dark'); // store light/dark
   const [isFullScreen, setIsFullScreen] = useState(false); //controls fullscreen graph
   const [isMobileChart, setIsMobileChart] = useState(() => window.matchMedia?.('(max-width: 760px)').matches ?? false);
+  const [visibleMetrics, setVisibleMetrics] = useState({
+    profit: true,
+    hourlyProfit: true,
+  });
 
   //
   const activePeriod = useMemo(
@@ -164,7 +178,23 @@ export default function ProfitChart({
   const fullScreenTextColor = isLightTheme ? '#111827' : '#d8dee8';
   const fullScreenGridColor = isLightTheme ? '#d1d5db' : '#263545';
   const lightChartLineColor = '#13e044';
-  const chartLineColor = isLightTheme ? lightChartLineColor : getThemeColor('--color-primary', '#00c853');
+  const chartLineColor = isLightTheme ? lightChartLineColor : '#32ff63';
+  const hourlyLineColor = '#ff3f4f';
+
+  function toggleMetric(metric) {
+    setVisibleMetrics((currentMetrics) => {
+      const enabledCount = Object.values(currentMetrics).filter(Boolean).length;
+
+      if (currentMetrics[metric] && enabledCount === 1) {
+        return currentMetrics;
+      }
+
+      return {
+        ...currentMetrics,
+        [metric]: !currentMetrics[metric],
+      };
+    });
+  }
 
   useEffect(() => {
     //observes any HTML element with the data-theme attr. Without this the line graph would not know that the theme changed.
@@ -225,6 +255,8 @@ export default function ProfitChart({
 
     let runningProfit = 0;
     let runningHands = 0;
+    let runningMinutes = 0;
+    let hasHourlyProfitStarted = false;
     const sessionsWithData = [];
 
     if (sortedSessions.length) {
@@ -236,6 +268,7 @@ export default function ProfitChart({
         xLabel: '0',
         timestamp: startTimestamp,
         profit: 0,
+        hourlyProfit: null,
         handsPlayed: 0,
         sessionLabel: 'Start',
       });
@@ -249,6 +282,8 @@ export default function ProfitChart({
       const sessionHands = Number(session.hands ?? session.stats?.handsPlayed) || 0; //get number of hands played
       const sessionProfit = Number(session.profit) || 0; //get session profit
       const sessionProfitAdjustment = Number(session.profitAdjustment) || 0;
+      const sessionDuration = Number(session.duration);
+      const sessionMinutes = Number.isFinite(sessionDuration) && sessionDuration > 0 ? sessionDuration : 0;
       const handResults = Array.isArray(session.handResults) ? session.handResults : [];
       const previousHands = runningHands;
 
@@ -261,6 +296,7 @@ export default function ProfitChart({
               cumulativeProfit: sessionProfit,
             },
           ];
+      const pointMinutes = points.length && sessionMinutes > 0 ? sessionMinutes / points.length : 0;
 
       points.forEach((point, pointIndex) => {
         const handProfit = Number(point.profit);
@@ -271,6 +307,18 @@ export default function ProfitChart({
 
         runningProfit += pointProfit; //running profit value
         runningHands = handCount; //running hands played value
+        runningMinutes += pointMinutes;
+
+        const shouldShowHourlyProfit = runningHands >= 500 && runningMinutes > 0;
+        const hourlyProfit = shouldShowHourlyProfit
+          ? hasHourlyProfitStarted
+            ? Number((runningProfit / (runningMinutes / 60)).toFixed(2))
+            : 0
+          : null;
+
+        if (shouldShowHourlyProfit) {
+          hasHourlyProfitStarted = true;
+        }
 
         //For each hand, return:
         sessionsWithData.push({
@@ -278,6 +326,7 @@ export default function ProfitChart({
           xLabel: runningHands.toLocaleString('en-US'), //hand number (x-axis)
           timestamp: getPointTime(point, session), //hand/session timestamp
           profit: Number(runningProfit.toFixed(2)), //running profit value
+          hourlyProfit,
           handsPlayed: runningHands, // running hands value
           sessionLabel: session.sessionName || `Session ${index + 1}`,
         });
@@ -309,36 +358,50 @@ export default function ProfitChart({
   }, [isMobileChart, mobileHandChartPoints, sessionsWithData]);
   const hasChartData = sessionsCount > 0 && chartPoints.length > 0;
 
-  // Keep each y-axis close to the values drawn on that axis.
+  // Keep the y-axis close to the values drawn on it.
   const axesMinMax = useMemo(() => {
-    function getAxisValues(keys) {
-      const values = keys
-        .flatMap((key) => chartPoints.map((item) => Number(item[key])))
+    function getAxisValues(key) {
+      return chartPoints
+        .map((item) => item[key])
+        .filter((value) => value !== null && value !== undefined)
+        .map((value) => Number(value))
         .filter((value) => Number.isFinite(value));
+    }
 
+    function getProfitAxesMinMax(values) {
       if (!values.length) {
         return {};
       }
 
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const range = max - min;
+      const topPadding = range === 0 ? Math.max(10, Math.abs(max) * 0.1) : range * 0.1;
+      const tickInterval = Math.max(10, Math.ceil(Math.max(range + topPadding, 10) / 4 / 10) * 10);
+
       return {
-        min: Math.min(0, ...values),
-        max: Math.max(0, ...values),
+        min,
+        max: max + topPadding,
+        ticks: {
+          stepSize: tickInterval,
+        },
       };
     }
 
-    function getAxesMinMax(range) {
-      if (!Number.isFinite(range.min) || !Number.isFinite(range.max)) {
+    function getHourlyAxesMinMax(values) {
+      if (!values.length) {
         return {};
       }
 
-      const maxAbsValue = Math.max(Math.abs(range.min), Math.abs(range.max));
-      const intervalCountPerSide = 2;
-      const tickInterval = Math.max(10, Math.ceil(maxAbsValue / intervalCountPerSide / 10) * 10);
-      const roundedMaxAbsValue = tickInterval * intervalCountPerSide;
+      const min = Math.min(0, ...values);
+      const max = Math.max(0, ...values);
+      const range = max - min;
+      const padding = range === 0 ? Math.max(10, Math.abs(max) * 0.1) : range * 0.1;
+      const tickInterval = Math.max(5, Math.ceil(Math.max(range + padding, 10) / 3 / 5) * 5);
 
       return {
-        min: -roundedMaxAbsValue,
-        max: roundedMaxAbsValue,
+        min,
+        max: max + padding,
         ticks: {
           stepSize: tickInterval,
         },
@@ -346,7 +409,8 @@ export default function ProfitChart({
     }
 
     return {
-      profit: getAxesMinMax(getAxisValues(['profit'])),
+      profit: getProfitAxesMinMax(getAxisValues('profit')),
+      hourlyProfit: getHourlyAxesMinMax(getAxisValues('hourlyProfit')),
     };
   }, [chartPoints]);
 
@@ -357,9 +421,11 @@ export default function ProfitChart({
     data:[5,12,18,14]
     }
   */
-  const datasets = useMemo(
-    () => [
-      {
+  const datasets = useMemo(() => {
+    const nextDatasets = [];
+
+    if (visibleMetrics.profit) {
+      nextDatasets.push({
         label: 'Total Profit', //main title
         data: getMetricValues(chartPoints, 'profit'),
         yAxisID: 'money', //axes ID
@@ -375,10 +441,31 @@ export default function ProfitChart({
         pointHoverBorderWidth: 2,
         borderWidth: 1.8,
         metricKey: 'profit',
-      },
-    ],
-    [chartLineColor, chartPoints, isMobileChart],
-  );
+      });
+    }
+
+    if (visibleMetrics.hourlyProfit) {
+      nextDatasets.push({
+        label: 'Hourly Profit',
+        data: getMetricValues(chartPoints, 'hourlyProfit'),
+        yAxisID: 'hourly',
+        borderColor: hourlyLineColor,
+        backgroundColor: 'transparent',
+        fill: false,
+        tension: 0,
+        pointRadius: isMobileChart ? 2.5 : 0,
+        pointHoverRadius: 5,
+        pointHitRadius: 16,
+        pointHoverBackgroundColor: hourlyLineColor,
+        pointHoverBorderColor: '#ffffff',
+        pointHoverBorderWidth: 2,
+        borderWidth: 1.8,
+        metricKey: 'hourlyProfit',
+      });
+    }
+
+    return nextDatasets;
+  }, [chartLineColor, chartPoints, hourlyLineColor, isMobileChart, visibleMetrics]);
 
   // Exactly what Chart.js expects.
   // Lables from sessionsWithData array (xLabel)
@@ -482,7 +569,13 @@ export default function ProfitChart({
               return details;
             },
             label: (context) => {
-              return `${context.dataset.label}: ${formatCurrency(Number(context.parsed.y) || 0, currency)}`;
+              const value = Number(context.parsed.y) || 0;
+
+              if (context.dataset.metricKey === 'hourlyProfit') {
+                return `${context.dataset.label}: ${formatAxisHourly(value, currency)}`;
+              }
+
+              return `${context.dataset.label}: ${formatCurrency(value, currency)}`;
             },
           },
         },
@@ -497,7 +590,7 @@ export default function ProfitChart({
             font: {
               weight: '700',
             },
-            text: 'Hands Played',
+            text: 'Hands',
           },
           grid: {
             color: gridColor,
@@ -525,7 +618,7 @@ export default function ProfitChart({
         money: {
           type: 'linear',
           position: 'right',
-          beginAtZero: true,
+          display: visibleMetrics.profit,
           ...axesMinMax.profit,
           title: {
             display: !isMobileChart,
@@ -533,7 +626,7 @@ export default function ProfitChart({
             font: {
               weight: '700',
             },
-            text: 'Currency Won',
+            text: 'Profit',
           },
           ticks: {
             ...axesMinMax.profit?.ticks,
@@ -563,17 +656,64 @@ export default function ProfitChart({
             width: 2,
           },
         },
+        hourly: {
+          type: 'linear',
+          position: 'left',
+          display: visibleMetrics.hourlyProfit,
+          ...axesMinMax.hourlyProfit,
+          title: {
+            display: false,
+          },
+          ticks: {
+            ...axesMinMax.hourlyProfit?.ticks,
+            color: textColor,
+            precision: 0,
+            callback: (value) => formatAxisHourly(value, currency),
+          },
+          afterBuildTicks: (axis) => {
+            if (!axis.ticks.some((tick) => Number(tick.value) === 0)) {
+              axis.ticks.push({ value: 0 });
+              axis.ticks.sort((firstTick, secondTick) => firstTick.value - secondTick.value);
+            }
+          },
+          grid: {
+            display: false,
+            drawTicks: true,
+          },
+          border: {
+            display: false,
+          },
+        },
       },
     };
   }
 
   const options = useMemo(
     () => getChartOptions(),
-    [chartPoints, chartGridColor, chartTextColor, datasets.length, axesMinMax, isMobileChart, currency, isLightTheme],
+    [
+      chartPoints,
+      chartGridColor,
+      chartTextColor,
+      datasets.length,
+      axesMinMax,
+      isMobileChart,
+      currency,
+      isLightTheme,
+      visibleMetrics,
+    ],
   );
   const fullScreenOptions = useMemo(
     () => getChartOptions({ fullScreen: true }),
-    [chartPoints, datasets.length, fullScreenGridColor, fullScreenTextColor, axesMinMax, isMobileChart, currency],
+    [
+      chartPoints,
+      datasets.length,
+      fullScreenGridColor,
+      fullScreenTextColor,
+      axesMinMax,
+      isMobileChart,
+      currency,
+      visibleMetrics,
+    ],
   );
 
   const fullScreenChart = isFullScreen
@@ -615,7 +755,26 @@ export default function ProfitChart({
   return (
     <div className='profit-card dashboard-profit-card'>
       <div className='profit-header'>
-        <h2 className='profit-chart-title'>Total Profit</h2>
+        <div className='profit-metric-toggles' aria-label='Profit chart metrics'>
+          <label style={{ '--metric-color': chartLineColor }}>
+            <input
+              type='checkbox'
+              checked={visibleMetrics.profit}
+              onChange={() => toggleMetric('profit')}
+            />
+            <span className='metric-check' aria-hidden='true'></span>
+            <span className='metric-label'>Total Profit</span>
+          </label>
+          <label style={{ '--metric-color': hourlyLineColor }}>
+            <input
+              type='checkbox'
+              checked={visibleMetrics.hourlyProfit}
+              onChange={() => toggleMetric('hourlyProfit')}
+            />
+            <span className='metric-check' aria-hidden='true'></span>
+            <span className='metric-label'>Hourly Profit</span>
+          </label>
+        </div>
         <div className='profit-header-actions'>
           <div className='profit-period-buttons' aria-label='Profit chart period'>
             {periods.map((period) => (
